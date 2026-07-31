@@ -1,0 +1,73 @@
+{
+  "branch": {
+    "CSE": ["cse", "cs", "computer science", "computer science and engineering", "computer branch", "cs branch", "computer"],
+    "CSE-DS": ["data science", "cse ds", "cse data science", "ds", "computer science data science"],
+    "CSE-AIML": ["aiml", "ai ml", "artificial intelligence", "machine learning", "cse aiml", "cse ai", "ai branch"],
+    "ISE": ["ise", "information science", "information science engineering", "ise branch"],
+    "ECE": ["ece", "electronics", "electronics and communication", "ec", "electronics branch"],
+    "Civil": ["civil", "civil engineering", "ce", "civil branch"],
+    "Mechanical": ["mechanical", "mech", "mechanical engineering", "me", "mechanical branch"],
+    "MBA": ["mba", "business administration", "management", "master of business administration"],
+    "CSE-CyberSecurity": ["cyber security", "cybersecurity", "cyber", "cse cyber security"],
+    "CS-BusinessSystems": ["business systems", "business application", "cs business", "cs bs"]
+  },
+
+  "category": {
+    "SC": ["sc", "scheduled caste"],
+    "ST": ["st", "scheduled tribe"],
+    "OBC": ["obc"],
+    "General": ["general", "gm"]
+  },
+
+  "exam": {
+    "KCET": ["kcet", "karnataka cet"],
+    "COMEDK": ["comedk"]
+  },
+
+  "quota": {
+    "Government": ["government quota", "government seat"],
+    "Management": ["management quota", "management seat", "management"],
+    "NRI": ["nri", "nri quota"]
+  },
+
+  "course": {
+    "B.E.": ["be", "b.e.", "engineering degree", "bachelor of engineering"],
+    "MBA": ["mba"],
+    "MCA": ["mca"]
+  },
+
+  "year": {
+    "1st Year": ["1st year", "first year", "year 1"],
+    "2nd Year": ["2nd year", "second year", "year 2"],
+    "3rd Year": ["3rd year", "third year", "year 3"],
+    "4th Year": ["4th year", "fourth year", "year 4"]
+  },
+
+  "semester": {
+    "1": ["1st semester", "sem 1", "semester 1"],
+    "2": ["2nd semester", "sem 2", "semester 2"],
+    "3": ["3rd semester", "sem 3", "semester 3"],
+    "4": ["4th semester", "sem 4", "semester 4"],
+    "5": ["5th semester", "sem 5", "semester 5"],
+    "6": ["6th semester", "sem 6", "semester 6"],
+    "7": ["7th semester", "sem 7", "semester 7"],
+    "8": ["8th semester", "sem 8", "semester 8"]
+  },
+
+  "campus_facility": {
+    "hostel": ["hostel", "accommodation", "boarding"],
+    "library": ["library", "reading room"],
+    "laboratories": ["lab", "labs", "laboratory"],
+    "transport": ["bus", "transport", "college bus"],
+    "wifi": ["wifi", "wi-fi", "internet"],
+    "parking": ["parking"],
+    "cafeteria": ["cafeteria", "canteen", "mess"]
+  },
+
+  "company": {
+    "TCS": ["tcs"],
+    "Infosys": ["infosys"],
+    "Wipro": ["wipro"],
+    "Amazon": ["amazon"]
+  }
+}
