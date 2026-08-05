@@ -1,0 +1,706 @@
+[
+  {
+    "query": "What is the annual fee for CSE?",
+    "expected_intent": "ask_fees_branch",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE"}
+  },
+  {
+    "query": "CSE ki fees kitni hai bhai?",
+    "expected_intent": "ask_fees_branch",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE"}
+  },
+  {
+    "query": "AIML ge fee eshtu?",
+    "expected_intent": "ask_fees_branch",
+    "language": "kn",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE-AIML"}
+  },
+  {
+    "query": "I really need to know what kind of money situation I am looking at for joining the computer branch",
+    "expected_intent": "ask_fees_branch",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE"}
+  },
+  {
+    "query": "What is the KCET cutoff for CSE?",
+    "expected_intent": "ask_cutoff",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE", "exam": "KCET"}
+  },
+  {
+    "query": "My daughter scored 82% in PUC. Can she get CSE?",
+    "expected_intent": "ask_cutoff",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE", "percentage": 82}
+  },
+  {
+    "query": "Management quota seat kaise milti hai?",
+    "expected_intent": "ask_admission_process",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {"quota": "Management"}
+  },
+  {
+    "query": "What documents are required for admission?",
+    "expected_intent": "ask_required_documents",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is a migration certificate required?",
+    "expected_intent": "ask_required_documents",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "What is the last date to apply?",
+    "expected_intent": "ask_application_deadline",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Has my seat been allotted?",
+    "expected_intent": "ask_admission_status",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Are seats available in CSE?",
+    "expected_intent": "ask_seat_availability",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE"}
+  },
+  {
+    "query": "How are placements in CSE?",
+    "expected_intent": "ask_placement_by_branch",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE"}
+  },
+  {
+    "query": "Which branch gets better placements, CSE or ISE?",
+    "expected_intent": "ask_placement_by_branch",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE"}
+  },
+  {
+    "query": "Does TCS visit the campus?",
+    "expected_intent": "ask_top_recruiters",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"company": "TCS"}
+  },
+  {
+    "query": "Are scholarships available?",
+    "expected_intent": "ask_scholarship_available",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "My family's income is below ₹3 lakh. Can my son get a scholarship?",
+    "expected_intent": "ask_scholarship_eligibility",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "What is the difference between CSE and AIML?",
+    "expected_intent": "ask_branch_difference",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE"}
+  },
+  {
+    "query": "I like coding. Which branch is best for me?",
+    "expected_intent": "ask_branch_recommendation",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "I am worried about my future.",
+    "expected_intent": "express_worry",
+    "language": "en",
+    "emotion": "worried",
+    "entities": {}
+  },
+  {
+    "query": "Mujhe dar lag raha hai ki placement nahi milega.",
+    "expected_intent": "express_worry",
+    "language": "hi",
+    "emotion": "worried",
+    "entities": {}
+  },
+  {
+    "query": "My daughter is not a topper. Will she still have good opportunities?",
+    "expected_intent": "ask_average_student_outcome",
+    "language": "en",
+    "emotion": "worried",
+    "entities": {}
+  },
+  {
+    "query": "Is the college NBA accredited?",
+    "expected_intent": "ask_accreditation",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is SVIT affiliated to VTU?",
+    "expected_intent": "ask_university_affiliation",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "What are the benefits of studying in an autonomous college?",
+    "expected_intent": "ask_autonomous",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+
+  {
+    "query": "What facilities are available in the hostel?",
+    "expected_intent": "ask_hostel_facilities",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "hostel"}
+  },
+  {
+    "query": "Is there a separate hostel for girls?",
+    "expected_intent": "ask_hostel_facilities",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "hostel"}
+  },
+  {
+    "query": "My son is coming from another city. Is hostel accommodation comfortable?",
+    "expected_intent": "ask_hostel_facilities",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "hostel"}
+  },
+  {
+    "query": "Does the college bus cover Electronic City?",
+    "expected_intent": "ask_transport_routes",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "transport"}
+  },
+  {
+    "query": "Namma area ge bus barutta?",
+    "expected_intent": "ask_transport_routes",
+    "language": "kn",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "transport"}
+  },
+  {
+    "query": "Does the library have technical journals?",
+    "expected_intent": "ask_library",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "library"}
+  },
+  {
+    "query": "Is there an AI and Machine Learning lab?",
+    "expected_intent": "ask_labs",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "laboratories", "branch": "CSE-AIML"}
+  },
+  {
+    "query": "Are labs accessible after class hours?",
+    "expected_intent": "ask_labs",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "laboratories"}
+  },
+  {
+    "query": "Is career counseling available?",
+    "expected_intent": "ask_student_support",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "My son is shy and may need guidance during the first year.",
+    "expected_intent": "ask_student_support",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"year": "1st Year"}
+  },
+  {
+    "query": "Are the faculty members approachable?",
+    "expected_intent": "ask_faculty_approachability",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Class ke baad faculty doubts clear karti hai kya?",
+    "expected_intent": "ask_faculty_approachability",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "How many years is engineering?",
+    "expected_intent": "ask_course_duration",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "MBA course duration?",
+    "expected_intent": "ask_course_duration",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"course": "MBA"}
+  },
+  {
+    "query": "Does the college conduct placement preparation classes?",
+    "expected_intent": "ask_campus_placement_training",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Mock interviews available?",
+    "expected_intent": "ask_campus_placement_training",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Are there cultural fests?",
+    "expected_intent": "ask_campus_life",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Does the college organize hackathons and technical events?",
+    "expected_intent": "ask_campus_life",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is 75 percent attendance mandatory?",
+    "expected_intent": "ask_attendance_policy",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"percentage": 75}
+  },
+  {
+    "query": "Can medical leave be considered for attendance?",
+    "expected_intent": "ask_attendance_policy",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "What are college timings?",
+    "expected_intent": "ask_working_hours",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is the college open on Sundays?",
+    "expected_intent": "ask_working_hours",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is the campus wheelchair accessible?",
+    "expected_intent": "ask_facilities_accessibility",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is there a health center on campus?",
+    "expected_intent": "ask_facilities_accessibility",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Can I pay the fees in installments?",
+    "expected_intent": "ask_fees_branch",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+
+  {
+    "query": "Can I submit photocopies?",
+    "expected_intent": "ask_required_documents",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "TC aur migration certificate chahiye kya?",
+    "expected_intent": "ask_required_documents",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Which documents are needed for management quota admission?",
+    "expected_intent": "ask_required_documents",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"quota": "Management"}
+  },
+  {
+    "query": "When does the admission process end?",
+    "expected_intent": "ask_application_deadline",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is late admission allowed?",
+    "expected_intent": "ask_application_deadline",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "KCET admission kab band honge?",
+    "expected_intent": "ask_application_deadline",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {"exam": "KCET"}
+  },
+  {
+    "query": "How do I track my application?",
+    "expected_intent": "ask_admission_status",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Meri application approve hui kya?",
+    "expected_intent": "ask_admission_status",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "My daughter has submitted her application. How can we check the status?",
+    "expected_intent": "ask_admission_status",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Any seats left in Computer Science?",
+    "expected_intent": "ask_seat_availability",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE"}
+  },
+  {
+    "query": "Is Cyber Security full?",
+    "expected_intent": "ask_seat_availability",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE-CyberSecurity"}
+  },
+  {
+    "query": "Can I get a seat through KCET?",
+    "expected_intent": "ask_seat_availability",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"exam": "KCET"}
+  },
+  {
+    "query": "Admission office number?",
+    "expected_intent": "ask_contact_admission_office",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Can I visit the admission office?",
+    "expected_intent": "ask_contact_admission_office",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Admission office se kaise contact karu?",
+    "expected_intent": "ask_contact_admission_office",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "What subjects are taught in AIML?",
+    "expected_intent": "ask_curriculum",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"branch": "CSE-AIML"}
+  },
+  {
+    "query": "Can I download the syllabus?",
+    "expected_intent": "ask_curriculum",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "How many internal exams are there?",
+    "expected_intent": "ask_exam_pattern",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Theory practical marks ratio?",
+    "expected_intent": "ask_exam_pattern",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "How is CGPA calculated?",
+    "expected_intent": "ask_grading_system",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "What is the difference between SGPA and CGPA?",
+    "expected_intent": "ask_grading_system",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Can I choose elective subjects?",
+    "expected_intent": "ask_academic_structure",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is there a Choice Based Credit System?",
+    "expected_intent": "ask_academic_structure",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Are paid internships available?",
+    "expected_intent": "ask_internship_opportunities",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Does the college help students find internships?",
+    "expected_intent": "ask_internship_opportunities",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+
+
+  {
+    "query": "Is there a cafeteria?",
+    "expected_intent": "ask_cafeteria",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is vegetarian food available?",
+    "expected_intent": "ask_cafeteria",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is campus Wi-Fi free?",
+    "expected_intent": "ask_wifi",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "wifi"}
+  },
+  {
+    "query": "Hostel Wi-Fi ideya?",
+    "expected_intent": "ask_wifi",
+    "language": "kn",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "wifi"}
+  },
+  {
+    "query": "Is bike parking available?",
+    "expected_intent": "ask_parking",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "parking"}
+  },
+  {
+    "query": "Are there parking charges?",
+    "expected_intent": "ask_parking",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {"campus_facility": "parking"}
+  },
+  {
+    "query": "How big is the campus?",
+    "expected_intent": "ask_infrastructure",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Are smart classrooms available?",
+    "expected_intent": "ask_infrastructure",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is there a coding club?",
+    "expected_intent": "ask_student_clubs",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Are cultural clubs available?",
+    "expected_intent": "ask_student_clubs",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Is there an incubation center?",
+    "expected_intent": "ask_entrepreneurship_support",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Can students start a company while studying?",
+    "expected_intent": "ask_entrepreneurship_support",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "My son wants to start his own company after engineering. Does the college support entrepreneurship?",
+    "expected_intent": "ask_entrepreneurship_support",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Are research opportunities available?",
+    "expected_intent": "ask_research_opportunities",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Can undergraduate students do research?",
+    "expected_intent": "ask_research_opportunities",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Can students publish research papers?",
+    "expected_intent": "ask_research_opportunities",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Hi",
+    "expected_intent": "greet",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Good morning",
+    "expected_intent": "greet",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Namaskara",
+    "expected_intent": "greet",
+    "language": "kn",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Hi, I have a question.",
+    "expected_intent": "greet",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "What's the weather today?",
+    "expected_intent": "fallback",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Who won the IPL?",
+    "expected_intent": "fallback",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Ek joke sunao.",
+    "expected_intent": "fallback",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "Write Python code.",
+    "expected_intent": "fallback",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "What is the capital of Japan?",
+    "expected_intent": "fallback",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  }
+]

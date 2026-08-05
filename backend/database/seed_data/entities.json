@@ -7,7 +7,7 @@
     "ECE": ["ece", "electronics", "electronics and communication", "ec", "electronics branch"],
     "Civil": ["civil", "civil engineering", "ce", "civil branch"],
     "Mechanical": ["mechanical", "mech", "mechanical engineering", "me", "mechanical branch"],
-    "MBA": ["mba", "business administration", "management", "master of business administration"],
+    "MBA": ["mba", "business administration", "master of business administration"],
     "CSE-CyberSecurity": ["cyber security", "cybersecurity", "cyber", "cse cyber security"],
     "CS-BusinessSystems": ["business systems", "business application", "cs business", "cs bs"]
   },
@@ -65,9 +65,31 @@
   },
 
   "company": {
-    "TCS": ["tcs"],
+    "note": "Sourced from SVIT placement page (2026). Changes every placement season — treat as admin-editable, not fixed.",
+    "Amazon": ["amazon"],
+    "Blackhawk Network": ["blackhawk", "blackhawk network"],
+    "Capgemini": ["capgemini"],
     "Infosys": ["infosys"],
-    "Wipro": ["wipro"],
-    "Amazon": ["amazon"]
+    "Wiley Edge": ["wiley edge", "wiley"],
+    "IBM": ["ibm"],
+    "Cognizant": ["cognizant"],
+    "Tata Electronics": ["tata electronics"],
+    "Zeta": ["zeta"],
+    "Bosch": ["bosch"],
+    "TCS": ["tcs", "tata consultancy services", "tata consultancy"],
+    "Unisys": ["unisys"],
+    "Infogain": ["infogain"],
+    "Storeys": ["storeys"],
+    "Accenture": ["accenture"],
+    "Juspay": ["juspay"],
+    "DeltaX": ["deltax", "delta x"],
+    "Deloitte": ["deloitte"],
+    "Johnson Controls": ["johnson controls"],
+    "Larsen & Toubro": ["larsen and toubro", "l&t", "l and t"],
+    "Tech Mahindra": ["tech mahindra"],
+    "Microland": ["microland"],
+    "HP": ["hp", "hewlett packard"],
+    "HCLTech": ["hcltech", "hcl", "hcl tech"],
+    "Wipro": ["wipro"]
   }
 }

@@ -1,0 +1,2057 @@
+[
+  {
+  "id": "ask_fees_branch",
+  "category": "Admissions",
+  "priority": "high",
+  "description": "User asks about tuition fees, fee structure, total course cost, quota fees, installment options, scholarships, hostel charges, transport charges, or other educational expenses related to engineering programs.",
+  "required_entities": [],
+  "optional_entities": [
+    "branch",
+    "quota",
+    "hostel",
+    "transport",
+    "scholarship"
+  ],
+  "knowledge_collection": "fees",
+  "examples": [
+    "What is the annual fee for CSE?",
+    "Fee structure for AIML branch.",
+    "How much are the tuition fees for ECE?",
+    "Total yearly fees for Mechanical Engineering?",
+    "What is the cost of studying Data Science?",
+    "What are the semester fees for ISE?",
+    "Can you share the complete fee structure for Cyber Security?",
+    "How much does the Computer Science course cost?",
+    "What is the total expense for the AIML program?",
+    "Are hostel fees included in the branch fees?",
+
+    "CSE ki fees kitni hai?",
+    "AIML branch ka total kharcha kitna padega?",
+    "Cyber Security ke liye kitna paisa chahiye?",
+    "Computer Science ka annual fee kya hai?",
+    "ECE branch ki yearly fees kitni hai?",
+    "Data Science course ka total fee structure kya hai?",
+    "ISE ki semester fees kitni hain?",
+    "Mechanical Engineering ka poora kharcha kitna hoga?",
+
+    "CSE ge fee eshtu?",
+    "AIML branch ge total fees eshtu?",
+    "Mechanical ge yearly fee eshtu barutte?",
+    "ECE ge annual fee eshtu?",
+    "Data Science ge fee structure enu?",
+    "ISE branch ge semester fee eshtu?",
+    "Cyber Security ge total kharcha eshtu?",
+
+    "How much should I budget for my daughter's CSE course?",
+    "My son wants to join AIML. What would be the total expense?",
+    "I want to know what kind of money situation I am looking at for joining the Computer Science branch.",
+    "We are planning for my child's admission. What will be the overall academic fees?",
+    "Can you tell me the approximate cost for completing the entire course?",
+
+    "Can I pay the fees in installments?",
+    "Is the fee the same for all four years?",
+    "Apart from tuition fee, are there any additional charges?",
+    "What will be the total expense including hostel?",
+    "How much budget should we keep ready for engineering?",
+    "Does the fee increase every academic year?",
+    "Can you tell me the complete cost from first year to graduation?",
+    "What is the government quota fee for CSE?",
+    "How much is the management quota fee for AIML?",
+    "What will be the total cost including transport?",
+
+    "Fees installment mein pay kar sakte hain?",
+    "Kya chaar saal fees same rahegi?",
+    "Tuition ke alawa aur koi charges hain?",
+    "Hostel ke saath total kitna kharcha hoga?",
+    "Government quota mein fees kitni hai?",
+    "Management quota ka total fee kitna padega?",
+    "Engineering ke liye total budget kitna rakhna chahiye?",
+    "Scholarship ke baad kitni fees deni padegi?",
+
+    "Fees installment alli pay maadbahuda?",
+    "Ella 4 years fee same irutta?",
+    "Tuition bere yavudadhru charges idiya?",
+    "Hostel jothe total kharcha eshtu agutte?",
+    "Government quota fee eshtu?",
+    "Management seat ge total fee eshtu?",
+    "Engineering ge total budget eshtu beku?",
+    "Scholarship aadmele fee eshtu barutte?",
+
+    "How much does CSE cost?",
+    "What will I pay if I choose AIML?",
+    "Can you tell me the fee structure for ECE?",
+    "How expensive is Mechanical Engineering?",
+    "What is the tuition fee for Data Science?"
+  ]
+},
+
+{
+  "id": "ask_cutoff",
+  "category": "Admissions",
+  "priority": "high",
+  "description": "User asks about admission cutoffs, opening and closing ranks, minimum qualifying ranks, expected cutoffs, or branch eligibility through entrance examinations such as KCET and COMEDK.",
+  "required_entities": [],
+  "optional_entities": [
+    "branch",
+    "exam",
+    "rank",
+    "marks",
+    "year",
+    "quota"
+  ],
+  "knowledge_collection": "cutoffs",
+  "examples": [
+    "What is the KCET cutoff for CSE?",
+    "COMEDK closing rank for AIML?",
+    "What was last year's cutoff for ECE?",
+    "Minimum rank required for Mechanical Engineering?",
+    "Cutoff marks for Cyber Security branch?",
+    "What is the expected cutoff for ISE?",
+    "What was the closing rank for Data Science last year?",
+    "How much rank is needed for CSE through COMEDK?",
+    "What is the opening and closing rank for AIML?",
+
+    "CSE ka cutoff kitna hai?",
+    "AIML ke liye kitni rank chahiye?",
+    "COMEDK mein ECE ka closing rank kya tha?",
+    "Data Science branch ke liye expected cutoff kya hai?",
+    "ISE ke liye minimum rank kitni honi chahiye?",
+    "Cyber Security ka last year cutoff kya tha?",
+    "KCET mein CSE ke liye kitne marks chahiye?",
+
+    "CSE ge cutoff eshtu?",
+    "AIML ge rank eshtu beku?",
+    "Mechanical ge last year cutoff enittu?",
+    "ECE ge closing rank eshtu ittu?",
+    "ISE ge minimum rank eshtu beku?",
+    "Data Science ge cutoff enittu?",
+    "COMEDK inda CSE ge rank eshtu beku?",
+
+    "My daughter scored 82% in PUC. Can she get CSE?",
+    "My son's KCET rank is 25,000. Which branches can he get?",
+    "Based on my rank, what are my chances of getting AIML?",
+    "I got 18,000 rank in KCET. Which branches are available for me?",
+    "Can you suggest branches based on my COMEDK rank?"
+  ]
+},
+
+{
+  "id": "ask_admission_process",
+  "category": "Admissions",
+  "priority": "high",
+  "description": "User asks about the engineering admission process, application procedure, admission through different quotas or entrance exams, required documents, online application, seat confirmation, or the overall admission workflow.",
+  "required_entities": [],
+  "optional_entities": [
+    "branch",
+    "exam",
+    "quota",
+    "document",
+    "admission_mode"
+  ],
+  "knowledge_collection": "admissions",
+  "examples": [
+    "What is the admission process for engineering?",
+    "How can I apply for CSE?",
+    "Steps to get admission through KCET?",
+    "What is the procedure for management quota admission?",
+    "How can I apply online?",
+    "What is the admission procedure for COMEDK students?",
+
+    "Admission process kya hai?",
+    "College mein admission kaise lena hai?",
+    "KCET ke through admission kaise hota hai?",
+    "Direct admission ka process kya hai?",
+    "COMEDK se admission kaise milega?",
+    "Management quota seat kaise milti hai?",
+
+    "Admission process hegide?",
+    "KCET inda admission hege sigutte?",
+    "Management seat ge apply hege maadbeku?",
+    "COMEDK moolaka admission hege?",
+    "Online application hege submit maadodu?",
+    "Direct admission sigutta?",
+
+    "I am a parent and want to know the complete admission procedure.",
+    "Can you explain the admission process from application to joining?",
+    "I am confused about how engineering admissions work. Can you guide me?",
+    "We want to know the step-by-step admission process.",
+    "How do I confirm my admission after seat allotment?",
+
+    "Admission ge first step enu?",
+    "Seat allot aadmele en maadbeku?",
+    "Admission process complete aagakke eshtu dina beku?",
+    "Parents college ge bandu admission maadbahuda?"
+  ]
+},
+
+{
+  "id": "ask_placement_by_branch",
+  "category": "Placements",
+  "priority": "high",
+  "description": "User asks about branch-wise placement performance, placement percentage, salary packages, career opportunities, future scope, industry demand, recruiter preferences, or compares branches based on placement outcomes.",
+  "required_entities": [],
+  "optional_entities": [
+    "branch",
+    "placement_metric",
+    "company",
+    "career_goal",
+    "location"
+  ],
+  "knowledge_collection": "placements",
+  "examples": [
+    "How are placements in CSE?",
+    "Placement percentage for AIML?",
+    "How are placements for ECE students?",
+    "Average package for Cyber Security students?",
+    "Highest package offered in CSE?",
+    "Are placements good for Mechanical Engineering?",
+    "How are placements for Data Science students?",
+    "Which branch has better placements?",
+    "Which branch has the highest placement percentage?",
+    "Which branch has better career opportunities?",
+    "Which branch has better future scope?",
+    "Which branch offers higher salary packages?",
+    "Which branch has better opportunities abroad?",
+    "Which engineering branch has more industry demand?",
+    "Which branch gets better campus placements?",
+
+    "CSE ka placement kaisa hai?",
+    "AIML branch mein jobs milti hain kya?",
+    "ECE ke placements ache hain kya?",
+    "Data Science branch ka placement record kya hai?",
+    "Mechanical branch mein placement hota hai kya?",
+    "Placement ke liye kaunsi branch best hai?",
+    "Future scope kis branch ka zyada hai?",
+    "Kis branch mein salary package zyada milta hai?",
+    "Abroad jobs ke liye kaunsi branch better hai?",
+    "Kis branch ka placement record sabse achha hai?",
+
+    "CSE ge placements hegide?",
+    "AIML ge average package eshtu?",
+    "Mechanical ge companies bartava?",
+    "ECE ge placement support ideya?",
+    "Data Science ge jobs sigutta?",
+    "Placement ge yava branch best?",
+    "Future scope yava branch ge jasthi?",
+    "Abroad opportunities yava branch ge chennagive?",
+    "Highest package yava branch ge sigutte?",
+    "Industry demand yava branch ge ide?",
+
+    "My daughter wants a branch with good placements. Which one would you recommend?",
+    "My son is looking for long-term career growth. Which branch has better opportunities?",
+    "We are more concerned about job security than branch popularity. Which branch is a better choice?",
+    "Which engineering branch has consistently performed well in campus placements?",
+    "Which branch is preferred by top recruiters?"
+  ]
+},
+
+{
+  "id": "ask_top_recruiters",
+  "category": "Placements",
+  "priority": "high",
+  "description": "User asks about campus recruiters, placement partners, IT companies, core companies, product companies, multinational companies, company-wise recruitment, recent recruiters, or hiring trends.",
+  "required_entities": [],
+  "optional_entities": [
+    "company",
+    "company_type",
+    "branch",
+    "year"
+  ],
+  "knowledge_collection": "recruiters",
+  "examples": [
+    "Which companies visit the campus?",
+    "Can you tell me the top companies recruiting from SVIT?",
+    "Which IT companies hire students?",
+    "Who are the major placement partners?",
+    "Do product companies visit the college?",
+    "Which core companies recruit students?",
+    "Are multinational companies visiting the campus?",
+    "Which companies recruited the highest number of students last year?",
+    "Does TCS visit the campus?",
+
+    "Kaunsi companies placement ke liye aati hain?",
+    "College mein sabse zyada hiring kaunsi companies karti hain?",
+    "Amazon aur Infosys aate hain kya?",
+    "MNC companies visit karti hain kya?",
+    "TCS aur Wipro placement ke liye aate hain kya?",
+    "Kaun kaun si software companies aati hain?",
+    "Core companies bhi aati hain kya?",
+
+    "Campus ge yav yav companies bartave?",
+    "College inda hecchu students yava companies ge select agtare?",
+    "Placement ge software companies bartava?",
+    "TCS, Infosys bartava?",
+    "MNC companies campus ge bartava?",
+    "Core companies ge opportunities ideya?",
+
+    "As a parent, I want to know which companies recruit students.",
+    "Which companies hired the most students last year?",
+    "Are there opportunities with core companies for Mechanical and ECE students?",
+    "Can you share the list of recent recruiters?",
+    "Which companies offer the highest packages?"
+  ]
+},
+
+{
+  "id": "ask_scholarship_available",
+  "category": "Scholarships",
+  "priority": "high",
+  "description": "User asks about the availability of scholarships, fee concessions, financial aid, government scholarships, merit scholarships, minority scholarships, or other financial assistance provided by the college.",
+  "required_entities": [],
+  "optional_entities": [
+    "scholarship_type",
+    "category",
+    "financial_need",
+    "academic_merit"
+  ],
+  "knowledge_collection": "scholarships",
+  "examples": [
+    "Are scholarships available?",
+    "What scholarships does the college offer?",
+    "Can engineering students get financial aid?",
+    "Are there any government scholarships?",
+    "Is there any fee concession scheme?",
+    "Are merit scholarships available?",
+    "Does the college provide financial assistance?",
+    "Are there scholarships for economically weaker students?",
+    "Is there any support for SC/ST students?",
+
+    "Scholarship milta hai kya?",
+    "College mein kaun kaun si scholarships available hain?",
+    "Fee concession options kya hain?",
+    "SC/ST students ke liye scholarship hai kya?",
+    "Merit scholarship milti hai kya?",
+    "Financial aid ka koi option hai kya?",
+    "Government scholarship ke liye apply kar sakte hain kya?",
+
+    "Scholarship ideya?",
+    "Fee concession sigutta?",
+    "Government scholarship apply maadbahuda?",
+    "Merit scholarship ideya?",
+    "Financial support sigutta?",
+    "SC/ST students ge scholarship ideya?",
+
+    "My daughter needs financial support. Are scholarships available?",
+    "We are looking for financial assistance options for engineering.",
+    "I want to know all the scholarship opportunities available for students.",
+    "Are there any scholarships for students with good marks?",
+    "Can my child get any fee waiver?",
+    "What scholarship schemes are offered by the college?",
+    "Are minority scholarships available?",
+    "Can students receive both college and government scholarships?",
+    "College scholarship ideya?",
+    "Minority scholarship sigutta?"
+  ]
+},
+
+{
+  "id": "ask_scholarship_eligibility",
+  "category": "Scholarships",
+  "priority": "high",
+  "description": "User asks about eligibility criteria for scholarships, including academic requirements, income limits, quota eligibility, required documents, and whether they qualify for college or government scholarship schemes.",
+  "required_entities": [],
+  "optional_entities": [
+    "scholarship_type",
+    "category",
+    "exam",
+    "quota",
+    "marks",
+    "income",
+    "document",
+    "academic_year"
+  ],
+  "knowledge_collection": "scholarships",
+  "examples": [
+    "Who is eligible for scholarships?",
+    "What are the criteria for fee concessions?",
+    "Can COMEDK students apply for scholarships?",
+    "What minimum marks are required to qualify for a merit scholarship?",
+    "Is scholarship based on income or merit?",
+    "What family income limit is considered for scholarship eligibility?",
+    "Are first-year students eligible for scholarships?",
+    "Can management quota students apply for scholarships?",
+    "What documents are needed for scholarship applications?",
+
+    "Scholarship ke liye eligibility kya hai?",
+    "Kaun scholarship ke liye apply kar sakta hai?",
+    "Scholarship ke liye minimum marks kitne chahiye?",
+    "Income limit kya hai scholarship ke liye?",
+    "COMEDK students scholarship ke liye eligible hain kya?",
+    "Scholarship ke liye income certificate zaroori hai kya?",
+    "Merit scholarship ke liye kitne marks chahiye?",
+
+    "Scholarship ge eligibility enu?",
+    "Scholarship sigakke eshtu marks beku?",
+    "Income certificate compulsory aa?",
+    "COMEDK students ge scholarship sigutta?",
+    "Scholarship ge yava documents beku?",
+    "Merit scholarship ge criteria enu?",
+
+    "My family's income is below ₹3 lakh. Can my son get a scholarship?",
+    "My daughter scored 92%. Is she eligible for merit scholarships?",
+    "I want to know whether I qualify for any scholarship schemes.",
+    "Are there any scholarships based on academic performance?",
+    "Can I apply for both government and college scholarships?",
+    "Am I eligible for any scholarship?",
+    "Can KCET students apply for merit scholarships?",
+    "Can minority students apply for scholarships?",
+    "Nanna marks ge scholarship sigutta?",
+    "Mere marks ke hisaab se scholarship milegi?"
+  ]
+},
+
+{
+  "id": "ask_branch_difference",
+  "category": "Academics",
+  "priority": "high",
+  "description": "User asks to compare two or more engineering branches based on curriculum, subjects, coding, mathematics, specialization, career focus, or academic characteristics.",
+  "required_entities": [],
+  "optional_entities": [
+    "branch",
+    "comparison_aspect",
+    "subject",
+    "career_goal"
+  ],
+  "knowledge_collection": "branches",
+  "examples": [
+    "What is the difference between CSE and AIML?",
+    "Compare CSE and ISE.",
+    "How is ISE different from CSE?",
+    "Compare AIML and Cyber Security.",
+    "What is the difference between AIML and Data Science?",
+    "How is Cyber Security different from Computer Science?",
+    "Which branch has more coding subjects?",
+    "Which branch has more mathematics?",
+    "Which branch focuses more on Artificial Intelligence?",
+    "What subjects are taught in AIML compared to CSE?",
+
+    "CSE aur AIML mein kya difference hai?",
+    "Data Science aur AIML mein kya farak hai?",
+    "Cyber Security aur CSE mein kya difference hai?",
+    "CSE aur ISE mein kya antar hai?",
+    "Kaunsi branch mein coding zyada hoti hai?",
+    "CSE aur AIML ke subjects mein kya difference hai?",
+    "Cyber Security aur CSE ka syllabus alag hai kya?",
+
+    "CSE mattu AIML difference enu?",
+    "ISE mattu CSE naduve vyathyasa enu?",
+    "CSE mattu Cyber Security syllabus nalli en difference ide?",
+    "AIML mattu Data Science subjects same aa?",
+    "Yava branch alli coding jasthi ide?",
+
+    "Can you help me compare different engineering branches?",
+    "I want to understand the academic differences between CSE and AIML.",
+    "Can you explain how these branches differ?",
+    "I want to compare the syllabus of different engineering branches.",
+    "Which branch focuses more on software development?",
+    "Is AIML more mathematics-oriented than CSE?",
+    "Are the subjects in CSE and Data Science similar?",
+    "Which branch is more theory-oriented?",
+    "Which branch is more practical-oriented?"
+  ]
+},
+
+{
+  "id": "express_worry",
+  "category": "Student Support",
+  "priority": "high",
+  "description": "User expresses anxiety, fear, stress, confusion, or self-doubt related to engineering, career decisions, academics, placements, or future prospects and seeks guidance or reassurance.",
+  "required_entities": [],
+  "optional_entities": [
+    "emotion",
+    "concern",
+    "career_goal",
+    "branch"
+  ],
+  "knowledge_collection": "student_support",
+  "examples": [
+    "I am worried about my future.",
+    "I am scared I won't get a good job.",
+    "I think I am not good enough for engineering.",
+    "I am worried about placements.",
+    "I feel stressed about my career.",
+    "I am afraid of making the wrong decision.",
+    "I don't know if engineering is right for me.",
+
+    "Mujhe future ko lekar tension ho rahi hai.",
+    "Mujhe dar lag raha hai ki placement nahi milega.",
+    "Main engineering handle kar paunga ya nahi pata nahi.",
+    "Mujhe lagta hai main engineering ke liye suitable nahi hoon.",
+    "Career ko lekar bahut tension hai.",
+
+    "Nanage future bagge tension ide.",
+    "Placement sigalla antha bhaya ide.",
+    "Engineering manage maadakke agutta antha doubt ide.",
+    "Career bagge tumba tension ide.",
+    "Nanna decision sariyagideya antha gothagtila.",
+
+    "My daughter is anxious about joining engineering.",
+    "My son is worried he may not perform well in college.",
+    "I am afraid I might make the wrong decision about my career.",
+    "I feel overwhelmed thinking about my future.",
+    "I need guidance because I am feeling confused."
+  ]
+},
+
+{
+  "id": "ask_average_student_outcome",
+  "category": "Student Support",
+  "priority": "high",
+  "description": "User asks whether students with average academic performance, lower CGPA, or backlogs can still achieve successful careers, secure placements, or obtain good job opportunities.",
+  "required_entities": [],
+  "optional_entities": [
+    "academic_performance",
+    "cgpa",
+    "backlogs",
+    "placement",
+    "career_goal",
+    "skill_level"
+  ],
+  "knowledge_collection": "student_support",
+  "examples": [
+    "Can average students get placements?",
+    "Do students with average marks get good jobs?",
+    "Is engineering worth it for an average student?",
+    "What career opportunities do average students usually have after engineering?",
+    "Can I succeed even if I am an average student?",
+    "Can students with backlogs get placements?",
+    "Do companies consider students with average academic performance?",
+    "Is it possible to build a successful career with average marks?",
+    "Can non-toppers get good salary packages?",
+
+    "Average student ko placement milta hai kya?",
+    "Topper na hone par bhi job mil sakti hai?",
+    "Kya average students successful hote hain?",
+    "Backlogs hone ke baad placement milta hai kya?",
+    "Average marks wale students ko achi job milti hai kya?",
+    "CGPA kam hone par placement milta hai kya?",
+    "Main topper nahi hoon, kya main successful ho sakta hoon?",
+
+    "Average students ge placement sigutta?",
+    "Topper alladidru job sigutta?",
+    "Backlog iddru future ideya?",
+    "Average marks iddru olle job sigutta?",
+    "Kadime CGPA iddru placement sigutta?",
+    "Naanu topper alla, nanagu success sigutta?",
+
+    "My daughter is not a topper. Will she still have good opportunities?",
+    "My son has average grades. Can he build a successful career?",
+    "I am not academically strong. Will I still be able to succeed?",
+    "I have average marks. Can I still get placed?",
+    "Will companies consider students with lower grades?",
+    "Is it necessary to be a topper to get a good placement?",
+    "Can hardworking average students get placed in good companies?",
+    "Will my CGPA alone decide my future?",
+    "Do skills matter more than marks during placements?",
+    "Can I improve my career even if my first-year marks are low?",
+
+    "Kya placement ke liye topper hona zaroori hai?",
+    "Agar marks average hain toh bhi achi company mil sakti hai?",
+    "Skills important hain ya marks?",
+    "First year mein marks kam aaye toh future kharab ho jayega kya?",
+
+    "Placement ge topper agirbekaa?",
+    "Average marks iddru olle company sigutta?",
+    "Skills important aa athava marks?",
+    "First year marks kadime iddare future problem agutta?"
+  ]
+},
+
+{
+  "id": "ask_accreditation",
+  "category": "Academics",
+  "priority": "high",
+  "description": "User asks about the college's accreditation, approvals, recognitions, or affiliations, including NBA, NAAC, AICTE, government recognition, and degree validity.",
+  "required_entities": [],
+  "optional_entities": [
+    "accreditation_body",
+    "branch",
+    "program",
+    "approval_type"
+  ],
+  "knowledge_collection": "accreditation",
+  "examples": [
+    "Is the college NBA accredited?",
+    "Does the college have NAAC accreditation?",
+    "What accreditations does the college have?",
+    "Is your engineering program accredited?",
+    "Is the college approved by AICTE?",
+
+    "NBA accreditation ideya?",
+    "College NAAC accredited aa?",
+    "AICTE approval ideya?",
+    "College ge yava accreditations ide?",
+    "Engineering courses NBA accredited aa?",
+
+    "NBA accreditation kya hai?",
+    "College AICTE approved hai kya?",
+    "NAAC grade kya hai?",
+    "Accreditation important hai kya?",
+    "College recognized by government hai kya?",
+
+    "My daughter is joining engineering. Is the college properly accredited?",
+    "We are looking for an accredited college. What approvals does SVIT have?",
+    "Can you tell me about the college accreditation?",
+    "Is your degree recognized across India?",
+    "Is the accreditation valid for all branches?"
+  ]
+},
+
+{
+  "id": "ask_university_affiliation",
+  "category": "Academics",
+  "priority": "high",
+  "description": "User asks about the college's university affiliation, autonomous status, degree-awarding university, or the relationship between the college and VTU.",
+  "required_entities": [],
+  "optional_entities": [
+    "university",
+    "college_status",
+    "degree",
+    "comparison"
+  ],
+  "knowledge_collection": "affiliation",
+  "examples": [
+    "Is the college autonomous or VTU?",
+    "Is SVIT affiliated to VTU?",
+    "Which university is the college affiliated with?",
+    "Is this a VTU college?",
+    "Who awards the engineering degree?",
+
+    "College VTU ge affiliated aa?",
+    "Autonomous college aa?",
+    "VTU athava autonomous?",
+    "Degree yaaru kodtare?",
+    "University affiliation enu?",
+
+    "College VTU ke under hai kya?",
+    "Autonomous college hai kya?",
+    "Engineering degree kis university se milegi?",
+    "VTU aur autonomous mein kya difference hai?",
+    "Affiliation kis university ke saath hai?",
+
+    "My son wants to study under VTU. Is your college affiliated?",
+    "Who issues the final degree certificate?",
+    "Is the college still under VTU?",
+    "Has the college become autonomous?",
+    "University affiliation details please."
+  ]
+},
+
+{
+  "id": "ask_autonomous",
+  "category": "Academics",
+  "priority": "high",
+  "description": "User asks about autonomous colleges, their advantages, differences from VTU-affiliated colleges, academic flexibility, examination system, syllabus, placements, or the impact of autonomous status on students.",
+  "required_entities": [],
+  "optional_entities": [
+    "college_status",
+    "university",
+    "comparison",
+    "academic_aspect",
+    "placement"
+  ],
+  "knowledge_collection": "autonomous",
+  "examples": [
+    "What are the benefits of studying in an autonomous college?",
+    "Why should I choose an autonomous college?",
+    "How is an autonomous college different from VTU?",
+    "What changes after becoming autonomous?",
+    "Does autonomous status help students?",
+
+    "Autonomous college na benefits enu?",
+    "VTU mattu autonomous difference enu?",
+    "Autonomous aadmele en changes agutte?",
+    "Autonomous college choose maadbekaa?",
+    "Autonomous system hegide?",
+
+    "Autonomous college ke kya advantages hain?",
+    "VTU aur autonomous mein kya farak hai?",
+    "Autonomous college mein syllabus alag hota hai kya?",
+    "Autonomous hone se placements improve hote hain kya?",
+    "Autonomous college better hai kya?",
+
+    "My daughter is confused between VTU and autonomous colleges.",
+    "Why are autonomous colleges considered better?",
+    "Does autonomous mean easier exams?",
+    "Will the degree value change after becoming autonomous?",
+    "Can you explain autonomous colleges in simple words?"
+  ]
+},
+
+{
+  "id": "ask_branch_recommendation",
+  "category": "Academics",
+  "priority": "high",
+  "description": "User asks for personalized guidance in choosing the most suitable engineering branch based on interests, career goals, skills, strengths, or future aspirations.",
+  "required_entities": [],
+  "optional_entities": [
+    "interest",
+    "career_goal",
+    "preferred_subject",
+    "branch",
+    "skill",
+    "comparison"
+  ],
+  "knowledge_collection": "branches",
+  "examples": [
+    "Which engineering branch should I choose?",
+    "I like coding. Which branch is best for me?",
+    "I am interested in Artificial Intelligence. Which branch should I take?",
+    "I want to become a software engineer. Which branch is suitable?",
+    "Which branch suits my interests?",
+    "I enjoy mathematics. Which engineering branch should I choose?",
+    "I want to work in Cyber Security. Which branch is better?",
+    "I like programming but I'm confused between CSE and AIML.",
+    "Which branch is right for me?",
+    "Can you help me choose the right engineering branch?",
+
+    "Mujhe coding pasand hai. Kaunsi branch loon?",
+    "Mujhe AI field mein jaana hai. Kaunsi branch best rahegi?",
+    "Mere liye kaunsi engineering branch sahi rahegi?",
+    "Main software engineer banna chahta hoon. Kaunsi branch loon?",
+    "Branch choose karne mein confusion hai.",
+
+    "Nanage coding ishta. Yava branch togobeku?",
+    "AI field ge hogbeku. Yava branch best?",
+    "Nanage yava engineering branch suit agutte?",
+    "Software engineer agbeku. Yava branch choose maadbeku?",
+    "Branch choose maadakke tumba confusion ide.",
+
+    "My daughter enjoys programming. Which branch would you recommend?",
+    "My son is interested in AI and Machine Learning. Which branch should he choose?",
+    "We are confused between CSE and AIML. Which one is better for our child?",
+    "Can you suggest the most suitable engineering branch based on interests?",
+    "I want guidance in selecting the right engineering branch."
+  ]
+},
+
+{
+  "id": "ask_hostel_facilities",
+  "category": "Campus Facilities",
+  "priority": "medium",
+  "description": "User asks about hostel facilities, accommodation, amenities, safety, food, room types, security, or services provided to hostel residents.",
+  "required_entities": [],
+  "optional_entities": [
+    "hostel_type",
+    "facility",
+    "gender",
+    "service",
+    "security_feature"
+  ],
+  "knowledge_collection": "hostel",
+  "examples": [
+    "What facilities are available in the hostel?",
+    "What facilities do students get in the hostel?",
+    "Does the hostel provide Wi-Fi?",
+    "Is hostel food included in the fees?",
+    "Are laundry facilities available in the hostel?",
+    "Is there a separate hostel for girls?",
+    "Do hostel rooms have attached bathrooms?",
+    "How many students stay in one room?",
+
+    "Hostel facilities kya kya hain?",
+    "Hostel mein mess facility hai kya?",
+    "Hostel mein Wi-Fi milta hai kya?",
+    "Girls hostel safe hai kya?",
+    "Hostel mein security kaisi hai?",
+    "Hostel mein study room hai kya?",
+    "Hostel mein 24-hour water aur electricity milti hai?",
+    "Parents hostel dekh sakte hain kya?",
+
+    "Hostel ge en en facilities ide?",
+    "Hostel alli students ge yava facilities sigutte?",
+    "Wi-Fi mattu laundry ideya hostel alli?",
+    "Separate hostel ideya boys mattu girls ge?",
+    "Hostel ge 24x7 security ideya?",
+    "CCTV ideya hostel alli?",
+    "Study room ideya?",
+    "Parents hostel nodbahuda?",
+
+    "My daughter will stay in the hostel. What facilities are available?",
+    "My son is coming from another city. Is hostel accommodation comfortable?",
+    "I want to know about hostel life and facilities.",
+    "What facilities are provided to hostel students besides accommodation?",
+    "Is the hostel available for first-year students?",
+    "Is 24×7 security available in the hostel?",
+    "Does the hostel have CCTV surveillance?",
+    "Are study rooms available in the hostel?",
+    "Is hot water available in the hostel?",
+    "Are visitors allowed inside the hostel?",
+    "What are the hostel timings?",
+    "Is medical assistance available for hostel students?"
+  ]
+},
+
+{
+  "id": "ask_transport_routes",
+  "category": "Campus Facilities",
+  "priority": "medium",
+  "description": "User asks about the college transportation system, bus routes, transport availability, pickup locations, bus timings, transport fees, or travel options for day scholars.",
+  "required_entities": [],
+  "optional_entities": [
+    "location",
+    "route",
+    "transport_type",
+    "student_type",
+    "fee"
+  ],
+  "knowledge_collection": "transport",
+  "examples": [
+    "What transport facilities are available?",
+    "Does the college provide bus service?",
+    "What are the bus routes for the college?",
+    "Is transportation available from Bangalore city?",
+    "What is the bus fee structure?",
+    "Are there buses from my area?",
+    "What are the college bus timings?",
+    "Is transport available for first-year students?",
+    "Can I check the bus route before admission?",
+    "Does the college bus cover Electronic City?",
+
+    "Transport facility available hai kya?",
+    "College bus timings kya hain?",
+    "Bus route details kaise milenge?",
+    "College bus ka fee kitna hai?",
+    "Bus pass compulsory hai kya?",
+
+    "Bus facility ideya?",
+    "College bus yav yav routes alli hogutte?",
+    "Transport charges eshtu?",
+    "Namma area ge bus barutta?",
+    "Bus timings enu?",
+    "Bus route list sigutta?",
+
+    "My daughter will commute daily. Is transport available?",
+    "My son lives far from the campus. What are the transport options?",
+    "I want to know whether college buses cover my location.",
+    "What transport options are available for day scholars?",
+    "Can you explain the college bus and transport facilities?"
+  ]
+},
+
+{
+  "id": "ask_library",
+  "category": "Campus Facilities",
+  "priority": "medium",
+  "description": "User asks about the college library, including library facilities, learning resources, book borrowing, digital library, study spaces, journals, timings, and academic resources available to students.",
+  "required_entities": [],
+  "optional_entities": [
+    "resource_type",
+    "facility",
+    "timing",
+    "service",
+    "student_type"
+  ],
+  "knowledge_collection": "library",
+  "examples": [
+    "Does the college have a library?",
+    "What learning resources are available in the library?",
+    "Is there a digital library facility?",
+    "What are the library timings?",
+    "Can students borrow books?",
+    "Does the library have technical journals?",
+    "Is the library open during weekends?",
+    "Can students study in the library after classes?",
+    "Does the library have previous-year question papers?",
+    "Can students access online journals and research papers?",
+    "Is there a quiet study area inside the library?",
+
+    "Library mein kaunsi facilities hain?",
+    "Library se books issue kar sakte hain kya?",
+    "Digital library available hai kya?",
+    "Competitive exam books ideya?",
+
+    "Library ideya college alli?",
+    "Library timing enu?",
+    "Students ge books borrow maadakke agutta?",
+    "E-books available ideya?",
+    "Weekend alli library open irutta?",
+    "Library alli individual study area ideya?",
+
+    "My daughter spends a lot of time studying. Is the library well equipped?",
+    "My son needs access to technical resources. Does the library provide them?",
+    "I want to know about the study resources available in the library."
+  ]
+},
+
+{
+  "id": "ask_labs",
+  "category": "Campus Facilities",
+  "priority": "medium",
+  "description": "User asks about laboratory facilities, computer labs, modern equipment, practical sessions, software, research facilities, project work, or access to laboratories.",
+  "required_entities": [],
+  "optional_entities": [
+    "branch",
+    "lab_type",
+    "facility",
+    "software",
+    "equipment",
+    "access_time"
+  ],
+  "knowledge_collection": "laboratories",
+  "examples": [
+    "What labs are available for CSE students?",
+    "Does the college have modern laboratories?",
+    "What laboratory facilities are available for engineering students?",
+    "Are computer labs available for all branches?",
+    "Are the laboratories equipped with modern equipment and software?",
+    "Is there an AI and Machine Learning lab?",
+    "Are labs accessible after class hours?",
+    "Are students allowed to use labs for projects?",
+    "Are labs available during weekends?",
+    "Are industry-standard tools and software available in the labs?",
+    "Do students work on real-world projects in laboratories?",
+
+    "Labs kaise hain college mein?",
+    "Computer labs updated hain kya?",
+    "Practical sessions regularly hote hain kya?",
+
+    "Labs hegide college alli?",
+    "Modern equipment ideya labs alli?",
+    "AIML ge separate lab ideya?",
+    "Practical classes proper aagi nadeyutta?",
+    "Students ge lab access sigutta?",
+    "Industry software ideya labs alli?",
+    "Mini project work ge labs use maadbahuda?",
+
+    "My daughter prefers hands-on learning. How are the labs?",
+    "My son is interested in research and projects. Are the labs good enough?",
+    "I want to know whether students get practical exposure."
+  ]
+},
+
+{
+  "id": "ask_student_support",
+  "category": "Student Support",
+  "priority": "medium",
+  "description": "User asks about student support services such as mentoring, academic guidance, counseling, mental health support, anti-ragging measures, placement mentoring, or assistance available to students.",
+  "required_entities": [],
+  "optional_entities": [
+    "support_type",
+    "student_year",
+    "concern",
+    "contact_person"
+  ],
+  "knowledge_collection": "student_support",
+  "examples": [
+    "What support services are available for students?",
+    "Does the college provide mentoring?",
+    "Is career counseling available?",
+    "Do students get academic guidance?",
+    "Is there mental health support on campus?",
+    "Are there anti-ragging measures in place?",
+
+    "Student support services kya kya hain?",
+    "Counseling facility available hai kya?",
+    "Mentorship program hai kya?",
+    "Weak students ko support milta hai kya?",
+
+    "Student support ideya?",
+    "Mentors assign maadtara students ge?",
+    "Counseling facility ideya campus alli?",
+    "Academic help sigutta?",
+    "Problems idre yaranna contact maadbeku?",
+
+    "My daughter may need extra academic support. What help is available?",
+    "My son is shy and may need guidance during the first year.",
+    "I want to know how the college supports struggling students.",
+    "Whom should students contact if they need academic or personal support?",
+    "Is there a faculty mentor for every student?",
+    "Does the college provide placement mentoring?",
+    "First year students ge mentor assign maadtara?",
+    "Parents concerns idre yaranna contact maadbeku?",
+    "How does the college support first-year students?"
+  ]
+},
+
+{
+  "id": "ask_faculty_approachability",
+  "category": "Student Support",
+  "priority": "medium",
+  "description": "User asks about faculty support, approachability, mentoring, guidance, project supervision, doubt clarification, placement guidance, or student-faculty interaction.",
+  "required_entities": [],
+  "optional_entities": [
+    "faculty_role",
+    "support_type",
+    "academic_activity",
+    "student_concern"
+  ],
+  "knowledge_collection": "faculty",
+  "examples": [
+    "Are the faculty members approachable?",
+    "How supportive are the professors?",
+    "Can students easily interact with teachers?",
+    "Do faculty members help outside class hours?",
+    "Do faculty members maintain a friendly and supportive environment for students?",
+    "Is there a mentorship system with faculty?",
+
+    "Faculty supportive hai kya?",
+    "Teachers doubts clear karte hain kya?",
+    "Professors approachable hain kya?",
+    "Faculty students ko guide karti hai kya?",
+    "Class ke baad faculty doubts clear karti hai kya?",
+    "Projects ke liye professors guide karte hain kya?",
+    "Placement preparation mein faculty help karti hai kya?",
+
+    "Faculty hegide college alli?",
+    "Teachers jothe easy aagi maatadbahuda?",
+    "Doubts kelidre faculty help maadtara?",
+    "Faculty supportive ideya projects ge?",
+    "Mentors assign maadtara faculty inda?",
+    "Class mugida mele doubts kelbahuda?",
+    "Projects ge faculty guide maadtara?",
+    "Placement preparation ge faculty support ideya?",
+
+    "My daughter is introverted. Will faculty members support her?",
+    "My son may need extra guidance. Are the professors helpful?",
+    "I want to know whether students can comfortably approach faculty.",
+    "Do teachers encourage questions and discussions?",
+    "How involved are faculty members in student development?",
+    "Are faculty members available after class for doubts?",
+    "Do professors encourage project work and research?",
+    "Will faculty guide students during placements?",
+    "Can students freely approach HODs and professors?"
+  ]
+},
+
+{
+  "id": "ask_course_duration",
+  "category": "Academics",
+  "priority": "medium",
+  "description": "User asks about the duration of engineering programs, number of semesters, course completion time, or the duration of specific branches or degree programs.",
+  "required_entities": [],
+  "optional_entities": [
+    "course",
+    "branch",
+    "degree",
+    "semester"
+  ],
+  "knowledge_collection": "academics",
+  "examples": [
+    "How many years is engineering?",
+    "Duration of CSE course?",
+    "How long is the B.E. program?",
+    "MBA course duration?",
+    "How many semesters are there in engineering?",
+    "How long does it take to complete AIML?",
+    "How long does the course take to complete?",
+    "What is the duration of the Computer Science course?",
+    "How many semesters are there in B.E.?",
+    "Is engineering a 4-year course?",
+    "How long does it take to graduate?",
+    "Does every engineering branch have the same duration?",
+
+    "Engineering course kitne saal ka hai?",
+    "Engineering 4 saal ka course hai kya?",
+    "B.E. mein kitne semesters hote hain?",
+    "AIML course kitne saal ka hai?",
+    "Sabhi branches ka duration same hai kya?",
+
+    "CSE ge course duration eshtu?",
+    "B.E. complete maadakke eshtu varsha beku?",
+    "Engineering 4 varsha course aa?",
+    "B.E. alli eshtu semesters idave?",
+    "Ella branches duration same aa?",
+    "AIML course eshtu varsha ide?"
+  ]
+},
+
+{
+  "id": "ask_campus_placement_training",
+  "category": "Placements",
+  "priority": "medium",
+  "description": "User asks about placement preparation, aptitude training, coding practice, communication skills, resume building, mock interviews, technical interview preparation, or campus placement readiness programs.",
+  "required_entities": [],
+  "optional_entities": [
+    "training_type",
+    "student_year",
+    "skill",
+    "placement_stage"
+  ],
+  "knowledge_collection": "placement_training",
+  "examples": [
+    "Do you provide placement training?",
+    "Does the college conduct placement preparation classes?",
+    "Does the college provide coding training for placements?",
+    "Does the college provide interview preparation and guidance?",
+    "Soft skills training available?",
+    "Mock interviews available?",
+    "How does SVIT prepare students for placements?",
+    "How is college placement training conducted?",
+    "Does the college provide aptitude training before placements?",
+    "Are communication skills training sessions conducted?",
+    "Do students receive technical interview training?",
+    "Is placement training compulsory for all students?",
+    "From which year does placement training begin?",
+
+    "College placement training kaise conduct hota hai?",
+    "Placement ke liye aptitude training milti hai kya?",
+    "Technical interview ki preparation karvate hain kya?",
+    "Placement training kis year se start hoti hai?",
+
+    "Aptitude coaching ide?",
+    "Resume building sessions conduct maadtira?",
+    "Placement aptitude training ideya?",
+    "Technical interview training kodtara?",
+    "Placement training yava year inda start agutte?"
+  ]
+},
+
+{
+  "id": "ask_campus_life",
+  "category": "Campus",
+  "priority": "medium",
+  "description": "User asks about campus life, student activities, clubs, technical events, cultural festivals, sports, extracurricular activities, or the overall student experience.",
+  "required_entities": [],
+  "optional_entities": [
+    "activity_type",
+    "club",
+    "event",
+    "interest"
+  ],
+  "knowledge_collection": "campus_life",
+  "examples": [
+    "How is campus life at SVIT?",
+    "Are there clubs and student activities?",
+    "What technical clubs are available for students?",
+    "What events happen in college?",
+    "Are there cultural fests?",
+    "How active is student life outside academics?",
+    "Is college life enjoyable?",
+    "What extracurricular activities are available for students?",
+    "Are there student clubs and societies?",
+    "Does the college organize hackathons and technical events?",
+    "Are sports and cultural activities encouraged?",
+    "What annual events are conducted on campus?",
+    "Is campus life fun and engaging?",
+
+    "College life kaisa hai?",
+    "College mein clubs aur events hote hain kya?",
+    "Hackathons aur technical competitions hote hain kya?",
+    "Campus life enjoyable hai kya?",
+
+    "Campus life hegide?",
+    "College alli clubs mattu events idiya?",
+    "Hackathon mattu technical competitions nadeyutta?",
+    "Campus life chennagideya?"
+  ]
+},
+
+{
+  "id": "ask_attendance_policy",
+  "category": "Academics",
+  "priority": "medium",
+  "description": "User asks about attendance requirements, minimum attendance percentage, attendance calculation, attendance shortage, medical leave, eligibility for examinations, or attendance regulations.",
+  "required_entities": [],
+  "optional_entities": [
+    "attendance_percentage",
+    "leave_type",
+    "subject",
+    "exam"
+  ],
+  "knowledge_collection": "attendance",
+  "examples": [
+    "What is the attendance policy?",
+    "Minimum attendance required?",
+    "Is 75 percent attendance mandatory?",
+    "How many classes can I miss?",
+    "What happens if attendance is low?",
+    "Is attendance compulsory?",
+    "Can I write exams with low attendance?",
+    "What are the rules for attendance shortage?",
+    "Is 75% attendance compulsory for every subject?",
+    "Can medical leave be considered for attendance?",
+    "Will I be detained if my attendance is below the minimum requirement?",
+    "Are there any exceptions to the attendance rule?",
+    "How is attendance calculated?",
+
+    "College ki attendance policy kya hai?",
+    "Agar attendance kam ho toh kya hoga?",
+    "Medical reason se attendance shortage consider karte hain kya?",
+    "Har subject mein 75% attendance zaroori hai kya?",
+
+    "Exam attend maadakke minimum attendance eshtu beku?",
+    "Attendance kam iddare enagutte?",
+    "Medical reason iddare attendance consider maadtara?",
+    "Prati subject ge 75% attendance compulsory aa?"
+  ]
+},
+
+{
+  "id": "ask_working_hours",
+  "category": "Campus",
+  "priority": "medium",
+  "description": "User asks about college working hours, class timings, office timings, working days, holidays, or the daily academic schedule.",
+  "required_entities": [],
+  "optional_entities": [
+    "timing_type",
+    "student_year",
+    "day",
+    "office"
+  ],
+  "knowledge_collection": "working_hours",
+  "examples": [
+    "What are college timings?",
+    "When do classes start?",
+    "When do classes end?",
+    "How many working days per week?",
+    "Is Saturday a holiday?",
+    "What are the working hours?",
+    "What time does the first class begin?",
+    "What time does the last class end?",
+    "Is the college open on Sundays?",
+    "What are the office working hours?",
+    "Are timings different for first-year students?",
+
+    "Class timings kya hai?",
+    "College kitne baje start hota hai?",
+    "Office timing kya hai?",
+    "Sunday ko college khula rehta hai kya?",
+
+    "College yaava time ge start agatte?",
+    "Regular class timings hegive?",
+    "College yaava time inda yaava time varege open irutte?",
+    "First class yaava time ge start agutte?",
+    "Office timings enu?",
+    "Sunday college open irutta?"
+  ]
+},
+
+{
+  "id": "ask_facilities_accessibility",
+  "category": "Campus",
+  "priority": "medium",
+  "description": "User asks about accessibility features, medical facilities, emergency support, first aid, or special facilities available for differently abled students on campus.",
+  "required_entities": [],
+  "optional_entities": [
+    "facility",
+    "accessibility_feature",
+    "support_type"
+  ],
+  "knowledge_collection": "accessibility",
+  "examples": [
+    "Is the campus wheelchair accessible?",
+    "Is a medical facility available?",
+    "Is emergency support available?",
+    "Is a first aid facility available?",
+    "Is there a health center on campus?",
+    "Are there ramps for disabled students?",
+    "Is accessibility support available for students?",
+    "Are there special facilities for differently abled students?",
+    "Is there a medical room available in the college?",
+    "What accessibility features are available on campus?"
+  ]
+},
+
+{
+  "id": "ask_required_documents",
+  "category": "Admissions",
+  "priority": "high",
+  "description": "User asks about the documents, certificates, or records required during the admission process, document verification, or enrollment.",
+  "required_entities": [],
+  "optional_entities": [
+    "document_type",
+    "admission_type",
+    "verification"
+  ],
+  "knowledge_collection": "admissions",
+  "examples": [
+    "What documents are required for admission?",
+    "Can you give me the document checklist?",
+    "Which certificates should I bring during admission?",
+    "What should I carry on admission day?",
+    "Admission documents list please.",
+    "Original documents compulsory?",
+    "Are original certificates mandatory?",
+    "Can I submit photocopies?",
+    "Is document verification compulsory?",
+    "When is document verification conducted?",
+    "Do I need TC for admission?",
+    "Is a migration certificate required?",
+    "Is caste certificate required?",
+    "Should I bring income certificate?",
+    "What identity proof should I carry?",
+    "Which documents are needed for KCET admission?",
+    "Which documents are required for COMEDK admission?",
+    "What documents are needed for management quota admission?",
+
+    "Admission ke liye kaunse documents chahiye?",
+    "Admission ke time kya kya documents lana hai?",
+    "Original documents compulsory hain kya?",
+    "TC aur migration certificate chahiye kya?",
+    "Document verification kab hota hai?",
+    "Income certificate zaroori hai kya?",
+    "Admission document list bhej dijiye.",
+
+    "Admission ge yava documents beku?",
+    "Original documents compulsory aa?",
+    "Document verification hegide?",
+    "TC compulsory aa?",
+    "Migration certificate beka?",
+    "Admission dina en en documents tarbeku?",
+    "Documents verification yavaga agutte?",
+
+    "My daughter is taking admission. What documents should we carry?",
+    "My son got a seat through KCET. Which certificates are required?",
+    "Can you share the complete admission document checklist?"
+  ]
+},
+
+{
+  "id": "ask_application_deadline",
+  "category": "Admissions",
+  "priority": "high",
+  "description": "User asks about admission deadlines, application closing dates, admission schedule, or whether applications are still being accepted.",
+  "required_entities": [],
+  "optional_entities": [
+    "admission_type",
+    "date",
+    "exam",
+    "quota"
+  ],
+  "knowledge_collection": "admissions",
+  "examples": [
+    "What is the last date to apply?",
+    "Admission application deadline?",
+    "When do admissions close?",
+    "Is the application still open?",
+    "Can I apply next week?",
+    "What is the last date for admission?",
+    "When does the admission process end?",
+    "Has the admission deadline passed?",
+    "Is there still time to apply?",
+    "Can I submit my application today?",
+    "Are admissions currently open?",
+    "When does online application close?",
+    "Last date for KCET admission?",
+    "Last date for COMEDK admission?",
+    "Management admission deadline?",
+    "Is late admission allowed?",
+    "Can I apply after the deadline?",
+    "When should I submit my documents?",
+
+    "Admission ki last date kya hai?",
+    "Admission form submit karne ki last date kya hai?",
+    "Admissions abhi open hain kya?",
+    "Kya main abhi apply kar sakta hoon?",
+    "Management quota admission ki last date kya hai?",
+    "KCET admission kab band honge?",
+
+    "Application last date yavaga?",
+    "Admission form submit maadakke last date enu?",
+    "Admissions innu open idiya?",
+    "Naanu next week apply maadbahuda?",
+    "Management admission deadline yavaga?",
+    "KCET admission ge last date yavudu?",
+
+    "My daughter will apply next week. Will admissions still be open?",
+    "We are planning for admission. What is the application deadline?",
+    "Can you tell me the admission schedule?"
+  ]
+},
+
+{
+  "id": "ask_admission_status",
+  "category": "Admissions",
+  "priority": "high",
+  "description": "User asks about the status of an admission application, seat confirmation, application approval, or admission completion.",
+  "required_entities": [],
+  "optional_entities": [
+    "application_id",
+    "admission_type",
+    "application_status"
+  ],
+  "knowledge_collection": "admissions",
+  "examples": [
+    "How can I check my admission status?",
+    "Has my admission been confirmed?",
+    "Can I check whether my admission is approved?",
+    "Is my seat confirmed?",
+    "How do I track my application?",
+    "Can I know my application status?",
+    "Has my application been accepted?",
+    "Is my admission process completed?",
+    "Can I check my admission online?",
+    "How will I know if my admission is confirmed?",
+    "When will my admission be confirmed?",
+    "Has my seat been allotted?",
+    "Can I track my admission progress?",
+
+    "Admission status hegide?",
+    "Admission confirm ayta?",
+    "Seat confirmed aa?",
+    "Application status check hege?",
+    "Admission complete ayta?",
+    "Seat allot ayta?",
+    "Nanna application approve ayta?",
+
+    "Mera admission confirm hua kya?",
+    "Application status kaise check karu?",
+    "Seat allot hui kya?",
+    "Admission process complete hua kya?",
+    "Meri application approve hui kya?",
+    "Admission online check kar sakta hoon kya?",
+
+    "My daughter has submitted her application. How can we check the status?",
+    "My son completed document verification. Has his admission been confirmed?",
+    "Can you tell me whether my admission is successful?"
+  ]
+},
+
+{
+  "id": "ask_seat_availability",
+  "category": "Admissions",
+  "priority": "high",
+  "description": "User asks whether seats are available in a particular branch, quota, or admission category.",
+  "required_entities": [],
+  "optional_entities": [
+    "branch",
+    "quota",
+    "admission_type"
+  ],
+  "knowledge_collection": "admissions",
+  "examples": [
+    "Are seats available in CSE?",
+    "Seat availability for ECE?",
+    "Are AIML seats available?",
+    "Can I still get a seat?",
+    "Seats remaining?",
+    "Any seats left in Computer Science?",
+    "Are admissions open for Mechanical Engineering?",
+    "Is Cyber Security full?",
+    "Are management seats available?",
+    "Any vacancy in Civil Engineering?",
+    "Can I get a seat through KCET?",
+    "Can I get a COMEDK seat?",
+    "Is there any seat available for Data Science?",
+
+    "CSE seats available aa?",
+    "AIML seat sigutta?",
+    "Mechanical seats full aa?",
+    "Civil branch seats ideya?",
+    "Management seats ideya?",
+    "KCET inda seat sigutta?",
+    "COMEDK seat ideya?",
+
+    "CSE mein seats available hain kya?",
+    "Management quota mein seat milegi kya?",
+    "ECE branch full ho gayi kya?",
+    "Cyber Security mein vacancy hai kya?",
+    "Abhi bhi admission mil sakta hai kya?",
+    "Data Science ki seats bachi hain kya?",
+
+    "My daughter wants CSE. Are seats still available?",
+    "My son is applying through COMEDK. Are seats available?",
+    "Can you tell me the current seat availability?"
+  ]
+},
+
+{
+  "id": "ask_contact_admission_office",
+  "category": "Admissions",
+  "priority": "high",
+  "description": "User asks how to contact the admission office, admission counselor, or admission in-charge for enquiries or assistance.",
+  "required_entities": [],
+  "optional_entities": [
+    "contact_type",
+    "department"
+  ],
+  "knowledge_collection": "contact_information",
+  "examples": [
+    "How can I contact the admission office?",
+    "Admission office number?",
+    "Admission office contact details?",
+    "Whom should I contact for admissions?",
+    "Can I talk to the admission in-charge?",
+    "Admission enquiry contact?",
+    "Admission office email?",
+    "Can I visit the admission office?",
+    "Who is the admission counselor?",
+    "Admission office working hours?",
+    "Can I call the admission department?",
+    "Admission office location?",
+    "How do I contact the admission team?",
+
+    "Admission office ellide?",
+    "Admission office ge call maadbeku.",
+    "Admission office email ideya?",
+    "Admission office timings enu?",
+    "Admission department contact kodi.",
+    "Admission office ge visit maadbahuda?",
+
+    "Admission office ka number chahiye.",
+    "Admission office se kaise contact karu?",
+    "Admission enquiry ke liye kisse baat karu?",
+    "Admission office ka email kya hai?",
+    "Admission office kab open rehta hai?",
+    "Counselor se baat kar sakte hain kya?",
+
+    "My daughter needs admission guidance. Whom should we contact?",
+    "My son has some admission-related questions. Can we speak to the admission office?",
+    "Can you share the official admission contact details?"
+  ]
+},
+
+{
+  "id": "ask_curriculum",
+  "category": "Academics",
+  "priority": "medium",
+  "description": "User asks about the curriculum, syllabus, subjects, semester-wise course structure, or academic content of a program or branch.",
+  "required_entities": [],
+  "optional_entities": [
+    "branch",
+    "semester",
+    "subject",
+    "curriculum_version"
+  ],
+  "knowledge_collection": "academics",
+  "examples": [
+    "What is the curriculum for CSE?",
+    "Can I see the CSE syllabus?",
+    "What subjects are taught in AIML?",
+    "What is the latest curriculum?",
+    "Semester-wise syllabus?",
+    "Can I download the syllabus?",
+    "Is the curriculum updated regularly?",
+    "How many subjects are there in first year?",
+    "What are the core subjects in ISE?",
+    "Does every branch have a different syllabus?",
+    "What subjects are included in Cyber Security?",
+    "Can I get the semester-wise curriculum?",
+    "What is taught in Data Science?",
+    "Are electives included in the syllabus?",
+
+    "Course curriculum kya hai?",
+    "CSE syllabus kya hai?",
+    "Latest syllabus available hai kya?",
+    "Semester-wise subjects bataiye.",
+    "Engineering syllabus kaisa hai?",
+    "AIML mein kaunse subjects hote hain?",
+
+    "CSE syllabus enu?",
+    "Engineering syllabus hegide?",
+    "Semester-wise syllabus ideya?",
+    "Latest syllabus sigutta?",
+    "Cyber Security subjects enu?",
+    "Curriculum update aagideya?",
+
+    "My daughter wants to know the subjects in CSE.",
+    "Can you share the curriculum for all engineering branches?",
+    "I want to know what I'll study during the four years."
+  ]
+},
+
+{
+  "id": "ask_exam_pattern",
+  "category": "Academics",
+  "priority": "medium",
+  "description": "User asks about the examination pattern, internal assessments, practical exams, evaluation scheme, or semester examination process.",
+  "required_entities": [],
+  "optional_entities": [
+    "exam_type",
+    "semester",
+    "subject",
+    "assessment_type"
+  ],
+  "knowledge_collection": "academics",
+  "examples": [
+    "What is the exam pattern?",
+    "How are semester exams conducted?",
+    "How many internal exams are there?",
+    "Are there practical exams?",
+    "What is the assessment pattern?",
+    "Theory practical marks ratio?",
+    "How are students evaluated?",
+    "Are lab exams conducted?",
+    "How many internals are compulsory?",
+    "What is the weightage of internals?",
+    "How many marks are assigned to internals?",
+    "How difficult are engineering exams?",
+    "When are semester exams conducted?",
+    "How is the final exam conducted?",
+
+    "Exam pattern kya hai?",
+    "Internal exams hote hain kya?",
+    "Lab exams bhi hote hain kya?",
+    "Engineering exams difficult hain kya?",
+    "Assessment kaise hota hai?",
+    "Theory aur practical marks kitne hote hain?",
+
+    "Semester exams hegide?",
+    "Internal exams ideya?",
+    "Lab exams ideya?",
+    "Assessment pattern enu?",
+    "Engineering exams kashta aa?",
+    "Exam schedule hegide?",
+
+    "My son wants to know how engineering students are evaluated.",
+    "Can you explain the examination process?",
+    "How are marks distributed between internals and semester exams?"
+  ]
+},
+
+{
+  "id": "ask_grading_system",
+  "category": "Academics",
+  "priority": "medium",
+  "description": "User asks about the grading system, CGPA, SGPA, credits, passing marks, grade calculation, or academic evaluation.",
+  "required_entities": [],
+  "optional_entities": [
+    "grade",
+    "cgpa",
+    "sgpa",
+    "credits",
+    "passing_marks"
+  ],
+  "knowledge_collection": "academics",
+  "examples": [
+    "How does the grading system work?",
+    "How is CGPA calculated?",
+    "How are grades awarded?",
+    "What are the passing marks?",
+    "Minimum CGPA required?",
+    "How are credits calculated?",
+    "What is the difference between SGPA and CGPA?",
+    "How is the evaluation process carried out?",
+    "What grading scale does the college follow?",
+    "How many credits are required to graduate?",
+    "How can I improve my CGPA?",
+    "Is CGPA calculated every semester?",
+    "How are final grades calculated?",
+    "What grade is considered distinction?",
+
+    "Grading system kya hai?",
+    "Passing marks kitne hain?",
+    "CGPA kaise calculate hota hai?",
+    "SGPA aur CGPA mein kya difference hai?",
+    "Credits kaise calculate karte hain?",
+    "Evaluation process kya hai?",
+
+    "CGPA calculate hege?",
+    "Passing marks eshtu?",
+    "Credits hege calculate maadtare?",
+    "SGPA mattu CGPA difference enu?",
+    "Grading system hegide?",
+    "Evaluation process enu?",
+
+    "My daughter wants to understand the CGPA system.",
+    "Can you explain the grading system in simple words?",
+    "How is academic performance evaluated?"
+  ]
+},
+
+{
+  "id": "ask_academic_structure",
+  "category": "Academics",
+  "priority": "medium",
+  "description": "User asks about the academic structure, credit system, electives, honours programs, minor degrees, specialization options, or curriculum flexibility.",
+  "required_entities": [],
+  "optional_entities": [
+    "program",
+    "branch",
+    "credit_system",
+    "specialization",
+    "elective"
+  ],
+  "knowledge_collection": "academics",
+  "examples": [
+    "Does the college offer electives?",
+    "Can I choose elective subjects?",
+    "Minor degree available?",
+    "Honours program available?",
+    "What is the credit system?",
+    "Is there a Choice Based Credit System?",
+    "Can I choose my specialization later?",
+    "Does the college offer honours courses?",
+    "Are minor degree programs available?",
+    "How flexible is the curriculum?",
+    "Can students customize their course?",
+    "What academic options are available?",
+    "Can I study interdisciplinary subjects?",
+    "Are open electives offered?",
+    "Can I take electives from other departments?",
+
+    "Academic structure kya hai?",
+    "Choice Based Credit System hai kya?",
+    "Elective subjects choose kar sakte hain kya?",
+    "Honours program available hai kya?",
+    "Minor degree milti hai kya?",
+    "Specialization baad mein choose kar sakte hain kya?",
+
+    "Credit system hegide?",
+    "Flexible curriculum ideya?",
+    "Choice based credit system ideya?",
+    "Minor degree ideya?",
+    "Honours program ideya?",
+    "Elective subjects togobahuda?",
+    "Specialization later choose maadbahuda?",
+
+    "My daughter wants to pursue an honours degree. Is it available?",
+    "Can my son take electives based on his interests?",
+    "I want to know about the academic flexibility offered by the college."
+  ]
+},
+
+{
+  "id": "ask_internship_opportunities",
+  "category": "Placements",
+  "priority": "medium",
+  "description": "User asks about internship opportunities, internship support, industry training, company collaborations, or internship guidance provided by the college.",
+  "required_entities": [],
+  "optional_entities": [
+    "internship_type",
+    "company",
+    "student_year",
+    "branch",
+    "paid"
+  ],
+  "knowledge_collection": "placements",
+  "examples": [
+    "Are internships provided?",
+    "Does the college arrange internships?",
+    "Are internship opportunities available?",
+    "Do students get internships through the college?",
+    "Are paid internships available?",
+    "Are summer internships offered?",
+    "Which companies provide internships?",
+    "Can first-year students do internships?",
+    "When do internships start?",
+    "Is internship compulsory?",
+    "Does the college help students find internships?",
+    "Do all branches get internship opportunities?",
+    "Are internships available in AI and Machine Learning?",
+    "Can I do an internship outside the college?",
+    "Does the college provide internship certificates?",
+
+    "Internship opportunities ideya?",
+    "Internship sigutta?",
+    "College internship arrange maadtara?",
+    "Paid internships ideya?",
+    "Companies internship kodtara?",
+    "Industry internships available ideya?",
+    "Internship yava year inda start agutte?",
+
+    "Internship opportunities hain kya?",
+    "College internship arrange karta hai kya?",
+    "Paid internship milti hai kya?",
+    "Summer internship available hai kya?",
+    "Placement se pehle internship karna compulsory hai kya?",
+    "Internship ke liye companies aati hain kya?",
+
+    "My daughter wants industry experience before graduation. Does the college provide internships?",
+    "My son wants a paid internship. Does the college help students?",
+    "Can you explain the internship opportunities available for engineering students?"
+  ]
+},
+
+{
+  "id": "ask_cafeteria",
+  "category": "Campus",
+  "priority": "low",
+  "description": "User asks about the college cafeteria, canteen, food options, pricing, or dining facilities.",
+  "required_entities": [],
+  "optional_entities": [
+    "food_type",
+    "facility"
+  ],
+  "knowledge_collection": "campus",
+  "examples": [
+    "Is there a cafeteria?",
+    "How is the college canteen?",
+    "Is vegetarian food available?",
+    "What are the cafeteria timings?",
+    "Are snacks available?",
+    "How is the food quality?",
+
+    "College canteen hegide?",
+    "Canteen ideya?",
+    "Food quality hegide?",
+    "Vegetarian food ideya?",
+
+    "College mein cafeteria hai kya?",
+    "Canteen ka food kaisa hai?",
+    "Food prices kya hain?",
+    "Mess aur cafeteria alag hain kya?",
+
+    "My daughter will stay on campus. How is the cafeteria?",
+    "Can students get meals inside the campus?"
+  ]
+},
+
+{
+  "id": "ask_wifi",
+  "category": "Campus",
+  "priority": "low",
+  "description": "User asks about Wi-Fi and internet facilities available on campus.",
+  "required_entities": [],
+  "optional_entities": [
+    "location"
+  ],
+  "knowledge_collection": "campus",
+  "examples": [
+    "Is Wi-Fi available?",
+    "Is campus Wi-Fi free?",
+    "Do students get Wi-Fi access?",
+    "Is internet available on campus?",
+    "Is Wi-Fi available in the hostel?",
+
+    "Campus Wi-Fi ideya?",
+    "Students ge Wi-Fi sigutta?",
+    "Hostel Wi-Fi ideya?",
+    "Internet facility ideya?",
+
+    "Campus mein Wi-Fi hai kya?",
+    "Wi-Fi password students ko milta hai kya?",
+    "Campus internet speed kaisi hai?",
+
+    "Does the entire campus have Wi-Fi coverage?",
+    "Can students use college Wi-Fi?"
+  ]
+},
+
+{
+  "id": "ask_parking",
+  "category": "Campus",
+  "priority": "low",
+  "description": "User asks about parking facilities for students and visitors.",
+  "required_entities": [],
+  "optional_entities": [
+    "vehicle_type"
+  ],
+  "knowledge_collection": "campus",
+  "examples": [
+    "Is parking available?",
+    "Is bike parking available?",
+    "Is car parking available?",
+    "Are there parking charges?",
+    "Is student parking available?",
+
+    "Bike parking ideya?",
+    "Car parking ideya?",
+    "Parking safe aa?",
+
+    "Parking facility hai kya?",
+    "Two wheeler parking hai kya?",
+    "Parking charges kitne hain?",
+
+    "Can visitors park inside the campus?",
+    "Is parking available for faculty and students?"
+  ]
+},
+
+{
+  "id": "ask_infrastructure",
+  "category": "Campus",
+  "priority": "low",
+  "description": "User asks about the college infrastructure, classrooms, buildings, and campus facilities.",
+  "required_entities": [],
+  "optional_entities": [
+    "facility"
+  ],
+  "knowledge_collection": "campus",
+  "examples": [
+    "How is the college infrastructure?",
+    "Are smart classrooms available?",
+    "How big is the campus?",
+    "Is the campus well maintained?",
+    "How are the classrooms?",
+
+    "Campus facilities hegide?",
+    "Modern classrooms ideya?",
+    "College environment hegide?",
+
+    "Infrastructure kaisa hai?",
+    "Campus kitna bada hai?",
+    "College well maintained hai kya?",
+
+    "Can you tell me about the campus facilities?",
+    "How is the overall campus environment?"
+  ]
+},
+
+{
+  "id": "ask_student_clubs",
+  "category": "Campus",
+  "priority": "low",
+  "description": "User asks about student clubs, technical societies, and extracurricular organizations.",
+  "required_entities": [],
+  "optional_entities": [
+    "club_type"
+  ],
+  "knowledge_collection": "campus",
+  "examples": [
+    "Are there student clubs?",
+    "Are there technical clubs?",
+    "Is there a coding club?",
+    "Can students join clubs?",
+    "Are cultural clubs available?",
+
+    "Technical clubs ideya?",
+    "Coding club ideya?",
+    "Clubs join maadbahuda?",
+
+    "College mein clubs hain kya?",
+    "Innovation clubs available hain kya?",
+    "IEEE student chapter hai kya?",
+
+    "My daughter wants to join technical clubs.",
+    "What student clubs are available on campus?"
+  ]
+},
+
+{
+  "id": "ask_entrepreneurship_support",
+  "category": "Campus",
+  "priority": "medium",
+  "description": "User asks about entrepreneurship support, startup ecosystem, incubation facilities, innovation centers, funding opportunities, or business mentoring available in the college.",
+  "required_entities": [],
+  "optional_entities": [
+    "startup_support",
+    "incubation",
+    "funding",
+    "program"
+  ],
+  "knowledge_collection": "campus",
+  "examples": [
+    "Does the college support startups?",
+    "Is there an entrepreneurship cell?",
+    "Is there an incubation center?",
+    "Are startup programs available?",
+    "Does the college encourage entrepreneurship?",
+    "Can students start a company while studying?",
+    "Are innovation labs available?",
+    "Is funding support available for student startups?",
+    "Does the college conduct entrepreneurship workshops?",
+    "Can I get guidance for my business idea?",
+
+    "Entrepreneurship cell ideya?",
+    "Startup support sigutta?",
+    "Innovation lab ideya?",
+    "Business ideas ge support ideya?",
+    "Funding support ideya?",
+
+    "Startup guidance milta hai?",
+    "College startup ko support karta hai kya?",
+    "Incubation center hai kya?",
+    "Business idea ke liye mentor milta hai kya?",
+
+    "My son wants to start his own company after engineering. Does the college support entrepreneurship?",
+    "Can students receive mentoring for startup ideas?"
+  ]
+},
+
+{
+  "id": "ask_research_opportunities",
+  "category": "Academics",
+  "priority": "medium",
+  "description": "User asks about research opportunities, research projects, publications, laboratories, faculty guidance, or undergraduate research activities.",
+  "required_entities": [],
+  "optional_entities": [
+    "research_area",
+    "branch",
+    "faculty",
+    "publication"
+  ],
+  "knowledge_collection": "academics",
+  "examples": [
+    "Are research opportunities available?",
+    "Can undergraduate students do research?",
+    "Are research projects available?",
+    "Can students work with faculty on research?",
+    "Are research labs available?",
+    "Does the college support publications?",
+    "Can students publish research papers?",
+    "Is research encouraged for engineering students?",
+    "Can I participate in research during my B.E.?",
+    "Are there funded research projects?",
+
+    "Research projects ideya?",
+    "Faculty research join maadbahuda?",
+    "Students research maadbahuda?",
+    "Research labs ideya?",
+    "Research guidance sigutta?",
+
+    "Research opportunities kya hain?",
+    "Research paper publish kar sakte hain kya?",
+    "Faculty ke saath research kar sakte hain kya?",
+    "Engineering students research karte hain kya?",
+
+    "My daughter is interested in research. What opportunities are available?",
+    "Can students participate in research before graduation?"
+  ]
+},
+
+{
+  "id": "greet",
+  "category": "General",
+  "priority": "low",
+  "description": "User greets the assistant or starts a conversation.",
+  "required_entities": [],
+  "optional_entities": [],
+  "knowledge_collection": null,
+  "examples": [
+    "Hi",
+    "Hello",
+    "Hey",
+    "Good morning",
+    "Good afternoon",
+    "Good evening",
+    "Hi there",
+    "Hello SVIT",
+    "Hey assistant",
+    "Can we talk?",
+
+    "Namaste",
+    "Namaskar",
+    "Hello ji",
+    "Hi dost",
+
+    "Namaskara",
+    "Hi guru",
+    "Hello sir",
+    "Hello madam",
+
+    "Is anyone there?",
+    "Can you help me?",
+    "Hi, I have a question.",
+    "Hello, I need some information."
+  ]
+},
+
+{
+  "id": "fallback",
+  "category": "General",
+  "priority": "low",
+  "description": "User asks something unrelated to the college, admissions, academics, campus, placements, or student services.",
+  "required_entities": [],
+  "optional_entities": [],
+  "knowledge_collection": null,
+  "examples": [
+    "Who won the IPL?",
+    "What's the weather today?",
+    "Tell me a joke.",
+    "Write Python code.",
+    "Solve this math problem.",
+    "Translate this sentence.",
+    "Who is the Prime Minister of India?",
+    "How do I cook biryani?",
+    "Book a flight for me.",
+    "Play a song.",
+
+    "Aaj weather kaisa hai?",
+    "Ek joke sunao.",
+    "Python program likho.",
+    "Mujhe movie recommend karo.",
+
+    "Ivattu weather hegide?",
+    "Ondu joke heli.",
+    "Python code bari.",
+    "Movie recommend maadu.",
+
+    "Who is Cristiano Ronaldo?",
+    "Tell me today's news.",
+    "Open YouTube.",
+    "How to lose weight?",
+    "What is the capital of Japan?"
+  ]
+}]
