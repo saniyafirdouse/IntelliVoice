@@ -1,0 +1,250 @@
+[
+  {
+    "branch": "CSE",
+    "quota": "Management",
+    "academic_year": "2026-27",
+    "annual_fee": 325000,
+    "semester_fee": 162500,
+    "early_bird_fee": 275000,
+    "payment_mode": "Semester-wise",
+    "installments": 2,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE",
+    "exam": "KCET",
+    "academic_year": "2026-27",
+    "annual_fee": 120000,
+    "semester_fee": 120000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE",
+    "exam": "COMEDK",
+    "academic_year": "2026-27",
+    "annual_fee": 140000,
+    "semester_fee": 140000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE-AIML",
+    "quota": "Management",
+    "academic_year": "2026-27",
+    "annual_fee": 325000,
+    "semester_fee": 162500,
+    "early_bird_fee": 275000,
+    "payment_mode": "Semester-wise",
+    "installments": 2,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE-AIML",
+    "exam": "KCET",
+    "academic_year": "2026-27",
+    "annual_fee": 118000,
+    "semester_fee": 118000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE-AIML",
+    "exam": "COMEDK",
+    "academic_year": "2026-27",
+    "annual_fee": 138000,
+    "semester_fee": 138000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE-CyberSecurity",
+    "quota": "Management",
+    "academic_year": "2026-27",
+    "annual_fee": 325000,
+    "semester_fee": 162500,
+    "early_bird_fee": 275000,
+    "payment_mode": "Semester-wise",
+    "installments": 2,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE-CyberSecurity",
+    "exam": "KCET",
+    "academic_year": "2026-27",
+    "annual_fee": 115000,
+    "semester_fee": 115000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE-CyberSecurity",
+    "exam": "COMEDK",
+    "academic_year": "2026-27",
+    "annual_fee": 135000,
+    "semester_fee": 135000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE-DS",
+    "quota": "Management",
+    "academic_year": "2026-27",
+    "annual_fee": 300000,
+    "semester_fee": 150000,
+    "early_bird_fee": 250000,
+    "payment_mode": "Semester-wise",
+    "installments": 2,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE-DS",
+    "exam": "KCET",
+    "academic_year": "2026-27",
+    "annual_fee": 112000,
+    "semester_fee": 112000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CSE-DS",
+    "exam": "COMEDK",
+    "academic_year": "2026-27",
+    "annual_fee": 132000,
+    "semester_fee": 132000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CS-BusinessSystems",
+    "quota": "Management",
+    "academic_year": "2026-27",
+    "annual_fee": 275000,
+    "semester_fee": 137500,
+    "early_bird_fee": 225000,
+    "payment_mode": "Semester-wise",
+    "installments": 2,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CS-BusinessSystems",
+    "exam": "KCET",
+    "academic_year": "2026-27",
+    "annual_fee": 108000,
+    "semester_fee": 108000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "CS-BusinessSystems",
+    "exam": "COMEDK",
+    "academic_year": "2026-27",
+    "annual_fee": 128000,
+    "semester_fee": 128000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "ECE",
+    "quota": "Management",
+    "academic_year": "2026-27",
+    "annual_fee": 250000,
+    "semester_fee": 125000,
+    "early_bird_fee": 200000,
+    "payment_mode": "Semester-wise",
+    "installments": 2,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "ECE",
+    "exam": "KCET",
+    "academic_year": "2026-27",
+    "annual_fee": 105000,
+    "semester_fee": 105000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "ECE",
+    "exam": "COMEDK",
+    "academic_year": "2026-27",
+    "annual_fee": 125000,
+    "semester_fee": 125000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "Mechanical",
+    "quota": "Management",
+    "academic_year": "2026-27",
+    "annual_fee": 125000,
+    "semester_fee": 62500,
+    "early_bird_fee": 95000,
+    "payment_mode": "Semester-wise",
+    "installments": 2,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "Mechanical",
+    "exam": "KCET",
+    "academic_year": "2026-27",
+    "annual_fee": 95000,
+    "semester_fee": 95000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "Mechanical",
+    "exam": "COMEDK",
+    "academic_year": "2026-27",
+    "annual_fee": 105000,
+    "semester_fee": 105000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "Civil",
+    "quota": "Management",
+    "academic_year": "2026-27",
+    "annual_fee": 125000,
+    "semester_fee": 62500,
+    "early_bird_fee": 95000,
+    "payment_mode": "Semester-wise",
+    "installments": 2,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "Civil",
+    "exam": "KCET",
+    "academic_year": "2026-27",
+    "annual_fee": 90000,
+    "semester_fee": 90000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  },
+  {
+    "branch": "Civil",
+    "exam": "COMEDK",
+    "academic_year": "2026-27",
+    "annual_fee": 100000,
+    "semester_fee": 100000,
+    "payment_mode": "One-time",
+    "installments": 1,
+    "last_updated": "2026-04-10"
+  }
+]
