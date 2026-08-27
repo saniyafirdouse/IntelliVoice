@@ -1,0 +1,318 @@
+[
+  {
+    "query": "hello sir actually my son he got some rank in KCET i dont remember exactly around fifteen thousand i think can he get into computer science or not",
+    "expected_intent": "ask_cutoff",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {
+      "branch": "CSE",
+      "exam": "KCET"
+    }
+  },
+  {
+    "query": "yaar CSE mein itna paisa lagta hai kya seriously total kitna",
+    "expected_intent": "ask_fees_branch",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {
+      "branch": "CSE"
+    }
+  },
+  {
+    "query": "sir woh CSE ka jo fee hai na total kitna lagta hai poora four saal ka",
+    "expected_intent": "ask_fees_branch",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {
+      "branch": "CSE"
+    }
+  },
+  {
+    "query": "I already called someone yesterday but nobody explained properly so what exactly does computer science cost per year",
+    "expected_intent": "ask_fees_branch",
+    "language": "en",
+    "emotion": "frustrated",
+    "entities": {
+      "branch": "CSE"
+    }
+  },
+  {
+    "query": "hi umm my daughter is in twelfth now we are thinking engineering so what all papers do we need to bring when we come",
+    "expected_intent": "ask_required_documents",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "actually can you just tell me by when we must finish the whole application otherwise we miss it",
+    "expected_intent": "ask_application_deadline",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "we submitted everything last week nobody is telling us if it went through or not",
+    "expected_intent": "ask_admission_status",
+    "language": "en",
+    "emotion": "frustrated",
+    "entities": {}
+  },
+  {
+    "query": "is computer branch already full or can my son still try",
+    "expected_intent": "ask_seat_availability",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {
+      "branch": "CSE"
+    }
+  },
+  {
+    "query": "honestly which branch gets the good jobs these days not the old ones tell me straight",
+    "expected_intent": "ask_placement_by_branch",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "does infosys wale log yahan aate hain job dene ke liye",
+    "expected_intent": "ask_top_recruiters",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {
+      "company": "Infosys"
+    }
+  },
+  {
+    "query": "we are not that well off financially is there anything that can help with the money side",
+    "expected_intent": "ask_scholarship_available",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "so my husband and I both dont earn much will that count for anything on the fee side",
+    "expected_intent": "ask_scholarship_eligibility",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "everyone keeps telling me different things about computer science and this AI one what is actually not the same about them",
+    "expected_intent": "ask_branch_difference",
+    "language": "en",
+    "emotion": "confused",
+    "entities": {
+      "branch": "CSE-AIML"
+    }
+  },
+  {
+    "query": "he is good with numbers and likes building stuff not really into computers though what do you suggest",
+    "expected_intent": "ask_branch_recommendation",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "I keep thinking what if he cannot handle it there and just gives up halfway",
+    "expected_intent": "express_worry",
+    "language": "en",
+    "emotion": "worried",
+    "entities": {}
+  },
+  {
+    "query": "she is not the topper type never has been will that hold her back later in life",
+    "expected_intent": "ask_average_student_outcome",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "is this place actually recognized properly or just some random college",
+    "expected_intent": "ask_accreditation",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "somebody told me you people are not under the state university anymore is that true",
+    "expected_intent": "ask_university_affiliation",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "she will be staying there alone first time away from home is it actually safe and comfortable",
+    "expected_intent": "ask_hostel_facilities",
+    "language": "en",
+    "emotion": "worried",
+    "entities": {
+      "campus_facility": "hostel"
+    }
+  },
+  {
+    "query": "we stay quite far like near electronic city does anything come from that side",
+    "expected_intent": "ask_transport_routes",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {
+      "campus_facility": "transport"
+    }
+  },
+  {
+    "query": "who do i even talk to about all this nobody is picking up the general number",
+    "expected_intent": "ask_contact_admission_office",
+    "language": "en",
+    "emotion": "frustrated",
+    "entities": {}
+  },
+  {
+    "query": "hii",
+    "expected_intent": "greet",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "good evening sorry to call so late",
+    "expected_intent": "greet",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "can you tell me todays cricket score",
+    "expected_intent": "fallback",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "sorry wrong question ignore that tell me a recipe for dinner",
+    "expected_intent": "fallback",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "kya AIML branch ka total kharcha zyada hota hai normal CS se",
+    "expected_intent": "ask_fees_branch",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {
+      "branch": "CSE-AIML"
+    }
+  },
+  {
+    "query": "last year how much rank was needed roughly for the AI branch through kcet",
+    "expected_intent": "ask_cutoff",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {
+      "branch": "CSE-AIML",
+      "exam": "KCET"
+    }
+  },
+  {
+    "query": "management ke through lena hai to kya karna padta hai poora process bata do",
+    "expected_intent": "ask_admission_process",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {
+      "quota": "Management"
+    }
+  },
+  {
+    "query": "do we need to get his caste papers or not we are general category",
+    "expected_intent": "ask_required_documents",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {
+      "category": "General"
+    }
+  },
+  {
+    "query": "kitne tak time hai abhi bhi form bhar sakte hain kya",
+    "expected_intent": "ask_application_deadline",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "any chance still left in mechanical or that branch also closed now",
+    "expected_intent": "ask_seat_availability",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {
+      "branch": "Mechanical"
+    }
+  },
+  {
+    "query": "does amazon or these big product companies even bother coming to a college like this",
+    "expected_intent": "ask_top_recruiters",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {
+      "company": "Amazon"
+    }
+  },
+  {
+    "query": "she scored around ninety percent will she qualify for anything on fees",
+    "expected_intent": "ask_scholarship_eligibility",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "everybody says data science is trending is it actually that different from normal cse subjects wise",
+    "expected_intent": "ask_branch_difference",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {
+      "branch": "CSE-DS"
+    }
+  },
+  {
+    "query": "honestly i dont even know what half these branch names mean can you just guide us based on what he likes",
+    "expected_intent": "ask_branch_recommendation",
+    "language": "en",
+    "emotion": "confused",
+    "entities": {}
+  },
+  {
+    "query": "what happens to the kids who are just average not brilliant do they even get jobs after",
+    "expected_intent": "ask_average_student_outcome",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "is it under vtu still or something changed recently i heard something",
+    "expected_intent": "ask_university_affiliation",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "girls hostel wahan safe hai na proper security vagera",
+    "expected_intent": "ask_hostel_facilities",
+    "language": "hi",
+    "emotion": "worried",
+    "entities": {
+      "campus_facility": "hostel"
+    }
+  },
+  {
+    "query": "office khula rehta hai kya sunday ke din bhi",
+    "expected_intent": "ask_working_hours",
+    "language": "hi",
+    "emotion": "neutral",
+    "entities": {}
+  },
+  {
+    "query": "if for some reason i cannot reach anyone on call is there another way to ask something",
+    "expected_intent": "ask_contact_admission_office",
+    "language": "en",
+    "emotion": "neutral",
+    "entities": {}
+  }
+]

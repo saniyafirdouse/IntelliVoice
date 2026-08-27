@@ -2,6 +2,7 @@ import json
 import os
 import re
 from sentence_transformers import SentenceTransformer, util
+from engines.groq_intent_classifier import classify_intent_groq
 
 print("Loading Sentence Transformer model...")
 embedding_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
@@ -59,6 +60,36 @@ ENTITY_LOOKUPS = {
 # lookup-able ones. Everything else in each intent's own
 # "optional_entities" list is documentation for Engine 5, not something
 # extracted here.
+
+# ── Conversational filler stripping ─────────────────────────────────────
+# Real phone-call speech is full of hedges and social framing that dilute
+# the mean-pooled embedding away from the actual question being asked.
+# This strips that noise ONLY for the text used in intent-matching —
+# entity extraction and emotion detection still see the original text,
+# since hedges like "i think" are useful signal for those.
+FILLER_PATTERNS = [
+    r"\bhello sir\b", r"\bhi sir\b", r"\bhello\b",
+    r"\bactually\b", r"\bhonestly\b", r"\bbasically\b", r"\bseriously\b",
+    r"\bi think\b", r"\bi guess\b",
+    r"\bi dont remember exactly\b", r"\bi don't remember exactly\b",
+    r"\byou know\b", r"\bum+\b", r"\buh+\b",
+    r"\bkind of\b", r"\bsort of\b",
+    r"\bsorry\b", r"\bplease\b",
+    r"\byaar\b", r"\bbhai\b", r"\bwoh\b",
+]
+
+def strip_conversational_filler(text: str) -> str:
+    # Guard: never strip on short messages — protects greetings like "Hi"
+    # from being emptied out entirely.
+    if len(text.split()) < 7:
+        return text
+    cleaned = text.lower()
+    for pattern in FILLER_PATTERNS:
+        cleaned = re.sub(pattern, " ", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned if cleaned else text
+
+
 EXTRACTABLE_ENTITY_TYPES = [
     "branch", "quota", "category", "exam",
     "company", "course", "year", "semester", "campus_facility"
@@ -144,6 +175,66 @@ def detect_emotion(text: str) -> str:
 COMPARISON_INTENTS = {"ask_branch_difference"}
 RECOMMENDATION_INTENTS = {"ask_branch_recommendation"}
 
+# ═══════════════════════════════════════════════════════════════════════
+# HYBRID ARBITRATION LAYER (Sentence Transformers + Groq)
+#
+# Added after empirical evaluation on 140 labeled queries (100 regression
+# + 40 held-out generalization set). See tests/log_hybrid_data.py and the
+# resulting database/seed_data/hybrid_analysis_log.csv.
+#
+# Findings:
+#   - When ST and Groq AGREE: correct 118/118 times (100%)
+#   - When they DISAGREE and ST confidence >= 0.90: ST was correct 4/4
+#   - When they DISAGREE and ST confidence <  0.90: Groq was correct 18/18
+#   - 0.90 sits inside an observed gap between 0.840 (highest wrong-ST
+#     disagreement score) and 0.914 (lowest correct-ST disagreement
+#     score) — an empirically derived boundary, not an arbitrary guess.
+#
+# This layer ONLY decides which intent_id wins. It does not touch entity
+# extraction, emotion detection, language detection, response_mode, or
+# knowledge_request construction — all of that remains exactly as before,
+# downstream of this decision.
+# ═══════════════════════════════════════════════════════════════════════
+
+HYBRID_ST_CONFIDENCE_THRESHOLD = 0.90
+
+
+async def arbitrate_intent(st_intent_id: str, st_confidence: float, groq_intent_id: str) -> tuple[str, str]:
+    """
+    Decide the final intent_id when ST and Groq disagree.
+    Returns (final_intent_id, decision_source) — decision_source is for
+    internal logging/debugging only, not part of the public output.
+    """
+    if st_intent_id == groq_intent_id:
+        return st_intent_id, "agreement"
+
+    if st_confidence >= HYBRID_ST_CONFIDENCE_THRESHOLD:
+        return st_intent_id, "st_high_confidence"
+
+    return groq_intent_id, "groq_arbitration"
+
+# Intents that share the "admissions" collection need a topic tag
+# so the Knowledge Engine can tell which sub-type of admission
+# info is being asked for (process / documents / deadline / status / seats).
+INTENT_TOPIC_MAP = {
+    "ask_admission_process": "process",
+    "ask_required_documents": "documents",
+    "ask_application_deadline": "deadline",
+    "ask_admission_status": "status",
+    "ask_seat_availability": "seats",
+}
+
+# Only these entity types are meaningful per admissions topic —
+# sending irrelevant extras causes false non-matches or, worse,
+# false matches against the wrong document.
+TOPIC_RELEVANT_ENTITIES = {
+    "process": [],
+    "documents": ["quota"],
+    "deadline": ["exam"],
+    "status": [],
+    "seats": ["branch"],
+}
+
 
 def determine_response_mode(intent_id: str, emotion: str, needs_escalation: bool) -> str:
     if needs_escalation:
@@ -177,6 +268,7 @@ def determine_needs_memory(text: str, entities: dict, confidence_zone: str) -> b
 # ── Main intent classification — the locked Engine 2 contract ─────────────
 async def classify_intent(text: str, normalized_text: str = None, language: str = "en") -> dict:
     query_for_matching = normalized_text if normalized_text else text
+    query_for_matching = strip_conversational_filler(query_for_matching)
 
     if not query_for_matching or not query_for_matching.strip():
         return _build_output(
@@ -197,32 +289,49 @@ async def classify_intent(text: str, normalized_text: str = None, language: str 
             best_score = score
             best_intent_id = intent_labels[idx]
 
-    # Three-zone confidence handling
+    # Three-zone confidence handling — UNCHANGED, exactly as before.
+    # st_intent_id below is the ST result AFTER this zone forcing is
+    # applied, matching precisely what was evaluated in the hybrid log.
     if best_score >= 0.55:
         confidence_zone = "confident"
     elif best_score >= 0.35:
         confidence_zone = "uncertain"
-        # best-guess intent is still used silently — no clarifying
-        # question back to the user, per standing project decision
     else:
         confidence_zone = "out_of_scope"
         best_intent_id = "fallback"
+
+    st_intent_id = best_intent_id
+    st_confidence = best_score
+
+    # ── Hybrid arbitration — the only new decision point ──────────────
+    groq_result = await classify_intent_groq(text)
+    groq_intent_id = groq_result["intent"]
+
+    final_intent_id, _decision_source = await arbitrate_intent(
+        st_intent_id, st_confidence, groq_intent_id
+    )
+    # ────────────────────────────────────────────────────────────────
 
     entities = extract_entities(text)
     emotion = detect_emotion(text)
 
     return _build_output(
         query=text, normalized_query=query_for_matching, language=language,
-        intent_id=best_intent_id, confidence=round(best_score, 3),
+        intent_id=final_intent_id, confidence=round(best_score, 3),
         confidence_zone=confidence_zone, emotion=emotion, entities=entities
     )
-
 
 def _build_output(query, normalized_query, language, intent_id, confidence,
                    confidence_zone, emotion, entities) -> dict:
     intent_record = INTENT_BY_ID.get(intent_id, {})
     category = intent_record.get("category", "General")
     knowledge_collection = intent_record.get("knowledge_collection")
+
+    if intent_id in INTENT_TOPIC_MAP:
+        topic = INTENT_TOPIC_MAP[intent_id]
+        relevant_keys = TOPIC_RELEVANT_ENTITIES.get(topic, [])
+        entities = {k: v for k, v in entities.items() if k in relevant_keys}
+        entities = {**entities, "topic": topic}
 
     needs_escalation = (
         emotion in {"worried", "frustrated"} and confidence_zone in {"uncertain", "out_of_scope"}

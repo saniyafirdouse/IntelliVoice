@@ -2,6 +2,7 @@ import whisper
 import tempfile
 import os
 import py3langid as langid
+from engines.muril_multitask_classifier import classify_language_emotion_muril
 
 print("Loading Whisper model...")
 whisper_model = whisper.load_model("small")
@@ -40,8 +41,8 @@ def detect_script(text: str) -> str | None:
     return None
 
 
-# ── Main language detection ────────────────────────────────────────────────
-def detect_language(text: str) -> dict:
+# ── Fallback: original py3langid detection (kept for safety) ──────────────
+def detect_language_py3langid(text: str) -> dict:
     if not text or not text.strip():
         return {
             "primary": "en",
@@ -49,26 +50,18 @@ def detect_language(text: str) -> dict:
             "is_code_switched": False
         }
 
-    # Step 1: Script detection wins outright — no ambiguity possible
-    # when native Kannada or Devanagari characters are present.
     script_lang = detect_script(text)
 
-    # Step 2: py3langid for romanized text, restricted to our 3 languages
     try:
         detected_lang, confidence = langid.classify(text)
     except Exception:
         detected_lang, confidence = "en", 0.0
 
-    # Step 3: Priority — script detection > restricted py3langid result
     primary = script_lang if script_lang else detected_lang
 
-    # Safety net: even though set_languages() restricts candidates,
-    # if anything unexpected ever comes back, fall back to English
-    # rather than propagating an unsupported code downstream.
     if primary not in SUPPORTED_LANGUAGES:
         primary = "en"
 
-    # Step 4: Code-switch detection
     has_latin = any(ch.isascii() and ch.isalpha() for ch in text)
     has_kannada = any(ord(ch) in KANNADA_RANGE for ch in text)
     has_devanagari = any(ord(ch) in DEVANAGARI_RANGE for ch in text)
@@ -83,6 +76,45 @@ def detect_language(text: str) -> dict:
         "has_devanagari": has_devanagari,
         "has_latin": has_latin,
         "confidence": round(float(confidence), 2)
+    }
+
+
+# ── Main language detection — fine-tuned MuRIL, empirically validated ─────
+# 95% vs py3langid's 80% on held-out test data (see database/seed_data/
+# muril_training/ evaluation results). Falls back to py3langid only if
+# MuRIL fails to load or errors at runtime.
+async def detect_language(text: str) -> dict:
+    if not text or not text.strip():
+        return {
+            "primary": "en",
+            "primary_name": "English",
+            "is_code_switched": False
+        }
+
+    muril_result = await classify_language_emotion_muril(text)
+
+    if muril_result["success"]:
+        primary = muril_result["language"]
+        confidence = muril_result["language_confidence"]
+    else:
+        fallback = detect_language_py3langid(text)
+        primary = fallback["primary"]
+        confidence = fallback.get("confidence")
+
+    has_latin = any(ch.isascii() and ch.isalpha() for ch in text)
+    has_kannada = any(ord(ch) in KANNADA_RANGE for ch in text)
+    has_devanagari = any(ord(ch) in DEVANAGARI_RANGE for ch in text)
+
+    is_code_switched = (primary in {"hi", "kn"}) and has_latin
+
+    return {
+        "primary": primary,
+        "primary_name": LANGUAGE_MAP.get(primary, "English"),
+        "is_code_switched": is_code_switched,
+        "has_kannada": has_kannada,
+        "has_devanagari": has_devanagari,
+        "has_latin": has_latin,
+        "confidence": confidence
     }
 
 
@@ -109,7 +141,7 @@ async def transcribe_audio(audio_bytes: bytes, filename: str = "audio.wav") -> d
         raw_text = result["text"].strip()
         os.unlink(tmp_path)
 
-        lang_info = detect_language(raw_text)
+        lang_info = await detect_language(raw_text)
         normalized = normalize_text(raw_text)
 
         return {
@@ -140,7 +172,7 @@ async def process_text_input(text: str) -> dict:
             "language": {"primary": "en", "primary_name": "English", "is_code_switched": False}
         }
 
-    lang_info = detect_language(text)
+    lang_info = await detect_language(text)
     normalized = normalize_text(text)
 
     return {

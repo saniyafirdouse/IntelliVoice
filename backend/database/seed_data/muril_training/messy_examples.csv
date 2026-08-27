@@ -1,0 +1,855 @@
+intent_id,category,text,language,emotion,label_success
+ask_fees_branch,Admissions,"Hey, um, can you tell me what the yearly tuition for the Computer Science Engineering program is, uh, please?",en,neutral,TRUE
+ask_fees_branch,Admissions,"Arre, fee structure ka details batao, kya CSE ka annual fee kitna aata hai, um?",hi,worried,TRUE
+ask_fees_branch,Admissions,"Um, I was wondering, yeh... hostel charges for the engineering branch, like, how much? And also, what about the semester fees?",en,confused,TRUE
+ask_fees_branch,Admissions,"Namaskara, fee structure yenu? Mechanical Engineering ge yearly fee elli? Hostel, transport fees? I feel like this is so confusing.",kn,frustrated,TRUE
+ask_fees_branch,Admissions,"Hey, I'm worried about the tuition fees for the Electronics and Communication branch, can you tell me the total cost for the year?",en,worried,TRUE
+ask_fees_branch,Admissions,"Fee structure batao, ECE ka annual fee kya hai?",hi,neutral,TRUE
+ask_fees_branch,Admissions,"Um, like, I'm so frustrated, can you give me the installment options for the Computer Science Engineering? Also, what's the scholarship availability?",en,frustrated,TRUE
+ask_fees_branch,Admissions,"I want to know the tuition fee for the B.Tech in Electrical Engineering, and I also want to know about the hostel charges, I'm a bit worried.",en,worried,TRUE
+ask_fees_branch,Admissions,"Great, can you tell me the fee structure for the AI and Machine Learning branch, including tuition, hostel, and transport? I am excited to enroll.",en,excited,TRUE
+ask_cutoff,Admissions,"Hey, can you tell me what the cutoff rank was for Electrical Engineering in last year, like the opening and closing ranks?",en,neutral,TRUE
+ask_cutoff,Admissions,"Um, yaar, KCET ka minimum rank kya hota hai for Mechanical, you know, like the closing rank? I’m a bit confused.",hi,confused,TRUE
+ask_cutoff,Admissions,"Hi, I was wondering, like, COMEDK closing rank for Computer Science, you know, like, what’s the minimum rank needed? I’m kinda worried.",en,worried,TRUE
+ask_cutoff,Admissions,Could you give me an idea of what the cutoff for Civil Engineering was last year? I'm trying to see if we have a chance.,en,worried,TRUE
+ask_cutoff,Admissions,"Hello, so, like, what was the opening rank for AI & ML in COMEDK last year? I want to know if my son can make it.",en,neutral,TRUE
+ask_cutoff,Admissions,"Hey, like, I want to know the cutoff for Mechanical Engineering in KCET, you know, the closing rank. I’m a bit frustrated because my son didn’t get his rank.",en,frustrated,TRUE
+ask_cutoff,Admissions,Do you know what the cutoff rank was for Pharmacy in last year’s KCET? I’m just checking if we’re in the ballpark.,en,excited,TRUE
+ask_cutoff,Admissions,"Um, bhai, COMEDK ka minimum rank for CSE kya tha last year? I’m a bit worried about the numbers.",hi,worried,TRUE
+ask_cutoff,Admissions,"So, like, I want to know the opening and closing ranks for Computer Science in KCET, you know? I’m confused because my son’s score is close.",en,confused,TRUE
+ask_admission_process,Admissions,"Hey, I was wondering, like, engineering admission ka process kya hai? I need to know the steps.",hi,worried,TRUE
+ask_admission_process,Admissions,"Um, so, can you tell me the steps to apply for CSE? I mean, I heard there are a lot of forms, but I'm not sure.",en,neutral,TRUE
+ask_admission_process,Admissions,"हेल्लो, मुझे इंजीनियरिंग में admission का process बताइए, जैसे, मैं online apply करना चाहता हूँ, steps क्या हैं?",hi,worried,TRUE
+ask_admission_process,Admissions,"I don't know, like, engineering mein KCET ke through admission kaise hota hai, and what documents do we need to submit, please explain.",hi,confused,TRUE
+ask_admission_process,Admissions,"कृपया बताओ, management quota के लिए admission procedure क्या है, मैं बहुत उलझन में हूँ.",hi,frustrated,TRUE
+ask_admission_process,Admissions,"Hey, so, is there a way to do the whole admission online, or do we need to visit the campus? I feel a bit stressed.",en,worried,TRUE
+ask_admission_process,Admissions,"नमस्ते, मैं engineering में admission के लिए application कैसे fill करूँ? जैसे, मैं कौन-कौन से documents जमा करूँ?",hi,neutral,TRUE
+ask_admission_process,Admissions,"Can you explain the seat confirmation process after admission, like, once I get accepted, what happens next?",en,excited,TRUE
+ask_admission_process,Admissions,"ಹೇ, ನನಗೆ ಎಂಜಿನಿಯರಿಂಗ್ admission ಪ್ರಕ್ರಿಯೆ ತಿಳಿಸಿ, ನಾನು ಯಾವ ಡಾಕ್ಯುಮೆಂಟ್ ಹಾಕಬೇಕು, ಎಲ್ಲ ಹಂತಗಳನ್ನೂ ತಿಳಿಸಿ.",kn,confused,TRUE
+ask_placement_by_branch,Placements,"Um, so, I was just wondering if you could tell me how the placement stats look for the Computer Science and Engineering students? I mean, you know, just to get an idea.",en,neutral,TRUE
+ask_placement_by_branch,Placements,"Suna hai ki placement kaafi accha hai, par main thoda confused hoon, like, CSE ke liye average salary kitna aata hai? Please explain.",hi,worried,TRUE
+ask_placement_by_branch,Placements,"I tried checking online, but nothing clear. Haan, placements in B.E. Electrical Engineering... I can't find any info. Can you please help? I'm kinda frustrated.",en,frustrated,TRUE
+ask_placement_by_branch,Placements,"Um, I'm not sure how to ask this, but could you give me some idea about the placement percentages for the mechanical branch? I keep seeing numbers, but I'm confused.",en,confused,TRUE
+ask_placement_by_branch,Placements,"Mujhe thoda tension aa rahi hai, kyunki abhi job market badal raha hai. So, what is the placement percentage for Electronics and Communication? I want to know the salary packages.",hi,worried,TRUE
+ask_placement_by_branch,Placements,"Hey, Civil Engineering placements, nanna kooda thodi info barutte. Can you confirm the average package?",kn,neutral,TRUE
+ask_placement_by_branch,Placements,"Wow, I've heard great things! Can you share the placement outcomes for the Biotechnology program? I want to see the industry demand and recruiter preferences.",en,excited,TRUE
+ask_placement_by_branch,Placements,"Yeh recruiter preference ka issue, I keep seeing some weird numbers. So, like, placements in Chemical Engineering, kya situation hai? I'm a bit frustrated.",hi,frustrated,TRUE
+ask_placement_by_branch,Placements,"Nanu nimage helabekadare, placements in Computer Science, but I’m worried because my child is new. Could you tell me about future scope and salary packages?",en,worried,TRUE
+ask_top_recruiters,Placements,"Hey, um, can you tell me which companies are actually coming to the campus next month? I heard something about big names, but I'm not sure.",en,worried,TRUE
+ask_top_recruiters,Placements,"Suna, recruiters ka schedule kya hai? I think some IT firms will visit, but I don't know the details.",hi,worried,TRUE
+ask_top_recruiters,Placements,"I was calling because, uh, what are the top multinational firms that have hired here in the last year? I need to plan for the interview.",en,worried,TRUE
+ask_top_recruiters,Placements,"Yaar, koi recent company visits aayi? I saw a poster but not sure if it's a big one.",hi,frustrated,TRUE
+ask_top_recruiters,Placements,"Um, can you give me a list of the core companies that usually recruit from this campus? I'm a bit anxious about the placement.",en,worried,TRUE
+ask_top_recruiters,Placements,"Namaskara, campus placement partners yella? I heard about some product companies but I can't find info.",kn,confused,TRUE
+ask_top_recruiters,Placements,"Hey, which IT companies do you think will be visiting next week? I'm kinda worried because my kid is nervous.",en,worried,TRUE
+ask_top_recruiters,Placements,"Suno, kaunse multinational companies aajkal campus visit kar rahe hain? I want to know so we can prepare.",hi,neutral,TRUE
+ask_top_recruiters,Placements,"I just wanted to ask, are there any new recruiters coming this semester? I heard some buzz but no concrete info.",en,confused,TRUE
+ask_scholarship_available,Scholarships,"Hi, I'm calling about... um, do you have any scholarships or fee waivers available for my child? ... I’m a bit worried about the tuition cost.",en,worried,TRUE
+ask_scholarship_available,Scholarships,"Hello, I was wondering if there are scholarships at the university? ... I heard some students get financial aid.",en,neutral,TRUE
+ask_scholarship_available,Scholarships,"Hey, sir, can you tell me if we can get any government scholarships for my kid? ... I keep hearing about something but I'm not sure.",en,worried,TRUE
+ask_scholarship_available,Scholarships,"Namaskara, I was wondering... scholarships... can you explain if there are any merit scholarships? ... I don't get it.",en,confused,TRUE
+ask_scholarship_available,Scholarships,"Hello, I've been trying to find out about scholarships, but no info. Do you even offer any? I'm frustrated.",en,frustrated,TRUE
+ask_scholarship_available,Scholarships,"Hi, I'm so excited! I heard you offer scholarships, can you tell me how to apply? ... I think my daughter would love it.",en,excited,TRUE
+ask_scholarship_available,Scholarships,"Namaste, do we get any fee concessions? ... I am worried about the fees for the upcoming semester.",en,worried,TRUE
+ask_scholarship_available,Scholarships,"Namaste, kya scholarships milti hain? ... Mujhe samajh nahi aa raha.",hi,confused,TRUE
+ask_scholarship_available,Scholarships,"Good afternoon, I want to know if there are any financial aid options available for students.",en,neutral,TRUE
+ask_scholarship_eligibility,Scholarships,"Hey, so I was just calling because I heard about scholarships, like, um, do you know if my daughter can get any, you know, fee concession? She got 8.5 GPA, but our income is a bit low...",en,worried,TRUE
+ask_scholarship_eligibility,Scholarships,"नमस्ते, I want to know if my daughter can get any scholarship, you know, she scored 95% in 12th but we have a low income. Can she apply for a fee concession?",en,confused,TRUE
+ask_scholarship_eligibility,Scholarships,"Hi, I was thinking about the scholarship, you know, my son got 90% in 12th, and we have some low income, so does that qualify him for any? I mean, is there a quota for SC?",en,neutral,TRUE
+ask_scholarship_eligibility,Scholarships,"Hello, could you tell me what documents are required to apply for a scholarship? My daughter has a good score but I'm not sure if she qualifies.",en,neutral,TRUE
+ask_scholarship_eligibility,Scholarships,"Um, नमस्ते, क्या हमें कोई गवर्नमेंट स्कॉलैशिप मिल सकती है? मेरा बेटा 85% लिया है, और हमारी आय सीमा के अंदर है, पर मुझे नहीं पता कि क्या ...",hi,frustrated,TRUE
+ask_scholarship_eligibility,Scholarships,"मुझे पता नहीं है कि मेरी बेटी को कौन सी स्कॉलैशिप के लिए आवेदन करना चाहिए, क्या उसे किसी प्रकार का मेरिट या फाइनेस कॉनसेंट्रेशन मिलता है?",hi,worried,TRUE
+ask_scholarship_eligibility,Scholarships,"हाय, मेरा बेटा 90% 12th ले चुका है, पर हमारी आय कम है, क्या वह स्कॉलैशिप के लिए पात्र है? क्या हमें कोई दस्तावेज़ जमा करना होगा?",hi,confused,TRUE
+ask_scholarship_eligibility,Scholarships,"Hey, I heard there might be some fee concessions for low-income families, like, can my son apply? He's got 8.2 GPA, and we are below the income limit, but I don't know the paperwork.",en,neutral,TRUE
+ask_scholarship_eligibility,Scholarships,"Hi, I'm really worried because my daughter didn't get into any college yet, and I heard scholarships could help, but I'm not sure what criteria she meets. Can you explain?",en,worried,TRUE
+ask_branch_difference,Academics,"Hey, can you tell me how Computer Science and Electrical Engineering differ in terms of courses and future jobs?",en,neutral,TRUE
+ask_branch_difference,Academics,"Um, I was just wondering, engineering mein Computer Science aur Mechanical Engineering ke curriculum ka difference kya hota hai, especially coding part?",hi,worried,TRUE
+ask_branch_difference,Academics,"So, I mean, like, if I choose Computer Science and then I want to go into AI, is that different from choosing Computer Engineering? I’m a bit confused.",en,confused,TRUE
+ask_branch_difference,Academics,"I keep hearing people talk about CSE and ISE, but I can't figure out which one is better. Why does it matter? It's so confusing.",en,frustrated,TRUE
+ask_branch_difference,Academics,"Can you explain the main differences between Software Engineering and Electronics & Communication Engineering, you know?",en,neutral,TRUE
+ask_branch_difference,Academics,"Hey, I’m thinking of my kid's future, but I'm not sure if choosing Computer Science or Information Technology is a big deal, especially with math and coding?",en,worried,TRUE
+ask_branch_difference,Academics,"I’m so excited to plan my daughter’s college! Could you break down how Mechanical Engineering differs from Aerospace Engineering, especially the curriculum?",en,excited,TRUE
+ask_branch_difference,Academics,"Um, like, what’s the difference between Cyber Security and AI? I keep mixing them up, and my son is asking.",en,confused,TRUE
+ask_branch_difference,Academics,"I keep seeing these branch names—Computer Science, Data Science, AI—but I don't get why they’re so different. Why does each branch have its own labs?",en,frustrated,TRUE
+express_worry,Student Support,"Hey, I keep thinking about whether my son will land a decent job after engineering, and I'm kinda freaking out.",en,worried,TRUE
+express_worry,Student Support,"Arre, main sochta hoon ki mera beta engineering kar ke, future mein kaise survive karega, mujhe bahut tension aa rahi hai.",hi,worried,TRUE
+express_worry,Student Support,"Um, nenage ondu doubt, my child will get placements after BTech, I feel like I'm losing my mind.",en,worried,TRUE
+express_worry,Student Support,"Um, I'm not sure if engineering is the right path for my kid, can you explain what the career prospects are?",en,confused,TRUE
+express_worry,Student Support,"Yeh toh mujhe samajh mein nahi aa raha, kaun se colleges mein placements ache hote hain, I just keep getting anxious.",hi,frustrated,TRUE
+express_worry,Student Support,Could you tell me about the placement rates for the engineering program?,en,neutral,TRUE
+express_worry,Student Support,"Naanu chintisu thare, my son will get a job after engineering, I keep getting worried about the future.",kn,worried,TRUE
+express_worry,Student Support,"Mujhe lagta hai ki engineering me career ka future bahut uncertain hai, main bahut darta hoon.",hi,worried,TRUE
+express_worry,Student Support,"I keep hearing about placement statistics, but I still don't know if my child will make it, it's so frustrating.",en,frustrated,TRUE
+ask_accreditation,Academics,"Um, so I was just wondering if the school has any accreditation from recognized bodies, you know, like NBA or something.",en,neutral,TRUE
+ask_accreditation,Academics,"Hey, can you tell me if this college is accredited? Um, I'm kinda anxious because my kid's future depends on it.",en,worried,TRUE
+ask_accreditation,Academics,क्या इस कॉलेज को कोई मान्यता मिली है? जैसे NBA या NAAC? मुझे बस जाँच करनी है.,hi,neutral,TRUE
+ask_accreditation,Academics,"मुझे बहुत चिंता है, क्या इस कॉलेज को कोई आधिकारिक मान्यता है? जैसे कि AICTE या कुछ और? कृपया बताइए.",hi,worried,TRUE
+ask_accreditation,Academics,ಈ ಕಾಲೇಜು NBA ಅಥವಾ NAAC ಮಾನ್ಯತೆ ಹೊಂದಿದೆಯೆ? ನಾನು ಕೇವಲ ತಿಳಿದುಕೊಳ್ಳಲು ಬಯಸುತ್ತೇನೆ.,kn,neutral,TRUE
+ask_accreditation,Academics,"ಈಗ ಹೇಳಿ, ಈ ಕಾಲೇಜು ಏಕೆ ಮಾನ್ಯತೆ ಹೊಂದಿಲ್ಲ? ನನಗೆ ಇದು ಬೇಕು, ನೀವು ನನಗೆ ವಿವರಿಸಬಹುದು? ಅಯ್ಯೋ, ನಾನು ತುಂಬಾ ನಿರಾಶನಾಗಿದ್ದೇನೆ.",kn,frustrated,TRUE
+ask_accreditation,Academics,"Um, I heard something about the college being accredited, but I'm not sure, like, does it have NBA, NAAC, or something? मैं थोड़ा उलझन में हूँ.",hi,confused,TRUE
+ask_accreditation,Academics,"Hey, I know my child is applying, but I'm worried, does the college have official approvals? जैसे AICTE, government recognition? मैं थोड़ा डर रहा हूँ.",hi,worried,TRUE
+ask_accreditation,Academics,"Hey, quick question, does this college have accreditation from bodies like NBA or NAAC? ನನಗೆ ಇದರಲ್ಲಿ ಏನಾದರೂ ಮಾಹಿತಿ ಇದೆ?",kn,neutral,TRUE
+ask_university_affiliation,Academics,"Hey, I know I'm calling late, but um... is the college affiliated with VTU or is it autonomous? I'm not sure.",en,worried,TRUE
+ask_university_affiliation,Academics,"Good morning, I wanted to ask, kya yeh college VTU se affiliated hai, or is it autonomous, please?",hi,neutral,TRUE
+ask_university_affiliation,Academics,"Namaskara, I was looking online and it says something about VTU, but I don't get it, is the college affiliated to VTU? I'm confused.",en,confused,TRUE
+ask_university_affiliation,Academics,"This is ridiculous, I've been trying to figure out if the college is autonomous or under VTU, can someone just tell me?",en,frustrated,TRUE
+ask_university_affiliation,Academics,"Sir, I'm kinda worried, kya yeh college VTU se linked hai ya independent? I'm not sure, please help.",hi,worried,TRUE
+ask_university_affiliation,Academics,"Hi! I just saw the name and I'm so excited, but can you confirm if the college is affiliated with VTU or it's an autonomous institute?",en,excited,TRUE
+ask_university_affiliation,Academics,"Namaskara, is this college affiliated with VTU? I need to know for the application.",en,neutral,TRUE
+ask_university_affiliation,Academics,"Arre, I keep hearing different things, is this college VTU affiliated, or is it autonomous? It's so confusing.",hi,frustrated,TRUE
+ask_university_affiliation,Academics,"Um, can you tell me if this college is affiliated with VTU, or is it autonomous? I'm not sure what to do.",en,confused,TRUE
+ask_transport_routes,Campus Facilities,"Um, so, I was just wondering, like, where does the campus bus actually start from, and when does it leave?",en,neutral,TRUE
+ask_transport_routes,Campus Facilities,"Hi, I am a bit worried, the kids are from Bangalore, do you have a bus that goes from Bangalore to the college, and what time does it reach the campus?",en,worried,TRUE
+ask_transport_routes,Campus Facilities,"Ugh, I keep hearing about the bus, but I can't find any schedule! Is there a real bus route? And what's the fee? I need this info ASAP.",en,frustrated,TRUE
+ask_transport_routes,Campus Facilities,"Hello, I was looking at the map, but I don't see the bus stop. Is there a bus route? And, like, how much does it cost? I'm kinda confused.",en,confused,TRUE
+ask_transport_routes,Campus Facilities,"Um, can you explain the bus timings? My daughter needs to get there early and I'm worried about missing the bus.",en,worried,TRUE
+ask_transport_routes,Campus Facilities,क्या आप बता सकते हैं कि कॉलेज का बस कौन से रूट पर चलती है और किस समय निकलती है?,hi,neutral,TRUE
+ask_transport_routes,Campus Facilities,"Wow, I just heard about the campus bus! So, can you tell me the routes and the pickup points? I'm excited to see the kids on the bus.",en,excited,TRUE
+ask_transport_routes,Campus Facilities,"Um, I think there's a bus, but I'm not sure which stops it makes. Do you know the route details?",en,confused,TRUE
+ask_library,Campus Facilities,"Um, hey, I'm calling just to ask what the library hours are, you know? I need to plan my visit.",en,neutral,TRUE
+ask_library,Campus Facilities,I’m worried because my son has a research project coming up and I can’t find out the library schedule. Can you help me?,en,worried,TRUE
+ask_library,Campus Facilities,"Hi, aapko pata hai ki library ka schedule kya hai? I need to know when to go, because my son has a deadline.",hi,worried,TRUE
+ask_library,Campus Facilities,"Hello, library schedule elli? I am a bit busy, but need to know the hours.",en,confused,TRUE
+ask_library,Campus Facilities,"I’ve been calling for days, but you never tell me the library hours. It’s frustrating!",en,frustrated,TRUE
+ask_library,Campus Facilities,"Hey, library ka koi digital resource available hai? I heard about e-libraries but I can’t find any info.",hi,confused,TRUE
+ask_library,Campus Facilities,Library nalli study rooms inna? I want to book a study space.,kn,neutral,TRUE
+ask_library,Campus Facilities,"Um, I’m super excited about the new library, and I was wondering, like, what kind of books and resources are there? Also, can I borrow them?",en,excited,TRUE
+ask_library,Campus Facilities,"Hello, library mein journals available hai? My daughter needs to find some academic journals for her essay.",hi,worried,TRUE
+ask_labs,Campus Facilities,"Um, so I was just calling to check if the campus has any labs for the CS program, you know, like labs where we can actually do projects?",en,neutral,TRUE
+ask_labs,Campus Facilities,"Hey, like, kya aap bata sakte ho ki engineering students ke liye labs kaunse available hain? Um, especially for practicals, you know?",hi,worried,TRUE
+ask_labs,Campus Facilities,"Hé, college nalli labs yenu iruvudu? Naanu project maadbeku, nanna confusion idhe.",kn,confused,TRUE
+ask_labs,Campus Facilities,"Naanu campus elli visit maadidaga, labs illa antha anubhavisthini. Ivaru modern labs iruvudilla?",kn,frustrated,TRUE
+ask_labs,Campus Facilities,"Mujhe thoda doubt hai, ki college mein labs ka kya setup hai, especially for practical sessions, kya aap bata sakte ho?",hi,neutral,TRUE
+ask_labs,Campus Facilities,"Hey, I’m calling because I heard the labs are state‑of‑the‑art, and I’m super excited to know if you have any computer labs for every branch?",en,excited,TRUE
+ask_labs,Campus Facilities,"Haan, so, I’m a bit worried because my kid needs to do project work, and I’m not sure if there are labs available. What labs do you have?",en,worried,TRUE
+ask_labs,Campus Facilities,"Um, like, can you tell me about the research facilities or labs, especially for software labs? I’m a bit confused.",en,confused,TRUE
+ask_labs,Campus Facilities,"I’m calling, like, because I want to know if the college has any computer labs, and if they’re up to date, you know?",en,neutral,TRUE
+ask_student_support,Student Support,"Um, hi, I'm calling because my kid is feeling a bit overwhelmed, and I just wanted to know if there are any mentoring programs or like counseling services on campus?",en,worried,TRUE
+ask_student_support,Student Support,"Arre, main to puchna chahta hu, kya college me students ke liye koi academic guidance milti hai? Like, is there a mentor for them?",hi,neutral,TRUE
+ask_student_support,Student Support,"Namaskara, I have a question about student support... like, does the college have any placement mentoring? Or some mental health support, na?",en,neutral,TRUE
+ask_student_support,Student Support,"So, I keep hearing about these 'support services', but I can't find any info. Do you even have counseling or anti-ragging measures? Because my child is scared!",en,frustrated,TRUE
+ask_student_support,Student Support,"Yeh kya, support services ka kya scene hai? Kya college me students ke liye koi counseling ya placement help milti hai? Mujhe samajh nahi aa raha!",hi,frustrated,TRUE
+ask_student_support,Student Support,"Um, I don't get it. Do they have any counseling or academic guidance? Because I'm not sure if it's included.",en,confused,TRUE
+ask_student_support,Student Support,"Namaskara, I am worried about my daughter. Does the college offer any kind of mental health support or anti-ragging? I keep hearing about it, but I don't know if it's real.",en,worried,TRUE
+ask_student_support,Student Support,"Arre, main soch raha hu ki, kya college me students ko koi mentorship milti hai? Mera beta stressed hai, aur main chahta hu ki usko koi counseling mile.",hi,worried,TRUE
+ask_student_support,Student Support,"Can you tell me if the college has any student support services? Like, do they provide academic guidance or counseling?",en,neutral,TRUE
+ask_faculty_approachability,Student Support,"Um, so I was thinking, do the professors actually feel like they’re around? You know, do they hang out between classes?",en,worried,TRUE
+ask_faculty_approachability,Student Support,"Suniye, professor log ka attitude kaise hai? Kya woh students ko help karte hai jab class ke baad bhi?",hi,worried,TRUE
+ask_faculty_approachability,Student Support,"Hey, I was thinking, do the faculty actually... you know, they’re like available for guidance? Like, do they respond to emails or something?",en,neutral,TRUE
+ask_faculty_approachability,Student Support,Kya aap bata sakte hai ki teachers ka approachability kaisa hai? Do they actually meet with students for projects?,hi,confused,TRUE
+ask_faculty_approachability,Student Support,"Sir, I want to know, are the professors approachable? Kya woh students ke doubts clear karne ke liye available rehte hai?",hi,frustrated,TRUE
+ask_faculty_approachability,Student Support,"Namaskara, nanna chalu, teachers elli? Do they actually help students outside class?",kn,neutral,TRUE
+ask_faculty_approachability,Student Support,"Um, so, teachers ki approachability kaise hai? Do they actually guide us during project?",hi,confused,TRUE
+ask_faculty_approachability,Student Support,"Hmm, can you tell me if the faculty is... you know, approachable? Kya woh office hours offer karte hai?",hi,worried,TRUE
+ask_faculty_approachability,Student Support,"I’m a bit worried, because my child is shy. Do the professors in the department... like, are they supportive? Do they actually do office hours?",en,worried,TRUE
+ask_campus_placement_training,Placements,"Hey, I was just calling to see if the campus offers any placement training? Like, do they have classes for interview prep, coding or resume building? I'm not sure what we need to prepare.",en,neutral,TRUE
+ask_campus_placement_training,Placements,"Um, hello, I was wondering kya aap log placement ke liye koi training dete ho? Do they have workshops for technical interview or communication skills? Please help me.",en,worried,TRUE
+ask_campus_placement_training,Placements,"Hi, so, I heard about some placement preparation, but I'm a bit lost. Kya yahan coding practice sessions hoti hain? Or do they just give us some guidance? I'm confused.",en,confused,TRUE
+ask_campus_placement_training,Placements,"Hey, I keep hearing about placement training, but I can't find any info. Kya koi dedicated program hai? Why can't I see it on the website? Frustrated.",en,frustrated,TRUE
+ask_campus_placement_training,Placements,"Hey, I'm so excited! Do we get any placement bootcamps or mock interviews? Kya campus mein training sessions hoti hain? I'd love to get ready.",en,excited,TRUE
+ask_campus_placement_training,Placements,"Hello, can you tell me if there are any placement classes or coding sessions offered? I'm trying to plan for the next semester.",en,neutral,TRUE
+ask_campus_placement_training,Placements,Kya aap campus placement ke liye koi training dete hain? Main thoda chintit hoon ki students ko kaunse skills sikhaaye jaate hain.,hi,worried,TRUE
+ask_campus_placement_training,Placements,Nanna campus placement training illa? Nanna mathu? Yellalli coding practice ledu? Confused.,kn,confused,TRUE
+ask_campus_placement_training,Placements,"I can't find any info on placement prep, and I'm getting frustrated. Do they really have mock interviews or resume workshops?",en,frustrated,TRUE
+ask_campus_life,Campus,"Hey, can you tell me what kind of student life is like there, like clubs, events, you know?",en,neutral,TRUE
+ask_campus_life,Campus,"Um, I'm a bit concerned, do you know if they have any active clubs or extracurriculars for the students? I'm worried my kid might feel left out.",en,worried,TRUE
+ask_campus_life,Campus,"Arre, campus life ka kya scene hai, like, kya wahan koi student clubs hote hain, ya sirf classes hi?",hi,confused,TRUE
+ask_campus_life,Campus,"Suna hai, campus mein activities toh hoti hain, par mujhe lagta hai ki waha ka system bahut complicated hai, koi details milegi?",hi,frustrated,TRUE
+ask_campus_life,Campus,"Namaskara, campus life yalli enu activities ide, clubs, events? Thara nanu ondu idea kodbeku.",kn,neutral,TRUE
+ask_campus_life,Campus,Ee college nalli student life haagide? Nanna kidge activities illaandre? I want to know if they have any clubs.,kn,worried,TRUE
+ask_campus_life,Campus,"Wow, I'm so excited to hear about campus life! What cool clubs and events do they have there?",en,excited,TRUE
+ask_campus_life,Campus,"Campus life ke baare mein thoda confusion hai, kya waha mein cultural festivals hote hain, ya sports only?",hi,confused,TRUE
+ask_campus_life,Campus,"I keep asking about campus life, but I still don't know if there are any sports or tech clubs. It's frustrating.",en,frustrated,TRUE
+ask_working_hours,Campus,"Um, hi, can you tell me the office hours for the admissions office? I need to drop off some documents before the weekend.",en,neutral,TRUE
+ask_working_hours,Campus,"Arre, what's the schedule for classes, like when do they start and end, because my kid is missing the first lesson.",hi,worried,TRUE
+ask_working_hours,Campus,"I was just wondering, the college opens at 9 am? And do they close at 5? I keep forgetting, so I want to be sure.",en,neutral,TRUE
+ask_working_hours,Campus,"Bhai, office timings kya hain, like kab khula aur kab band hota hai, I need to book an appointment.",hi,frustrated,TRUE
+ask_working_hours,Campus,"Excuse me, um, can you tell me if the campus is open on Saturdays, and how many working days they have in a week?",en,neutral,TRUE
+ask_working_hours,Campus,"Kya aap bata sakte hain ki college ki working hours kya hain, like, do they have any holidays during the semester?",hi,confused,TRUE
+ask_working_hours,Campus,"Hey, Bangalore nalli, college timings bareyalli nanu confuse. Classes start at 8? And on holidays, do they close?",kn,confused,TRUE
+ask_working_hours,Campus,"Suni, I keep hearing that the office works from 9 to 5, but I'm not sure if that's true, can you confirm?",en,neutral,TRUE
+ask_working_hours,Campus,"Um, I need to know the exact working hours, like do they have a 24/7 support? Because I have a question about my child’s enrollment.",en,worried,TRUE
+ask_facilities_accessibility,Campus,"Um, so, like, is there any wheelchair ramp or something, you know, for the campus? I just want to make sure my daughter can get around.",en,worried,TRUE
+ask_facilities_accessibility,Campus,"Hey, I was wondering, campus mein koi wheelchair accessible jagah hai? Aur koi medical facility bhi? I'm kinda nervous.",hi,worried,TRUE
+ask_facilities_accessibility,Campus,"Hi, campus elli wheelchair accessible? I also want to know if there's a first aid kit or emergency support. Naanu thumba anxiety.",kn,worried,TRUE
+ask_facilities_accessibility,Campus,"Um, like, campus mein wheelchair ramp hai kya? Or medical facility? I'm worried.",hi,worried,TRUE
+ask_facilities_accessibility,Campus,"So, like, I've been calling a lot and I just can't find out if there are wheelchair ramps or a medical facility? I need to know, seriously.",en,frustrated,TRUE
+ask_facilities_accessibility,Campus,"Mujhe puchna hai, campus pe wheelchair ka access hai kya? Aur koi first aid station? I'm confused.",hi,confused,TRUE
+ask_facilities_accessibility,Campus,"Naanu campus wheelchair accessibility about koodi? Also, emergency support? I am confused about all this.",kn,confused,TRUE
+ask_facilities_accessibility,Campus,Can you tell me if the campus has wheelchair access and medical facilities?,en,neutral,TRUE
+ask_facilities_accessibility,Campus,Hey! I heard the campus is super inclusive. Is it wheelchair friendly? Do they have first aid? I am so excited to bring my son.,en,excited,TRUE
+ask_admission_status,Admissions,"Um, hello, I was just calling to check if my son's application has been processed yet, you know? I haven't heard anything, so I'm a bit worried.",en,worried,TRUE
+ask_admission_status,Admissions,"Arre, main apni daughter ki admission status puchna chahta hoon, kya uski seat confirm ho gayi hai?",hi,neutral,TRUE
+ask_admission_status,Admissions,"ನಾನು ನನ್ನ ವಿದ್ಯಾರ್ಥಿಯ admission status ನೋಡಲು ಬಯಸುತ್ತೇನೆ, ಅವರ seat confirmation ಇದೆಯೇ?",kn,confused,TRUE
+ask_admission_status,Admissions,"Listen, I've called this office a dozen times, and I still can't get a clear answer about whether my daughter's application is approved. This is so frustrating!",en,frustrated,TRUE
+ask_admission_status,Admissions,Hi! I'm so excited to hear if my child's admission has been confirmed—can you tell me the status?,en,excited,TRUE
+ask_admission_status,Admissions,"Mere paas ek sawaal hai, main kaafi tension mein hoon, kya aap bata sakte hain ki mere bachche ki admission status kya hai?",hi,worried,TRUE
+ask_admission_status,Admissions,"ನನ್ನ ವಿದ್ಯಾರ್ಥಿಯ admission status ಬಗ್ಗೆ ಕೇಳಲು ಬಯಸುತ್ತೇನೆ, seat confirmation ಇದೆಯೇ?",kn,neutral,TRUE
+ask_admission_status,Admissions,"Um, I'm not sure what to do next—has the admission been approved? Or am I missing something? Can you tell me the status?",en,confused,TRUE
+ask_admission_status,Admissions,"Yeh kya ho raha hai? Main bahut baar phone kiya, par koi clear answer nahi mil raha ki mera bachcha admitted hai ya nahi. Bahut pareshan hoon!",hi,frustrated,TRUE
+ask_grading_system,Academics,"Um, so I was looking at the transcripts and I'm a bit confused about how the SGPA is actually calculated. Like, do you guys add up all the marks and then divide by something, or is there a different method? I just want to make sure my kid's grades are being evaluated correctly.",en,worried,TRUE
+ask_grading_system,Academics,"Hey, I don't know if I'm saying this right, but how do you guys do the grading? I mean, we have this CGPA thing, and I keep hearing about credits and passing marks. Can you explain how the grades are awarded, please?",en,neutral,TRUE
+ask_grading_system,Academics,"Arre bhai, I was reading the syllabus and I keep seeing SGPA and CGPA. I'm not sure what the difference is, and I don't understand how the passing marks are set. Can you tell me how the grading system works, please?",hi,confused,TRUE
+ask_grading_system,Academics,"Um, so like, my daughter just got her final grades, and I’m not sure if she passed or not. I want to know how the CGPA is calculated, because I keep seeing numbers that look different. Could you explain how the grading works?",en,worried,TRUE
+ask_grading_system,Academics,"मुझे नहीं पता, मैं सोच रहा हूं कि क्या CGPA में हर विषय के अंकों को जोड़कर औसत निकालते हैं? या फिर कुछ अलग तरीके से? मैं बस यह जानना चाहता हूं कि ग्रेड कैसे दिया जाता है।",hi,confused,TRUE
+ask_grading_system,Academics,"Naanu CGPA mattu SGPA yela calculate maaduttare? Nanna student ge passing marks 50% aagbeku, but I keep seeing different numbers. Can you explain the grading system? I am a bit frustrated.",kn,frustrated,TRUE
+ask_grading_system,Academics,"Hey, I keep hearing about credits and how they factor into CGPA. I'm so confused about whether credits are weighted or not. Can you explain the grading system, like what the passing marks are? मैं बस यह समझना चाहता हूं कि यह सब कैसे काम करता है।",hi,confused,TRUE
+ask_grading_system,Academics,"Um, so I’m worried that my child might not meet the required CGPA for the next semester. How do you calculate SGPA and CGPA? What are the passing marks? I'm just trying to figure it out.",en,worried,TRUE
+ask_grading_system,Academics,"हाय, मैं जानना चाहूंगा कि ग्रेडिंग सिस्टम में CGPA कैसे निकाला जाता है और पासिंग मार्क्स क्या हैं? मुझे समझ नहीं आ रहा कि यह सब कैसे काम करता है।",hi,confused,TRUE
+ask_academic_structure,Academics,"Um, I was just wondering if the college has any elective courses? I mean, like, kya hum apne interest ke hisaab se pick kar sakte hain?",hi,worried,TRUE
+ask_academic_structure,Academics,"Hey, I was thinking, like, kya school mein honours programs hain? I heard something but not sure.",hi,neutral,TRUE
+ask_academic_structure,Academics,"Sir, kya aap bata sakte hain ki college mein electives hain ya nahi, aur kya hum apne interest ke hisaab se choose kar sakte hain?",hi,worried,TRUE
+ask_academic_structure,Academics,"Um, I wanted to know if there's a minor degree option, like something we can add on, but I'm not sure how it works, kya?",hi,confused,TRUE
+ask_academic_structure,Academics,"Bhai, main soch raha tha ki kya aap bata sakte ho ki curriculum kitna flexible hai? Like, can we do electives and all that?",hi,frustrated,TRUE
+ask_academic_structure,Academics,"I’m just calling to check if there are any specializations? Like, can a student choose a track in their major?",en,neutral,TRUE
+ask_academic_structure,Academics,"Hey, I wanted to ask about credit system, you know, like how many credits are required, and if electives can count?",en,confused,TRUE
+ask_academic_structure,Academics,"Sir, college mein kaunse honours programs available hai? Kya woh full-time ya part-time hote hain?",hi,worried,TRUE
+ask_academic_structure,Academics,"Um, I’m a bit confused about the curriculum flexibility, can we mix courses from different departments? I’m not sure.",en,confused,TRUE
+ask_internship_opportunities,Placements,"Um, hey, I was just wondering if the college has any internship programs for students, like, you know, actual industry placements?",en,neutral,TRUE
+ask_internship_opportunities,Placements,"Hi, I mean, kya aap bata sakte ho ki college internships provide karte hai ya nahi, because my kid is looking for some hands-on work.",en,worried,TRUE
+ask_internship_opportunities,Placements,"Hey, can you tell me, like, nanna bachcha internship opportunities kooduthe? I mean, they want to get some real experience.",en,confused,TRUE
+ask_internship_opportunities,Placements,"Um, this is really urgent, we need to know if there are any internships available, please? My daughter is about to finish semester.",en,worried,TRUE
+ask_internship_opportunities,Placements,"Arre, main bata raha hu ki main internship chahiye, lekin college ke side se koi bhi support nahi mil raha. Kya yeh sahi hai?",hi,frustrated,TRUE
+ask_internship_opportunities,Placements,"Neevu, I don't know, can you explain to me how the internship process works, because I keep seeing different words, like 'placements', 'internship', etc.",en,confused,TRUE
+ask_internship_opportunities,Placements,Great news! I've heard that the college might be offering internships! Do you have any details? I want to sign up as soon as possible.,en,excited,TRUE
+ask_internship_opportunities,Placements,"Hello, please tell me, yeh college internship support provide karte hai? I'm a bit worried because my son needs to get some experience before graduation.",en,worried,TRUE
+ask_internship_opportunities,Placements,"Hey, do you know if the college arranges internships? I just want to know, it's not a big deal but it would help.",en,neutral,TRUE
+ask_cafeteria,Campus,"Um, is there like a cafeteria or something on campus? I just want to know if the kids can eat there.",en,neutral,TRUE
+ask_cafeteria,Campus,"Hey, I was calling to puchna hai ki campus mein koi canteen hai kya? I mean, do they serve lunch? I'm not sure.",hi,worried,TRUE
+ask_cafeteria,Campus,"Naan ondu question idde, campus nalli cafeteria irbeku? Adare, veg options yenu? I don't know.",kn,confused,TRUE
+ask_cafeteria,Campus,"Um, so, is there a cafeteria? Because I'm worried about the kids, they need good food. I don't think there's one.",en,frustrated,TRUE
+ask_cafeteria,Campus,"Cafeteria irutte? I think there's one, but I want to confirm. Do they have breakfast?",en,neutral,TRUE
+ask_cafeteria,Campus,"Bhai, cafeteria timings kya hote hain? I want to know if my kids can eat after class.",hi,excited,TRUE
+ask_cafeteria,Campus,"Hey, canteen irutte? And if yes, what time open agutte? I'm a bit confused because I can't find it on the map.",en,confused,TRUE
+ask_cafeteria,Campus,"Um, I was wondering if the cafeteria serves vegetarian food? I'm worried because my daughter is a vegetarian.",en,worried,TRUE
+ask_cafeteria,Campus,"Cafeteria timings? I don't know, please tell me.",en,frustrated,TRUE
+ask_wifi,Campus,"Hey, so, is there Wi‑Fi on campus, you know, like जहाँ मैं बस लॉग इन कर सकता हूँ? I just want to check if I can surf.",hi,neutral,TRUE
+ask_wifi,Campus,"मुझे थोड़ा चिंता है, क्या कॉलेज में इंटरनेट है? मेरे बच्चे को होमवर्क के लिए ज़रूरत है, क्या वाई‑फाई मिल सकता है?",hi,worried,TRUE
+ask_wifi,Campus,"So, like, is there Wi‑Fi on campus? I keep hearing about free Wi‑Fi, but I'm not sure if it's actually available?",en,confused,TRUE
+ask_wifi,Campus,"I tried to find the Wi‑Fi earlier, but the signal was weak. Is the campus Wi‑Fi actually working or is it just a myth?",en,frustrated,TRUE
+ask_wifi,Campus,"Great! I'm so excited, does the college offer Wi‑Fi on campus? मैं इसे चेक करने के लिए इंतजार नहीं कर सकता।",hi,excited,TRUE
+ask_wifi,Campus,"अच्छा, क्या यहाँ Wi‑Fi है? मेरा बच्चा पूरी रात पढ़ रहा है, अगर इंटरनेट नहीं है तो वह परेशान हो जाएगा.",hi,worried,TRUE
+ask_wifi,Campus,कैंपस में वीफि है क्या? छात्रों को उपयोग करने की सुविधा है?,hi,neutral,TRUE
+ask_wifi,Campus,मुझे समझ नहीं आ रहा कि कॉलेज में वाई‑फाई कैसे काम करता है. क्या कोई गाइड है?,hi,confused,TRUE
+ask_wifi,Campus,"I keep hearing that there's Wi‑Fi, but every time I try to connect, it fails. क्या यहाँ वास्तव में कोई नेटवर्क है?",hi,frustrated,TRUE
+ask_parking,Campus,"Um, so, I was wondering if we can park on campus for visitors? I mean, like, can we actually find a spot here for my car?",en,neutral,TRUE
+ask_parking,Campus,"Hey, I was looking at the brochure, and kya parking facilities yahan hain? Because my kid’s coming tomorrow and I don’t want to drive all the way.",en,worried,TRUE
+ask_parking,Campus,"I tried calling earlier but no answer, and now I’m like, this is annoying, because I need to know, what parking is available here? There are no signs.",en,frustrated,TRUE
+ask_parking,Campus,"Um, so, I read the website, but parking charges? I don’t get it. Can you explain? क्या parking fees हैं?",hi,confused,TRUE
+ask_parking,Campus,"Great! I just saw the campus brochure and I’m super excited! So, can we park in the student parking lot? I can’t wait to see it.",en,excited,TRUE
+ask_parking,Campus,क्या आप मुझे बता सकते हैं कि यहाँ पार्किंग की सुविधा है या नहीं? मैं थोड़ा चिंतित हूँ क्योंकि मेरे बच्चे को कल आना है.,hi,worried,TRUE
+ask_parking,Campus,"ಪಾರ್ಕಿಂಗ್ ಸ್ಥಳಗಳ ಬಗ್ಗೆ ತಿಳಿಸಬಹುದು? ನನಗೆ ಅರ್ಥವಾಗುತ್ತಿಲ್ಲ, ಇಲ್ಲಿ ಎಷ್ಟು ಪಾರ್ಕಿಂಗ್ ಇದೆ?",kn,confused,TRUE
+ask_parking,Campus,"I keep calling, और फिर भी कोई जवाब नहीं, this is so frustrating. Can you tell me how many parking spots we have? मैं बहुत परेशान हूँ.",hi,frustrated,TRUE
+ask_parking,Campus,"So, parking, is it available on campus? Just checking, because I need to drop my child off.",en,neutral,TRUE
+ask_infrastructure,Campus,"Um, so like, can you tell me how the campus is, you know, the size and stuff? I mean, is it big and all? I'm kinda worried about whether they'll have the right facilities.",en,worried,TRUE
+ask_infrastructure,Campus,"Arre, bhai, campus ka size kaise hai? Thoda big lagta hai, par kya modern facilities hain? Mera beta ko best environment chahiye.",hi,worried,TRUE
+ask_infrastructure,Campus,"Hey, so I was thinking about the campus, like, is it big? And do they have smart classrooms, or is it just old stuff? I heard different things.",en,confused,TRUE
+ask_infrastructure,Campus,"Um, you know, campus, like, how big is it? And do they have smart classrooms? I heard some things but I'm not sure, so I'm worried.",en,worried,TRUE
+ask_infrastructure,Campus,"Hi, I was wondering, the campus, like, is it big? And do they have smart classrooms or just basic ones? I'm not sure, so I'm just checking.",en,neutral,TRUE
+ask_infrastructure,Campus,"Bhai, campus ke buildings ka condition kaise hai? Kya maintenance theek se ho rahi hai? Yeh sab pata karna mushkil hai.",hi,frustrated,TRUE
+ask_infrastructure,Campus,"Hey, the campus, I mean, the infrastructure, is it good? Do they have modern labs? I'm worried about my kid.",en,worried,TRUE
+ask_infrastructure,Campus,"Um, can you tell me about the campus? Like, how big is it, and do they have smart classrooms?",en,neutral,TRUE
+ask_infrastructure,Campus,"Arre, bhai, campus ke infrastructure ke bare me batao, like, classrooms, buildings, everything. I don't know where to start.",hi,confused,TRUE
+ask_student_clubs,Campus,"Um, kya aap bata sakte hain ki students ke liye koi clubs hain? Like, coding clubs or something, you know?",hi,worried,TRUE
+ask_student_clubs,Campus,"Hey, students have clubs? nanna eega, like, tech clubs or something, you know?",kn,confused,TRUE
+ask_student_clubs,Campus,"I was wondering if there are any clubs for students, like? Do they have a coding club?",en,neutral,TRUE
+ask_student_clubs,Campus,Kya yahan student clubs available hain? Mujhe coding club ke baare mein janna hai.,hi,worried,TRUE
+ask_student_clubs,Campus,"Um, like, do students get to join clubs? Kya technical societies bhi hain?",hi,frustrated,TRUE
+ask_student_clubs,Campus,"So, are there any clubs? students can join? Nanna friend, like, tech club?",kn,neutral,TRUE
+ask_student_clubs,Campus,Can I ask if there are student clubs? Is there a coding club?,en,worried,TRUE
+ask_student_clubs,Campus,Students ke liye koi club hai? Technical society ke baare mein batao.,hi,confused,TRUE
+ask_student_clubs,Campus,"Hey, do students have clubs? Nanna, like, coding club, you know?",kn,excited,TRUE
+fallback,General,"Um, can you tell me, like, what the weather is going to be like this weekend? I can't remember the forecast.",en,worried,TRUE
+fallback,General,"Bhai, IPL ka match ka score kya tha last night, you know?",hi,excited,TRUE
+fallback,General,"Bhai, can you, like, give me a quick joke, please?",hi,excited,TRUE
+fallback,General,"Hey, can you, like, show me a simple python code snippet to sort a list, because I need to teach my son.",en,frustrated,TRUE
+fallback,General,"Arre, kya aaj ka mausam ka haal hai? Weather forecast kuch batao.",hi,worried,TRUE
+fallback,General,"Sanna, could you tell me the score of the cricket match yesterday? I was trying to remember.",en,confused,TRUE
+fallback,General,"nanna, nanna kodaddu? Hegide weather in Bangalore? Need to plan outing.",kn,worried,TRUE
+fallback,General,"Um, can you, like, write some python code for me, because my daughter is stuck on a homework problem.",en,frustrated,TRUE
+fallback,General,"Hey, can you tell me a joke or something, just to lighten up? I'm feeling a bit tired.",en,neutral,TRUE
+ask_average_student_outcome,Student Support,"Bhai, average marks se koi placement mil sakti hai? I just, um, I'm a bit worried about future.",hi,worried,TRUE
+ask_average_student_outcome,Student Support,"I mean, like, can a student with just average grades still get a decent job? I’m kinda freaking out, you know?",en,worried,TRUE
+ask_average_student_outcome,Student Support,"Seriously, I've seen so many students with A's get jobs, but what about those of us who just average? Can't we get anything decent?",en,frustrated,TRUE
+ask_average_student_outcome,Student Support,"Yaar, average marks wale students ka future kya hoga? Placement ke chances kitne? I'm not sure, like, what should we do?",hi,confused,TRUE
+ask_average_student_outcome,Student Support,"ಹೇ, average CGPA ಹೊಂದಿರುವ ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ placements ಲಭ್ಯವಿರುವುದೇ? I just want to know, like, what's the chance.",kn,neutral,TRUE
+ask_average_student_outcome,Student Support,"ನನ್ನ ಮಗ average marks ಇಟ್ಟುಕೊಂಡಿದ್ದಾನೆ, ಅವನಿಗೆ ಕೆಲಸ ಸಿಗುತ್ತದೆಯೇ? I'm worried about him, you know.",kn,worried,TRUE
+ask_average_student_outcome,Student Support,"Why does everyone keep saying average students can't get good jobs? That's not fair, I mean.",en,frustrated,TRUE
+ask_average_student_outcome,Student Support,"क्या ये सच है कि औसत छात्रों को अच्छी नौकरी नहीं मिलती? मैं थोड़ा उलझन में हूँ, like, can we do something?",hi,confused,TRUE
+ask_average_student_outcome,Student Support,"Is there any data on placement rates for students who are in the middle of the pack? I just want to get some numbers, you know?",en,neutral,TRUE
+ask_autonomous,Academics,"Can you tell me, like, what the difference is, I mean, between an autonomous college and a regular VTU affiliated one?",en,neutral,TRUE
+ask_autonomous,Academics,"Um, I was wondering, like, autonomous colleges, yaar, how are they better for our son, you know, in terms of courses and everything?",hi,worried,TRUE
+ask_autonomous,Academics,"So, like, autonomous college, what does that mean, I mean, is the syllabus different, or exams, you know?",en,confused,TRUE
+ask_autonomous,Academics,"I keep hearing about autonomous colleges, but I'm not sure why it's all so confusing, can you explain the exam system difference?",en,frustrated,TRUE
+ask_autonomous,Academics,"Hey, I just read that autonomous colleges have more flexible schedules, so how does that actually work, please tell me!",en,excited,TRUE
+ask_autonomous,Academics,"Autonomous college, I heard placement rates better, but can you explain how it works, like, will there be extra projects?",en,worried,TRUE
+ask_autonomous,Academics,"Wait, so if a college becomes autonomous, does that mean the curriculum changes, or is it just the administration?",en,confused,TRUE
+ask_autonomous,Academics,"Just to clarify, autonomous colleges, they give more freedom to professors, right?",en,neutral,TRUE
+ask_autonomous,Academics,"Honestly, I don't get why they say autonomous, like, does it really affect the grades or the credits?",en,frustrated,TRUE
+ask_branch_recommendation,Academics,"Hey, I was wondering which engineering branch would be a good fit for my son if he loves programming but also wants to work on hardware, yaar?",en,neutral,TRUE
+ask_branch_recommendation,Academics,"Mujhe bahut tension ho rahi hai, mere bachche ko coding ka interest hai, lekin usko future mein kaun sa engineering branch choose karna chahiye?",hi,worried,TRUE
+ask_branch_recommendation,Academics,"So, like, my daughter is really into AI, but she also likes building robots, and I keep thinking, which branch should we pick? I don't even know if it's computer science or electrical.",en,confused,TRUE
+ask_branch_recommendation,Academics,"I have tried looking online, but I can't decide! My son wants to be a software engineer, but we keep getting mixed advice. What branch would actually set him up for success?",en,frustrated,TRUE
+ask_branch_recommendation,Academics,"ನನ್ನ ಮಗನು ಕೋಡಿಂಗ್ ಅನ್ನು ಪ್ರೀತಿಸುತ್ತಾನೆ, but he also loves hardware, so which engineering branch is best?",kn,neutral,TRUE
+ask_branch_recommendation,Academics,"Arre yaar, mera beta maths mein accha hai, but he also loves coding, so like, what branch should we go for? I'm really worried about his future.",hi,worried,TRUE
+ask_branch_recommendation,Academics,"Hey, you know, my kid likes AI and also wants to work on robotics, so like, which engineering branch do you think is best? I keep getting confused by all the options.",en,confused,TRUE
+ask_branch_recommendation,Academics,"I just found out my daughter is super passionate about machine learning, and I want to make sure we choose the right branch—so which engineering stream would be the best for her?",en,excited,TRUE
+ask_branch_recommendation,Academics,"Mere bachche ko coding pasand hai, lekin main samajh nahi pa raha ki kaun sa engineering branch uske liye sahi rahega, kaafi options hain, bahut hi frustrating!",hi,frustrated,TRUE
+ask_hostel_facilities,Campus Facilities,"Um, hi, can you tell me what kind of amenities they have in the hostel? Like, do they have Wi‑Fi, laundry, or maybe a gym?",en,neutral,TRUE
+ask_hostel_facilities,Campus Facilities,"Hey, I'm worried, does the hostel give meals? I heard maybe it's not included. What do they provide?",en,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"I don't know, do they have a security guard? Is there CCTV? I'm a bit confused about safety.",en,confused,TRUE
+ask_hostel_facilities,Campus Facilities,क्या कमरे में फ्रिज होता है? और क्या वाई‑फाई मुफ्त है? मैं थोड़ा परेशान हूँ क्योंकि मैं अभी तक नहीं जानता।,hi,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"हाय, मैं सोच रहा हूँ कि हॉस्टल में क्या- क्या सुविधाएँ हैं? जैसे कि डॉर्म रूम का प्रकार, क्या रूम में टॉयलेट है?",hi,neutral,TRUE
+ask_hostel_facilities,Campus Facilities,"मुझे समझ नहीं आ रहा, क्या हॉस्टल में फूड सर्विस है? क्या वो सब कुछ फ्री है या पेमेंट करना पड़ेगा?",hi,confused,TRUE
+ask_hostel_facilities,Campus Facilities,"Hey, can you tell me about the room types? Like single, double, or shared? And what about laundry facilities? I am a bit frustrated because I haven't heard about it.",en,frustrated,TRUE
+ask_hostel_facilities,Campus Facilities,"नमस्ते, क्या हॉस्टल में Wi‑Fi उपलब्ध है? और क्या वहाँ कोई 24/7 सुरक्षा है? मैं थोड़ी घबराया हुआ हूँ।",hi,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"हाय, मैं जानना चाहता हूँ कि हॉस्टल में क्या सुविधाएं हैं, जैसे कि रूम में एयर कंडीशनिंग या सिर्फ फैन? और क्या खाना मिलता है?",hi,neutral,TRUE
+ask_course_duration,Academics,"Hey, I was just calling, so, you know, how long does the engineering course actually take? I mean, like, years, semesters, whatever.",en,neutral,TRUE
+ask_course_duration,Academics,"अच्छा, B.Tech का duration कितना है? 4 साल का है, पर मुझे पूरी तरह से समझ नहीं आया।",hi,confused,TRUE
+ask_course_duration,Academics,"मुझे पक्का नहीं पता, लेकिन engineering के लिए कितने साल लगते हैं? क्या आप मुझे बता सकते हैं?",hi,confused,TRUE
+ask_course_duration,Academics,"हेल्लो, I just wanted to ask, engineering में कितने semesters होते हैं? I don't want to miss any deadlines.",hi,worried,TRUE
+ask_course_duration,Academics,"Namaste, I am a bit worried about the duration of the B.E. program. It's a bit confusing for me.",en,worried,TRUE
+ask_course_duration,Academics,"Yo, like, how many years does the MBA course run? I mean, do we need to do 2 years or 3?",en,neutral,TRUE
+ask_course_duration,Academics,"हाय, मुझे थकान हो रही है, लेकिन मैं जानना चाहता हूँ, engineering की course duration क्या है? क्या यह चार साल का है?",hi,worried,TRUE
+ask_course_duration,Academics,"Hey, I'm calling from the kitchen, and I just can't remember how long the CSE program takes. Can you tell me in a nutshell?",en,neutral,TRUE
+ask_course_duration,Academics,"नमस्ते, मैं थोड़ा उलझन में हूँ, क्या आप मुझे बता सकते हैं कि B.Tech का duration कितना है? मैं जल्द से जल्द decision लेना चाहता हूँ.",hi,confused,TRUE
+ask_attendance_policy,Academics,"Hey, can you tell me how many classes a student needs to attend to be eligible for the final exam? I'm not sure about the threshold.",en,neutral,TRUE
+ask_attendance_policy,Academics,"Um, I was checking the student portal, and I saw a note that says 70% attendance required. If my child misses a few more days, will he still be allowed to sit for the exams? I'm kinda anxious about it.",en,worried,TRUE
+ask_attendance_policy,Academics,"Hello, I keep seeing 'attendance 80%' on the website, but then there's a line about 'medical leave' that says something else. Can you explain how the calculation works when a student has a doctor's appointment? I'm a bit confused.",en,confused,TRUE
+ask_attendance_policy,Academics,"This is ridiculous! I already missed three days last week, but the system says I’m below the minimum. How can I even get my kid to sit for the test if the attendance rule is so strict?",en,frustrated,TRUE
+ask_attendance_policy,Academics,"Hi, I wanted to ask if there's a maximum number of absences allowed per semester? I saw something about 12 days but not sure if that's correct.",en,neutral,TRUE
+ask_attendance_policy,Academics,"Um, my child was sick and was absent for a week, but I think the medical leave policy might cover it. Will that be counted as attendance or not? I’m worried about falling behind.",en,worried,TRUE
+ask_attendance_policy,Academics,"Hey! I heard that if you attend at least 90% you get a bonus? Just checking, is that true? I'm excited about the perks!",en,excited,TRUE
+ask_attendance_policy,Academics,"I keep getting messages that my child is 'at risk' due to attendance, but I don't see any clear guidelines. How do they calculate it? It's frustrating.",en,frustrated,TRUE
+ask_attendance_policy,Academics,"So, if a student takes a leave of absence for a month, do they lose credit for those classes? I'm confused about how that affects the final grade.",en,confused,TRUE
+ask_application_deadline,Admissions,"Um, so, I was just wondering when the deadline is, because we need to finish the paperwork before the next week.",en,neutral,TRUE
+ask_application_deadline,Admissions,"Hey, can you tell me the deadline for applying? I mean, next mahine ka deadline kya hai, but not sure.",en,neutral,TRUE
+ask_application_deadline,Admissions,"Mujhe deadline ka pata chalna hai, kya last date hai? I'm kinda worried because we have other things to do.",hi,worried,TRUE
+ask_application_deadline,Admissions,"Kya deadline hai, please? I keep checking but nothing shows, I'm a bit confused.",hi,confused,TRUE
+ask_application_deadline,Admissions,"Um, dekho, application deadline kaun sa date hai, because we are still in the middle of the semester.",kn,worried,TRUE
+ask_application_deadline,Admissions,"I can't find any info, so what's the deadline, like? I feel frustrated, like we might miss it.",en,frustrated,TRUE
+ask_application_deadline,Admissions,"Excuse me, when does the admissions close? I'm excited but also anxious, because I want to apply.",en,excited,TRUE
+ask_application_deadline,Admissions,"Suniye, deadline kya hai? I don't know if it's still open, so please tell me.",hi,worried,TRUE
+ask_application_deadline,Admissions,"Um, so, can you confirm the last date to apply, because I think we might still be in time, but I'm not sure.",en,confused,TRUE
+ask_seat_availability,Admissions,"Um, hi, can you tell me if there are any seats left in the Computer Science department?",en,neutral,TRUE
+ask_seat_availability,Admissions,"Sare, CSE ki seats abhi available hain ya nahi, please?",hi,worried,TRUE
+ask_seat_availability,Admissions,"Hey, I'm calling about the AI & ML program, are there any slots left? I need to decide soon.",en,worried,TRUE
+ask_seat_availability,Admissions,"Mujhe thoda confusion hai, BTech Mechanical ka quota fill hua ya nahi? Seat availability?",hi,confused,TRUE
+ask_seat_availability,Admissions,"Hello, can you please confirm if there's still a seat in the ECE branch? I keep hearing about some openings.",en,neutral,TRUE
+ask_seat_availability,Admissions,"Bhai, 2025 ka admission ka seat ka status kya hai, especially for the reserved quota?",hi,frustrated,TRUE
+ask_seat_availability,Admissions,"Hi, I want to know if there are any spots left in the Data Science course, because my child is interested.",en,neutral,TRUE
+ask_seat_availability,Admissions,"Namaskara, EEE branch la seat innu available ide? I need to plan.",kn,worried,TRUE
+ask_seat_availability,Admissions,"Hey, Computer Engineering ki seats almost full lag rahi hain, kya yeh sahi hai? Mujhe jaldi se pata karna hai.",hi,frustrated,TRUE
+ask_exam_pattern,Academics,"Um, so, like, can you tell me what the exam pattern is like? I mean, I want to know how they structure the semester tests.",en,neutral,TRUE
+ask_exam_pattern,Academics,"Suna hai ki exam pattern thoda alag hai, par main thoda confused hoon. Kya aap bata sakte ho ki semester ke exams ka format kya hoga?",hi,confused,TRUE
+ask_exam_pattern,Academics,Internal exams are a bit weird. How many internal assessments are there in a semester? I am kinda worried.,en,worried,TRUE
+ask_exam_pattern,Academics,I’m not sure if I should be preparing for practical exams or just theory. How do they evaluate us in the semester?,en,worried,TRUE
+ask_exam_pattern,Academics,"Arre, ek minute, please. Exam pattern ke baare mein thoda confusion hai. Kya semester mein practical test bhi hote hain? Yeh kaise evaluate kiya jata hai?",hi,confused,TRUE
+ask_exam_pattern,Academics,"Banni, I'm a bit frustrated because I keep hearing about internal assessments but no clear pattern. Could you explain how many internal exams we have? And what’s the evaluation scheme?",en,frustrated,TRUE
+ask_exam_pattern,Academics,"Um, do they have any sort of continuous assessment, like quizzes or something? And how are the semester exams structured? I'm just trying to get a rough idea.",en,neutral,TRUE
+ask_exam_pattern,Academics,"Hey, so I want to know about the exam pattern, but I'm a little worried. Do they have practical exams? And how do they do the evaluation? I’m not sure.",en,worried,TRUE
+ask_exam_pattern,Academics,"Naanu ondu confusion, internal exams kadhadare. Semester pattern nalli internal assessments yeh? Evaluation scheme elli?",kn,confused,TRUE
+ask_research_opportunities,Academics,"Um, hi, I'm calling because I heard there might be research programs, but can you tell me if undergrads can actually do research?",en,neutral,TRUE
+ask_research_opportunities,Academics,"Hey, I was just wondering, kya aapke campus me research opportunities available hain?",hi,worried,TRUE
+ask_research_opportunities,Academics,"Namaskara, I was calling because I want to know if there are research labs for undergrads, but I don't know where to start?",en,confused,TRUE
+ask_research_opportunities,Academics,"Um... hello, I'm really concerned, my child might miss out, so do you have any research programs for undergrads?",en,worried,TRUE
+ask_research_opportunities,Academics,"Hello, I keep hearing about research but I can't find details, kya koi research project available hai? I'm so frustrated",hi,frustrated,TRUE
+ask_research_opportunities,Academics,"Hey, I've been hearing great things, so I'm excited, do you have any research projects for undergrads?",en,excited,TRUE
+ask_research_opportunities,Academics,"Um, I don't get it, are there research opportunities? I'm kinda confused",en,confused,TRUE
+ask_research_opportunities,Academics,"Namaste, kya aapke college me research ka mauka hai?",hi,neutral,TRUE
+ask_research_opportunities,Academics,"Hey, I'm calling because I'm worried about my daughter's future, do we have any research opportunities available?",en,worried,TRUE
+ask_required_documents,Admissions,"Um, I know we need some papers but can you tell me exactly which ones we need for the application? I'm kinda worried because I don't want to miss anything.",en,worried,TRUE
+ask_required_documents,Admissions,"Hey, I was wondering, like, kya documents bring karna padega admission ke liye? I heard some certificates but I'm not sure.",hi,confused,TRUE
+ask_required_documents,Admissions,"Hi, so, I want to know, like, ಯಾವ ಯಾವ ದಾಖಲೆಗಳನ್ನು ಬೇಕು for enrollment? I'm a bit nervous.",kn,worried,TRUE
+ask_required_documents,Admissions,"Can you give me a quick list of the documents I need to submit for admission, like, please? Main samajh nahi pa raha.",hi,neutral,TRUE
+ask_required_documents,Admissions,"I already sent all these documents, but I'm still being asked for more! Which documents do you actually need? This is so annoying.",en,frustrated,TRUE
+ask_required_documents,Admissions,Great! I'm so ready to apply. Just tell me what certificates I should bring to the admissions office so I can finish this quickly!,en,excited,TRUE
+ask_required_documents,Admissions,"Okay, so, I think I have the transcripts and the birth certificate, but do I need the old school report card too? Please help, I'm confused.",en,confused,TRUE
+ask_required_documents,Admissions,"Hmm, I have my mark sheets, but like, do I need the parent ID too? I'm a little worried that I forgot something.",en,worried,TRUE
+ask_required_documents,Admissions,"What paperwork do I have to bring to the enrollment day, like? I'm a bit confused, kya?",hi,confused,TRUE
+ask_contact_admission_office,Admissions,"Hey, I was trying to find a number for the admissions team but I can't seem to locate it. Do you know where I can reach them?",en,worried,TRUE
+ask_contact_admission_office,Admissions,"Arre, main admissions office ka phone number kaise dhoondh sakta hoon? I keep looking but no luck.",hi,confused,TRUE
+ask_contact_admission_office,Admissions,"Mujhe admission counsellor se baat karni hai, but I can't find the contact details. Kya aap help karenge?",hi,worried,TRUE
+ask_contact_admission_office,Admissions,"Hey, I want to reach out to the admissions team, but I can't find the number. Naanu eega yen maadabekaguttide?",kn,confused,TRUE
+ask_contact_admission_office,Admissions,"I need to talk to someone about enrollment, but I don't know who to call. Any idea?",en,frustrated,TRUE
+ask_contact_admission_office,Admissions,"Bhai, admission office ko call kaise karein? I keep clicking through the website but no contact info.",hi,frustrated,TRUE
+ask_contact_admission_office,Admissions,I was trying to get in touch with admissions but I keep hitting a dead end. Neevu helthira?,en,worried,TRUE
+ask_contact_admission_office,Admissions,"OMG, can you tell me who I should reach out to for admission questions? I don't have a number.",en,excited,TRUE
+ask_contact_admission_office,Admissions,Admission office ko kaun contact karega? I'm kinda confused about where to start.,en,confused,TRUE
+ask_entrepreneurship_support,Campus,"Hey, I was wondering if the school has any programs for students who want to start their own business? I mean, like, is there anything that helps them get a launchpad?",en,neutral,TRUE
+ask_entrepreneurship_support,Campus,"Um, I know you're busy, but I'm really worried about my son. He wants to launch a startup, and I don't know if the college has any mentorship or funding support. Can you tell me?",en,worried,TRUE
+ask_entrepreneurship_support,Campus,"Hi, main thoda confuse ho gaya hoon, college mein entrepreneurship support ka kya arrangement hai? Like, kya koi incubation center hai ya koi startup club?",hi,confused,TRUE
+ask_entrepreneurship_support,Campus,"Hey, I tried to find info about entrepreneurship, but nothing clear. I want to know if there's a business mentoring program. Naanu ee school alli startup support iruvudilla?",kn,frustrated,TRUE
+ask_entrepreneurship_support,Campus,"Um, I'm calling because my daughter is anxious. She wants to start a business and I need to know if the college provides any funding or incubation facilities. Please tell me, okay?",en,worried,TRUE
+ask_entrepreneurship_support,Campus,Could you let me know if there is any entrepreneurship cell or program for students interested in startups?,en,neutral,TRUE
+ask_entrepreneurship_support,Campus,"Hey, mujhe bahut excitement hai! My son wants to launch a startup and I heard the college has an innovation center. Is that true? Please give me details!",hi,excited,TRUE
+ask_entrepreneurship_support,Campus,"Namaskara, I heard about some startup support but I'm not sure. College nalli entrepreneurship support iruvudanna? I need to know if there is any mentoring or incubation.",kn,confused,TRUE
+ask_entrepreneurship_support,Campus,I don't understand why there's no clear info on entrepreneurship support. Is there a program for students to get funding or mentorship? This is frustrating.,en,frustrated,TRUE
+greet,General,"Hi, I was just calling, like, to say hello and see if anyone is available.",en,neutral,TRUE
+greet,General,"Hello, um, I know it's busy, but I just wanted to… like… hello, could you…?",en,worried,TRUE
+greet,General,"Namaste, main aaj thoda late call kar raha hoon, I just wanted to say hi and see if you can…?",en,worried,TRUE
+greet,General,"Hey, bhai, main toh itna wait kar raha hoon, I just wanted to say hi, like, but no response.",hi,frustrated,TRUE
+greet,General,"Hello, naanu nanna student, I am calling, like, I want to say hi but I'm not sure…?",kn,confused,TRUE
+greet,General,"Hi, nanu kanda, I'm so excited to call you today, I just wanted to say hello and ask…?",en,excited,TRUE
+greet,General,"नमस्ते, मैं कॉल कर रहा हूँ, बस हाय कहना चाहता था।",hi,neutral,TRUE
+greet,General,"Hey, um, I don't know if this is the right number, but I just wanted to say hi and…?",en,confused,TRUE
+greet,General,"Hello! Wow, it's so nice to finally get through, just wanted to say hi and talk a bit.",en,excited,TRUE
+ask_curriculum,Academics,"Hey, can you walk me through what courses are in the first year of the Computer Science program?",en,neutral,TRUE
+ask_curriculum,Academics,"Um, I was wondering, like, the syllabus for the AI course, kya aap bata sakte hain ki pehle semester mein kya subjects cover hote hain?",hi,worried,TRUE
+ask_curriculum,Academics,"So, I read that there's a new curriculum for data science, but I'm not sure, like, what topics do they cover in the second semester, shri? I don't get it.",en,confused,TRUE
+ask_curriculum,Academics,"Seriously, why is the curriculum so confusing? I keep looking at the course list and I can't figure out which electives are available, aur main soch raha hoon ki yeh sab kaise kaam karega.",hi,frustrated,TRUE
+ask_curriculum,Academics,"I'm really anxious about my daughter, she's interested in engineering, but I'm not sure what the curriculum looks like, can you give me an overview?",en,worried,TRUE
+ask_curriculum,Academics,"Yoo, the curriculum for mechanical engineering seems super cool! Can you tell me if there's a project-based course in the third year? I'm so excited to see what they'll teach.",en,excited,TRUE
+ask_curriculum,Academics,Could you explain the semester-wise structure of the BTech program?,en,neutral,TRUE
+ask_curriculum,Academics,"I keep seeing different course names, like, is it the same as the old curriculum, kya difference hai?",hi,confused,TRUE
+ask_curriculum,Academics,"My son wants to study electronics, but I'm worried about the curriculum. Do they have enough practical labs in the first year?",en,worried,TRUE
+ask_fees_branch,Fees,"Actually, I wanted to check the fees for CSE because my son is planning to join this year and we are comparing a few colleges, so could you tell me roughly how much we would have to pay?",en,neutral,TRUE
+ask_fees_branch,Fees,"See, my daughter is mainly interested in CSE and before we go ahead with the admission I just wanted to understand the complete fee amount for the branch, including what we have to pay for the year.",en,neutral,TRUE
+ask_fees_branch,Fees,"I was just calling to ask about the CSE fees because I couldn't understand the fee structure properly from the information we received, so how much does it come to?",en,confused,TRUE
+ask_fees_branch,Fees,"Actually mere bete ko CSE lena hai, aur admission ke pehle hum fee ka pura idea lena chahte hain, toh CSE ke liye ek saal ka kitna fees padega?",hi,neutral,TRUE
+ask_fees_branch,Fees,"Dekhiye, hum thoda budget calculate kar rahe hain because hostel bhi consider karna hai, toh CSE ki fees kitni hai aur roughly kitna amount arrange karna padega?",hi,worried,TRUE
+ask_fees_branch,Fees,"Meri daughter CSE ke liye interested hai, bas fee ko lekar thoda confusion hai, aap bata sakte hain ki total fees kitni hoti hai?",hi,confused,TRUE
+ask_fees_branch,Fees,"Actually nanna maga CSE choose madbeku antha iddane, admission madoke munche fee amount swalpa gothagbeku, CSE ge eshtu fee agutte?",kn,neutral,TRUE
+ask_fees_branch,Fees,"Namma budget swalpa calculate madta iddivi, hostel bere ide, so CSE branch ge annual fee eshtu barutte anta helthira?",kn,worried,TRUE
+ask_fees_branch,Fees,"CSE ge admission madbeku antha think madta iddivi, fee structure clear agilla, swalpa complete amount yestu antha helbahuda?",kn,confused,TRUE
+ask_fees_branch,Fees,"Sir, CSE ki fees kitni hai, because admission ke saath hostel bhi lena hai and we need to plan the total budget properly?",hi,worried,TRUE
+ask_cutoff,Admissions,"My son has written KCET and we are waiting for the result, but he is mainly interested in CSE, so I wanted to know what kind of rank is generally needed for that branch.",en,worried,TRUE
+ask_cutoff,Admissions,"Actually we are not sure whether his rank will be enough, so before we make our choices could you tell me the approximate KCET cutoff for CSE?",en,confused,TRUE
+ask_cutoff,Admissions,"I was checking the admission possibilities because my daughter has a particular rank, and I wanted to understand whether CSE would normally be possible with that rank.",en,worried,TRUE
+ask_cutoff,Admissions,"Mere bete ka KCET rank abhi itna hai, aur usko CSE hi chahiye, toh aap bata sakte hain ki usually CSE ke liye kitni rank tak admission milta hai?",hi,worried,TRUE
+ask_cutoff,Admissions,"Hum options dekh rahe hain aur rank ko lekar thoda confusion hai, COMEDK mein CSE ke liye roughly kya cutoff rehta hai?",hi,confused,TRUE
+ask_cutoff,Admissions,"Meri daughter ka rank expected se thoda kam aa sakta hai, isliye tension ho rahi hai, kya CSE ke liye us rank par chance ho sakta hai?",hi,worried,TRUE
+ask_cutoff,Admissions,"Nanna maga KCET barediddane, CSE beku antha helta iddane, avana rank ge CSE chance ideya anta swalpa tilkobeku.",kn,worried,TRUE
+ask_cutoff,Admissions,"Rank bagge swalpa confusion ide, COMEDK alli CSE ge usually yestu cutoff irutte anta helidre namge options decide madakke help agutte.",kn,confused,TRUE
+ask_cutoff,Admissions,"Nanna daughter ge CSE interest ide, rank expected range alli ide, so ee rank ge seat sigabahuda anta check madbekittu.",kn,worried,TRUE
+ask_cutoff,Admissions,"Mera KCET rank 32000 hai, CSE ge chance ideya, illa bere branch consider madbeku anta nimma opinion bekittu.",kn,worried,TRUE
+ask_admission_process,Admissions,"Actually this is our first child going for engineering, so we are not really familiar with the procedure, after the seat is allotted what exactly do we have to do?",en,confused,TRUE
+ask_admission_process,Admissions,"I wanted to understand the admission process from beginning to end because we don't want to miss any step after counselling, so could you explain how it works?",en,worried,TRUE
+ask_admission_process,Admissions,"We have received the information about the college but the actual admission procedure is not very clear to us, like registration, verification, fee payment and reporting, how does all that happen?",en,confused,TRUE
+ask_admission_process,Admissions,"Mere bete ko seat mil gayi hai, ab uske baad exactly kya process hai, documents kab dene hain aur fees kab pay karni hai, thoda samjha denge?",hi,confused,TRUE
+ask_admission_process,Admissions,"Hum pehli baar engineering admission kar rahe hain, isliye process ko lekar thoda confusion hai, counselling ke baad college mein kya kya karna padega?",hi,confused,TRUE
+ask_admission_process,Admissions,"Seat allot hone ke baad reporting kaise karni hai aur admission complete kaise hoga, bas ye confirm karna tha.",hi,neutral,TRUE
+ask_admission_process,Admissions,"Namma first time engineering admission, process swalpa confuse agide, seat allot aadmele college alli yava steps follow madbeku?",kn,confused,TRUE
+ask_admission_process,Admissions,"Counselling complete aagide, next admission process yenu, documents verification mattu fee payment heg madbeku anta tilkobekittu.",kn,confused,TRUE
+ask_admission_process,Admissions,"Seat allotment aadmele reporting yavaga madbeku, admission complete agoke inna enella madbeku?",kn,neutral,TRUE
+ask_admission_process,Admissions,"Sir, seat allot ho gaya hai, ab college mein report madbeku alva, documents aur fees ka process yenu?",kn,confused,TRUE
+ask_required_documents,Admissions,"We are planning to come for admission next week, so I just wanted to make sure we bring everything, what documents and certificates will be required?",en,worried,TRUE
+ask_required_documents,Admissions,"My daughter has all her marks cards but I'm not sure about the other certificates, so could you tell me the complete document list for admission?",en,confused,TRUE
+ask_required_documents,Admissions,Before we travel to the college I wanted to double-check the paperwork because we don't want to come all the way and find that something is missing.,en,worried,TRUE
+ask_required_documents,Admissions,"Admission ke time hum kaun kaun se documents lekar aayein, marks card ke alawa aur certificates bhi chahiye kya?",hi,confused,TRUE
+ask_required_documents,Admissions,"Mere bete ke documents ready hain, lekin migration certificate ya transfer certificate mein se kya kya zaroori hai, aap bata sakte hain?",hi,confused,TRUE
+ask_required_documents,Admissions,"Hum college aane wale hain, isliye ek baar complete list confirm karna tha, admission ke liye exactly kya kya chahiye?",hi,neutral,TRUE
+ask_required_documents,Admissions,"Admission ge barbekadre documents yella ready madbeku, marks card jothe bere certificates beka?",kn,confused,TRUE
+ask_required_documents,Admissions,"Nanna maga documents ready madta iddane, Transfer Certificate mattu Migration Certificate yella beka anta confirm madbekittu.",kn,confused,TRUE
+ask_required_documents,Admissions,"College ge bandaga yavude document miss agbardu, so admission ge complete documents list helbahuda?",kn,worried,TRUE
+ask_required_documents,Admissions,"Sir, marks card ide, transfer certificate ide, innu yava documents tarbeku admission time alli?",kn,neutral,TRUE
+ask_application_deadline,Admissions,"We are still discussing whether to apply, but I don't want us to miss the date, so could you tell me when the admission application closes?",en,worried,TRUE
+ask_application_deadline,Admissions,"My daughter has not submitted the application yet because we were waiting for some documents, is there still time or has the last date passed?",en,worried,TRUE
+ask_application_deadline,Admissions,I was just calling to confirm the deadline because different people have told us different dates and I'm not sure which one is correct.,en,confused,TRUE
+ask_application_deadline,Admissions,"Hum abhi application submit nahi kar paaye hain, toh last date kya hai, aur agar thoda late ho gaya toh apply kar sakte hain kya?",hi,worried,TRUE
+ask_application_deadline,Admissions,"Admission ki date ko lekar humein alag alag information mil rahi hai, aap please final last date bata denge?",hi,confused,TRUE
+ask_application_deadline,Admissions,"Mere bete ke documents kal tak ready honge, uske baad apply karna hai, toh application ki deadline kab tak hai?",hi,worried,TRUE
+ask_application_deadline,Admissions,"Application inna submit madilla, last date yavaga ide anta confirm madbekittu, late aagi problem agbeda antha.",kn,worried,TRUE
+ask_application_deadline,Admissions,"Admission application ge last date bagge different information sigta ide, correct date yavudu anta helthira?",kn,confused,TRUE
+ask_application_deadline,Admissions,"Nanna daughter documents ready madta iddale, apply madakke inna time ideya athava deadline mugidideya?",kn,worried,TRUE
+ask_application_deadline,Admissions,"Sir, last date kab hai, application inna submit madbahuda because we are waiting for one document?",kn,worried,TRUE
+ask_admission_status,Admissions,"I submitted my son's application a few days ago and we haven't heard anything yet, so I wanted to know how we can check the admission status.",en,worried,TRUE
+ask_admission_status,Admissions,"We completed the application and payment, but I'm not sure whether everything went through properly, can you tell me how to check the status?",en,confused,TRUE
+ask_admission_status,Admissions,"I'm calling because we submitted the application but there has been no update, so is there some way to verify whether it has been processed?",en,worried,TRUE
+ask_admission_status,Admissions,"Maine application submit kar diya hai aur payment bhi ho gaya, lekin abhi tak koi update nahi mila, status kaise check karun?",hi,worried,TRUE
+ask_admission_status,Admissions,"Mere bete ka application submit hua tha, ab admission ka status dekhna hai, kahan check karna padega?",hi,confused,TRUE
+ask_admission_status,Admissions,"Humne sab kuch submit kar diya tha, bas ye confirm karna hai ki application properly receive hua hai ya nahi.",hi,worried,TRUE
+ask_admission_status,Admissions,"Nanna application submit madidini, payment kooda aagide, aadre status update bandilla, heg check madodu?",kn,worried,TRUE
+ask_admission_status,Admissions,"Application process complete aagide antha anisutte, but status yenu anta nodakke yelli check madbeku?",kn,confused,TRUE
+ask_admission_status,Admissions,"Nanna maga application submit madiddane, admission status bagge update siglilla, swalpa help madthira?",kn,worried,TRUE
+ask_admission_status,Admissions,"Sir, application submit kiya hai, status yelli check madodu, portal alli nodbahuda?",kn,confused,TRUE
+ask_seat_availability,Admissions,"My daughter is interested only in CSE and we are planning to apply now, so before we proceed I wanted to know whether there are still seats available.",en,worried,TRUE
+ask_seat_availability,Admissions,"We were a little late in deciding the branch, and now I'm worried that CSE might already be full, so could you check if seats are still available?",en,worried,TRUE
+ask_seat_availability,Admissions,"My son's rank is suitable for the branch, but we haven't completed admission yet, is there still a chance to get a CSE seat?",en,worried,TRUE
+ask_seat_availability,Admissions,"Mere bete ko CSE hi chahiye aur hum abhi admission karne wale hain, toh kya CSE mein abhi bhi seat available hai?",hi,worried,TRUE
+ask_seat_availability,Admissions,"Hum thoda late ho gaye admission decide karne mein, isliye tension hai ki CSE ki seats bhar toh nahi gayi hain?",hi,worried,TRUE
+ask_seat_availability,Admissions,"Rank theek hai lekin seat availability ka doubt hai, kya abhi CSE mil sakta hai?",hi,confused,TRUE
+ask_seat_availability,Admissions,"Nanna maga CSE beku antha fix aagiddane, admission inna madilla, CSE alli seats available ideya?",kn,worried,TRUE
+ask_seat_availability,Admissions,"Admission swalpa late aaytu, CSE seats full aagideya athava inna availability ideya anta check madbekittu.",kn,worried,TRUE
+ask_seat_availability,Admissions,"Rank okay ide, but CSE seat sigutta antha doubt ide, inna seats available idya?",kn,confused,TRUE
+ask_seat_availability,Admissions,"Sir, CSE mein seat available hai, illa full aagide, because we are ready to apply now?",kn,worried,TRUE
+ask_placement_by_branch,Placements,"My son is choosing between two branches mainly because of career prospects, so I wanted to understand how placements are for CSE and what kind of packages students usually get.",en,neutral,TRUE
+ask_placement_by_branch,Placements,"We are not expecting a huge package, but we do want to know whether students from this branch generally get placed and what the average outcome looks like.",en,worried,TRUE
+ask_placement_by_branch,Placements,"Before deciding the branch I wanted to ask about placements, like what percentage of students get placed and whether companies offer decent packages.",en,neutral,TRUE
+ask_placement_by_branch,Placements,"Mere bete ke liye branch choose kar rahe hain, aur placement important hai, toh CSE mein average package aur placement kaisa rehta hai?",hi,neutral,TRUE
+ask_placement_by_branch,Placements,"Hum log sirf branch naam dekh ke decide nahi karna chahte, placement ka actual scene kya hai, CSE students ko jobs milti hain?",hi,worried,TRUE
+ask_placement_by_branch,Placements,"Meri daughter CSE lena chahti hai, lekin humein future ko lekar thoda concern hai, placement percentage roughly kitna hai?",hi,worried,TRUE
+ask_placement_by_branch,Placements,"Nanna maga branch choose madbeku, placement important ide, CSE students ge usually yava range package sigutte?",kn,neutral,TRUE
+ask_placement_by_branch,Placements,"CSE ge placement outcome hegide, average students kooda place agtara, percentage yestu ide anta gothagbekittu.",kn,worried,TRUE
+ask_placement_by_branch,Placements,"Branch decide madoke munche placement details check madta iddivi, CSE students ge opportunities hegive?",kn,neutral,TRUE
+ask_placement_by_branch,Placements,"CSE ka placement kaisa hai, average package yestu sigutte, because future career bagge decide madbeku?",kn,worried,TRUE
+ask_top_recruiters,Placements,"Actually we were looking at the placement side before choosing the college, so could you tell me which companies usually come to campus and recruit students?",en,neutral,TRUE
+ask_top_recruiters,Placements,"My son is interested in CSE and keeps asking about the companies that visit, so I wanted to know which major recruiters normally come here.",en,excited,TRUE
+ask_top_recruiters,Placements,"I don't really know the placement companies apart from the big names, so which companies actually recruit from your college?",en,neutral,TRUE
+ask_top_recruiters,Placements,"Mere bete ko placement ko lekar bahut interest hai, toh campus mein kaun kaun si companies recruitment ke liye aati hain?",hi,excited,TRUE
+ask_top_recruiters,Placements,"Hum college compare kar rahe hain, aur recruiter list dekhna important hai, yahan kaunsi badi companies students ko hire karti hain?",hi,neutral,TRUE
+ask_top_recruiters,Placements,"Boeing ya Amazon jaise companies campus mein aati hain kya, ya mostly local companies hoti hain?",hi,neutral,TRUE
+ask_top_recruiters,Placements,"Placement bagge check madta iddivi, college ge yava companies recruitment ge bartave anta helbahuda?",kn,neutral,TRUE
+ask_top_recruiters,Placements,"Nanna maga CSE choose madbeku antha iddane, campus ge yava big companies bartave, recruitment opportunities hegive?",kn,excited,TRUE
+ask_top_recruiters,Placements,"Boeing tara company students na hire madutta, campus recruitment ge bartara anta check madbekittu.",kn,neutral,TRUE
+ask_top_recruiters,Placements,"Sir, kaunsi companies recruit kartave, CSE students ge campus placement alli yava options ide?",kn,neutral,TRUE
+ask_internship_opportunities,Placements,"My daughter is still in the earlier years, but she wants to get practical experience, so does the college help students find internships?",en,excited,TRUE
+ask_internship_opportunities,Placements,"I wanted to ask about internships because getting some industry experience during engineering is important to us, are there opportunities for that?",en,neutral,TRUE
+ask_internship_opportunities,Placements,"Do students have to find internships completely on their own, or does the college provide some support and opportunities?",en,confused,TRUE
+ask_internship_opportunities,Placements,"Meri daughter ko engineering ke saath internship karni hai, kya college companies ke through internship opportunities provide karta hai?",hi,excited,TRUE
+ask_internship_opportunities,Placements,"Internship ke liye students ko college help karta hai kya, ya khud hi companies ko contact karna padta hai?",hi,confused,TRUE
+ask_internship_opportunities,Placements,"Hum chahte hain ki second ya third year mein internship mile, college mein uske kuch chances hain kya?",hi,neutral,TRUE
+ask_internship_opportunities,Placements,"Nanna maga internship madbeku antha interest iddane, college companies jothe opportunities provide madutta?",kn,excited,TRUE
+ask_internship_opportunities,Placements,"Internship sigakke students themselves companies na contact madbekaa, college support ideya?",kn,confused,TRUE
+ask_internship_opportunities,Placements,"Third year alli internship madbeku antha plan ide, college inda yava opportunities sigutte?",kn,neutral,TRUE
+ask_internship_opportunities,Placements,"Internship opportunities ideya, college help madutta, because practical experience bekagide?",kn,excited,TRUE
+ask_scholarship_available,Fees,"We are trying to manage the overall education cost, especially with hostel expenses, so I wanted to know whether the college has any scholarship or financial support.",en,worried,TRUE
+ask_scholarship_available,Fees,My daughter has good marks and we were wondering if there are any scholarships available that could help with the fee burden.,en,worried,TRUE
+ask_scholarship_available,Fees,Before we finalize admission I wanted to check whether the college itself offers any scholarship schemes for students.,en,neutral,TRUE
+ask_scholarship_available,Fees,"Fees thoda zyada ho raha hai, isliye poochna tha ki college mein scholarship ya financial help milti hai kya?",hi,worried,TRUE
+ask_scholarship_available,Fees,"Mere bete ke marks achhe hain, kya usko scholarship ka koi benefit mil sakta hai, ya college mein aisi facility nahi hai?",hi,neutral,TRUE
+ask_scholarship_available,Fees,"Hum total expense calculate kar rahe hain, scholarship available ho toh thoda help ho jayega, isliye confirm karna tha.",hi,worried,TRUE
+ask_scholarship_available,Fees,"Fees manage madbeku antha think madta iddivi, college alli scholarship support ideya?",kn,worried,TRUE
+ask_scholarship_available,Fees,"Nanna daughter ge marks chennagide, scholarship sigbahuda anta kelbekittu, college alli yava schemes ive?",kn,neutral,TRUE
+ask_scholarship_available,Fees,"Education cost swalpa heavy agutte, scholarship athava financial help yavadadru ideya?",kn,worried,TRUE
+ask_scholarship_available,Fees,"Scholarship milti hai kya, fees swalpa kam agakke yenu option ide?",kn,worried,TRUE
+ask_scholarship_eligibility,Fees,"My daughter has scored well, but I'm not sure what exactly makes a student eligible for a scholarship, could you explain the criteria?",en,confused,TRUE
+ask_scholarship_eligibility,Fees,"We wanted to check the scholarship before planning our finances, so what marks or conditions does a student need to satisfy?",en,neutral,TRUE
+ask_scholarship_eligibility,Fees,"I know scholarships are available in some colleges, but I'm not sure whether they depend on marks, category or something else.",en,confused,TRUE
+ask_scholarship_eligibility,Fees,"Mere bete ke marks achhe hain, lekin scholarship ke liye exactly kya eligibility honi chahiye, thoda bata denge?",hi,confused,TRUE
+ask_scholarship_eligibility,Fees,"Scholarship kis basis pe milti hai, marks important hain ya category bhi consider hoti hai?",hi,confused,TRUE
+ask_scholarship_eligibility,Fees,"Hum apply karna chahte hain, bas ye samajhna hai ki kaun students scholarship ke liye eligible hote hain.",hi,neutral,TRUE
+ask_scholarship_eligibility,Fees,"Nanna maga scholarship ge apply madbeku, yava criteria satisfy madbeku anta clear madbekittu.",kn,confused,TRUE
+ask_scholarship_eligibility,Fees,"Marks mele depend agutta athava category kooda consider madtara, scholarship eligibility enu?",kn,confused,TRUE
+ask_scholarship_eligibility,Fees,"Scholarship ge yava students eligible, namge apply madbahuda anta check madbekittu.",kn,neutral,TRUE
+ask_scholarship_eligibility,Fees,"Scholarship ke liye marks important hai, category consider madtara, criteria yenu?",kn,confused,TRUE
+ask_branch_difference,Academics,"My son is confused between CSE and CSE-AIML because both sound very similar to us, so could you explain what the actual difference is in subjects and what students study?",en,confused,TRUE
+ask_branch_difference,Academics,"We don't want to choose a branch just because the name sounds popular, so I wanted to understand how CSE-DS and regular CSE are actually different.",en,confused,TRUE
+ask_branch_difference,Academics,"I've been reading about these branches online but honestly I'm more confused now, could you explain the main curriculum difference between them?",en,confused,TRUE
+ask_branch_difference,Academics,"CSE aur AIML dono computer related hain, lekin actual mein subjects aur course mein kya difference hota hai, thoda simple mein bata sakte hain?",hi,confused,TRUE
+ask_branch_difference,Academics,"Mere bete ko CSE-AIML pasand aa raha hai, but hum regular CSE bhi consider kar rahe hain, dono mein kya major difference hai?",hi,confused,TRUE
+ask_branch_difference,Academics,"Internet pe bahut alag information mil rahi hai, isliye pooch raha hoon, CSE-DS aur CSE mein padhai ka difference kya hai?",hi,confused,TRUE
+ask_branch_difference,Academics,"CSE mattu AIML rendu similar anisutte, aadre subjects alli actual difference yenu, swalpa explain madthira?",kn,confused,TRUE
+ask_branch_difference,Academics,"Nanna maga CSE-DS athava CSE choose madbeku antha confuse agiddane, curriculum hege different ide?",kn,confused,TRUE
+ask_branch_difference,Academics,"Branches hesaru bere ide ashte antha anisutte, aadre course alli yava major difference ide anta gothagbeku.",kn,confused,TRUE
+ask_branch_difference,Academics,"CSE aur AIML same tara ide, but subjects yava reethi different ide, yava branch better anta alla, difference gothagbeku.",kn,confused,TRUE
+ask_branch_recommendation,Academics,"My son likes computers and coding but he doesn't really know what the different branches mean, so based on that kind of interest which branch would you suggest?",en,confused,TRUE
+ask_branch_recommendation,Academics,"We are looking at CSE, AIML and Data Science and honestly all the names are confusing, could you help us understand which one might suit him better?",en,confused,TRUE
+ask_branch_recommendation,Academics,"My daughter is interested in technology but she hasn't decided what she wants to specialize in, so we wanted some guidance before choosing the branch.",en,confused,TRUE
+ask_branch_recommendation,Academics,"Mere bete ko coding achhi lagti hai, lekin CSE aur AIML mein confuse hai, aap uske interest ke hisaab se kaunsi branch suggest karenge?",hi,confused,TRUE
+ask_branch_recommendation,Academics,"Hum sirf popular branch dekh ke decide nahi karna chahte, meri daughter ko computers mein interest hai, toh uske liye kya better rahega?",hi,neutral,TRUE
+ask_branch_recommendation,Academics,"Usko maths aur coding dono pasand hain, lekin exact branch samajh nahi aa rahi, thoda guide kar denge?",hi,confused,TRUE
+ask_branch_recommendation,Academics,"Nanna maga ge coding tumba ishta, aadre CSE, AIML athava DS yava choose madbeku anta confuse agiddane, help madthira?",kn,confused,TRUE
+ask_branch_recommendation,Academics,"Computer interest ide, coding kooda ishta, but future ge yava branch useful anta decide madakke nimma suggestion beku.",kn,confused,TRUE
+ask_branch_recommendation,Academics,"Nanna daughter ge technology interest ide, specialization yenu choose madbeku gothilla, yava branch suit agutte anta helbahuda?",kn,confused,TRUE
+ask_branch_recommendation,Academics,"Coding pasand hai, maths kooda okay ide, CSE athava AIML yava choose madodu better anta swalpa guide madi.",kn,confused,TRUE
+express_worry,Student Support,"Honestly I'm a little scared about my son going into engineering because he has never been very confident academically, and I'm not sure how he will manage.",en,worried,TRUE
+express_worry,Student Support,"I keep thinking about what will happen after four years, because everyone says placements are difficult and it's making me quite anxious.",en,worried,TRUE
+express_worry,Student Support,"Maybe I'm overthinking it, but as a parent I am worried whether my daughter will adjust to college and actually do well.",en,worried,TRUE
+express_worry,Student Support,"Mujhe thoda tension ho raha hai because mera beta engineering ko lekar confident nahi hai, pata nahi college mein kaise manage karega.",hi,worried,TRUE
+express_worry,Student Support,"Sab log alag alag baat bol rahe hain future ko lekar, isliye honestly mujhe samajh nahi aa raha ki mera bachcha theek karega ya nahi.",hi,worried,TRUE
+express_worry,Student Support,"Meri daughter pehli baar ghar se door rahegi, toh admission se zyada mujhe uski safety aur adjustment ko lekar worry ho rahi hai.",hi,worried,TRUE
+express_worry,Student Support,"Nanna maga engineering join madbeku antha iddane, aadre studies manage madbahuda antha nanage swalpa worry agta ide.",kn,worried,TRUE
+express_worry,Student Support,"Future bagge tumba think madta iddini, placement sigutta illa antha tension agta ide, en madbeku gothagta illa.",kn,worried,TRUE
+express_worry,Student Support,"Nanna daughter first time mane inda horagade irbeku, hostel mattu college adjust agutta antha worry ide.",kn,worried,TRUE
+express_worry,Student Support,"Sir, engineering easy alla antha ellaru helta idare, nanage swalpa bhaya ide, maga manage madbahuda anta.",kn,worried,TRUE
+ask_average_student_outcome,Student Support,"My daughter is not a topper, she's more of an average student, so I wanted to know honestly whether students like her still manage to get good jobs.",en,worried,TRUE
+ask_average_student_outcome,Student Support,"My son usually gets decent marks but he's definitely not among the top students, does the college still provide enough support for students like him to succeed?",en,worried,TRUE
+ask_average_student_outcome,Student Support,"We are not expecting him to be a university rank holder, but as parents we want to know whether an average student can still have a good career after graduating.",en,worried,TRUE
+ask_average_student_outcome,Student Support,"Meri daughter topper nahi hai, average marks aate hain, toh kya aise students ko bhi placement ka achha chance milta hai?",hi,worried,TRUE
+ask_average_student_outcome,Student Support,"Mera beta studies mein normal hai, bahut outstanding nahi hai, toh college mein usko support milega aur future mein job mil sakti hai?",hi,worried,TRUE
+ask_average_student_outcome,Student Support,"Hum rank student nahi hain, bas average performance hai, isliye thoda concern hai ki engineering ke baad outcome kaisa rahega.",hi,worried,TRUE
+ask_average_student_outcome,Student Support,"Nanna maga topper alla, average student, aadre engineering aadmele good placement sigabahuda anta namge swalpa worry ide.",kn,worried,TRUE
+ask_average_student_outcome,Student Support,"Marks okay ide but top student alla, college support idre average student kooda successful agbahuda?",kn,worried,TRUE
+ask_average_student_outcome,Student Support,"Nanna daughter studies alli average, placement opportunities ella top students ge matra sigutta athava avlige kooda chance ideya?",kn,worried,TRUE
+ask_average_student_outcome,Student Support,"Topper nahi hoon, average student iddini, engineering aadmele job sigutta antha swalpa tension ide.",kn,worried,TRUE
+ask_accreditation,Academics,We were checking the college details before admission and I wanted to confirm whether the college or its engineering programs have NBA or NAAC accreditation.,en,neutral,TRUE
+ask_accreditation,Academics,"I have seen different things mentioned online about accreditation, so could you tell me what official accreditations the college currently has?",en,confused,TRUE
+ask_accreditation,Academics,"My parents are asking whether the degree is properly recognized and accredited, so I wanted to understand the NBA, NAAC or AICTE status.",en,worried,TRUE
+ask_accreditation,Academics,"Admission se pehle hum college ki accreditation check kar rahe hain, kya yahan NBA ya NAAC accreditation hai?",hi,neutral,TRUE
+ask_accreditation,Academics,"Online alag alag information mil rahi hai, isliye confirm karna tha ki engineering courses properly accredited hain ya nahi.",hi,confused,TRUE
+ask_accreditation,Academics,"Mere parents specifically accreditation ke baare mein pooch rahe hain, college ko kaunsi recognition mili hui hai?",hi,neutral,TRUE
+ask_accreditation,Academics,"Admission ge munche college accreditation bagge confirm madbekittu, NBA athava NAAC ideya?",kn,neutral,TRUE
+ask_accreditation,Academics,"Engineering courses properly accredited agiveya anta parents kelidru, official status yenu?",kn,confused,TRUE
+ask_accreditation,Academics,"College ge NBA athava NAAC accreditation ideya, online alli clear information sigta illa.",kn,confused,TRUE
+ask_accreditation,Academics,"Sir, accreditation hai kya, engineering courses ge NBA athava NAAC status yenu anta swalpa helthira?",kn,neutral,TRUE
+ask_university_affiliation,Academics,Before we proceed with admission my parents wanted to confirm whether the college is affiliated with VTU or whether it follows a different university structure.,en,neutral,TRUE
+ask_university_affiliation,Academics,"I saw something about autonomous status and got confused, so is the college still affiliated with VTU or not?",en,confused,TRUE
+ask_university_affiliation,Academics,"For the degree and examinations, I wanted to understand whether students come under VTU affiliation.",en,neutral,TRUE
+ask_university_affiliation,Academics,"Admission se pehle ek cheez confirm karni thi, ye college VTU se affiliated hai na, ya autonomous hai?",hi,confused,TRUE
+ask_university_affiliation,Academics,"Mere parents VTU affiliation ke baare mein pooch rahe the, degree aur exams kis university ke under hote hain?",hi,neutral,TRUE
+ask_university_affiliation,Academics,"Online mujhe clear nahi mila, college VTU ke under hai ya autonomous, please bata denge?",hi,confused,TRUE
+ask_university_affiliation,Academics,College VTU ge affiliated agideya athava autonomous agideya anta admission ge munche confirm madbekittu.,kn,confused,TRUE
+ask_university_affiliation,Academics,"Degree mattu exams VTU under barutta antha parents kelidru, swalpa clear madthira?",kn,neutral,TRUE
+ask_university_affiliation,Academics,"VTU affiliation bagge online alli confusion ide, college exact affiliation yenu?",kn,confused,TRUE
+ask_university_affiliation,Academics,"Sir, college VTU se affiliated hai alva, autonomous status bere idya?",kn,confused,TRUE
+ask_autonomous,Academics,"I keep hearing that the college is autonomous, but I'm not really sure what that means for a student in terms of syllabus and exams.",en,confused,TRUE
+ask_autonomous,Academics,"My parents are asking whether autonomous is actually better than being affiliated, so could you explain what benefit students get?",en,confused,TRUE
+ask_autonomous,Academics,"Before choosing the college I wanted to understand what autonomous status changes for students, because I don't want to misunderstand it.",en,confused,TRUE
+ask_autonomous,Academics,"Autonomous college ka naam suna hai, lekin iska actual meaning kya hai aur students ko isse kya benefit milta hai?",hi,confused,TRUE
+ask_autonomous,Academics,"Mere parents ko samajh nahi aa raha ki autonomous aur VTU affiliated mein difference kya hota hai, aap simple mein bata denge?",hi,confused,TRUE
+ask_autonomous,Academics,"Agar college autonomous hai toh syllabus aur exams mein kya change hota hai, ye jaana tha.",hi,confused,TRUE
+ask_autonomous,Academics,"College autonomous ide antha helidru, adu students ge yava benefit kodutte anta gothagbekittu.",kn,confused,TRUE
+ask_autonomous,Academics,"Autonomous mattu VTU affiliated difference enu, syllabus mattu exams ge yava impact ide?",kn,confused,TRUE
+ask_autonomous,Academics,"Autonomous college andre exactly enu, students ge adarinda yava advantage sigutte?",kn,neutral,TRUE
+ask_autonomous,Academics,"Autonomous hai anta kelidini, but exams mattu syllabus hege change agutte anta clear illa.",kn,confused,TRUE
+ask_hostel_facilities,Campus Facilities,"My daughter may have to stay in the hostel because we live quite far away, so before we decide I wanted to know about the rooms, food, safety and general facilities.",en,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"We are considering hostel accommodation for my son, and safety is our main concern, so could you explain what the hostel facilities are like?",en,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"I wanted to ask about the hostel because this will be her first time staying away from home, what kind of accommodation is provided?",en,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"Meri daughter ko hostel mein rehna padega because hum door rehte hain, toh girls hostel safe hai aur rooms aur food ka arrangement kaisa hai?",hi,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"Hostel ke baare mein thoda tension hai, especially safety ko lekar, aap bata sakte hain girls hostel mein kya facilities milti hain?",hi,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"Humne hostel consider kiya hai, lekin room, food aur basic facilities ka idea nahi hai, admission se pehle samajhna tha.",hi,confused,TRUE
+ask_hostel_facilities,Campus Facilities,"Nanna daughter hostel alli stay madbeku, mane tumba doora ide, girls hostel safety mattu facilities hege ive?",kn,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"Hostel choose madoke munche rooms, food mattu safety bagge complete information beku, yenu facilities ive?",kn,neutral,TRUE
+ask_hostel_facilities,Campus Facilities,"Maga first time mane inda horagade irtane, hostel safe ideya, accommodation hegide anta kelbekittu.",kn,worried,TRUE
+ask_hostel_facilities,Campus Facilities,"Hostel facilities hegive, rooms safe idya, food arrangement ideya, because student stay madbeku?",kn,worried,TRUE
+ask_transport_routes,Campus Facilities,"We live around Yelahanka and my daughter may need to travel by college bus every day, so I wanted to know whether there is a route from our side.",en,neutral,TRUE
+ask_transport_routes,Campus Facilities,"My son won't be staying in the hostel, so transport is important for us, could you tell me which areas the college buses usually cover?",en,worried,TRUE
+ask_transport_routes,Campus Facilities,"We are trying to calculate the daily travel arrangement before admission, is there college transport and how far do the routes go?",en,neutral,TRUE
+ask_transport_routes,Campus Facilities,"Hum Yelahanka side rehte hain aur hostel nahi lena hai, toh college bus hamare area se aati hai kya, route kaise hain?",hi,neutral,TRUE
+ask_transport_routes,Campus Facilities,"Mere bete ko daily college aana jaana hoga, isliye transport important hai, kaun kaun se areas ke liye bus available hai?",hi,neutral,TRUE
+ask_transport_routes,Campus Facilities,"College bus ka route list mil sakta hai kya, hum admission ke pehle travel arrangement confirm karna chahte hain.",hi,neutral,TRUE
+ask_transport_routes,Campus Facilities,"Namma mane Yelahanka side ide, hostel beda, college bus aa area inda hogutta anta check madbekittu.",kn,neutral,TRUE
+ask_transport_routes,Campus Facilities,"Daily college travel madbeku, transport facility ideya, yava areas cover madtare anta helbahuda?",kn,neutral,TRUE
+ask_transport_routes,Campus Facilities,"Nanna maga bus alli college ge barbeku, route list athava pickup places yelli sigutte?",kn,confused,TRUE
+ask_transport_routes,Campus Facilities,"Yelahanka inda bus hai kya, daily college ge hogoke transport facility ideya?",kn,neutral,TRUE
+ask_library,Campus Facilities,"My daughter likes studying in the library rather than at home, so I wanted to know what kind of books, study space and timings are available.",en,neutral,TRUE
+ask_library,Campus Facilities,"We were looking at the campus facilities and the library is important to us, does it have enough resources and can students use it after classes?",en,neutral,TRUE
+ask_library,Campus Facilities,I wanted to check the library timings because sometimes students need a quiet place to study after regular college hours.,en,neutral,TRUE
+ask_library,Campus Facilities,"Meri daughter ko library mein padhna pasand hai, toh yahan library ka timing kya hai aur study space proper hai kya?",hi,neutral,TRUE
+ask_library,Campus Facilities,"College ki library mein books aur study facilities kaise hain, students class ke baad bhi use kar sakte hain kya?",hi,neutral,TRUE
+ask_library,Campus Facilities,Library ka timing confirm karna tha because exam ke time students ko extra study karna padta hai.,hi,neutral,TRUE
+ask_library,Campus Facilities,"Nanna maga library alli study madoke ishta padtane, library timing mattu study space hegide anta gothagbekittu.",kn,neutral,TRUE
+ask_library,Campus Facilities,"College library alli enough books mattu digital resources iveya, students class aadmele use madbahuda?",kn,neutral,TRUE
+ask_library,Campus Facilities,"Exam time alli library late vargu open irutta, timing swalpa confirm madthira?",kn,neutral,TRUE
+ask_library,Campus Facilities,"Library ka timing yenu, study space ideya, because maga class bittmele alli study madbeku?",kn,neutral,TRUE
+ask_labs,Campus Facilities,"My son is choosing an engineering branch and we don't want the course to be only theoretical, so could you tell me what kind of labs and equipment students get to use?",en,neutral,TRUE
+ask_labs,Campus Facilities,"I wanted to understand whether students actually get enough practical exposure, because laboratory facilities are quite important for engineering.",en,neutral,TRUE
+ask_labs,Campus Facilities,"Are the labs properly equipped and maintained, and do students get regular practical sessions during the course?",en,neutral,TRUE
+ask_labs,Campus Facilities,"Engineering mein practical bahut important hai, toh college ke labs properly equipped hain kya aur students ko regular lab sessions milte hain?",hi,neutral,TRUE
+ask_labs,Campus Facilities,"Mere bete ko practical learning pasand hai, isliye laboratory facilities kaise hain aur equipment updated hai kya?",hi,neutral,TRUE
+ask_labs,Campus Facilities,"Hum course choose karne se pehle labs ke baare mein jaan na chahte hain, students ko actual practical time milta hai kya?",hi,neutral,TRUE
+ask_labs,Campus Facilities,"Engineering alli practical important, so labs alli proper equipment ideya mattu students ge enough lab time sigutta?",kn,neutral,TRUE
+ask_labs,Campus Facilities,"Nanna maga practical work ge interest iddane, college laboratories hegive, equipment sariyagi ideya?",kn,neutral,TRUE
+ask_labs,Campus Facilities,"Labs regular use madbahuda, students ge practical sessions enough sigutta anta check madbekittu.",kn,neutral,TRUE
+ask_labs,Campus Facilities,"Lab facilities kaisi hain, equipment proper ideya, practical exposure sigutta?",kn,neutral,TRUE
+ask_faculty_approachability,Student Support,"My daughter is usually hesitant to ask teachers questions, so I wanted to know whether the faculty here are approachable when students have doubts.",en,worried,TRUE
+ask_faculty_approachability,Student Support,"One thing we care about is whether teachers actually help students outside the classroom, especially when someone is struggling with a subject.",en,neutral,TRUE
+ask_faculty_approachability,Student Support,"My son is not very confident about speaking to professors, so are the faculty generally friendly and accessible?",en,worried,TRUE
+ask_faculty_approachability,Student Support,"Meri daughter thodi shy hai aur teachers se doubt poochne mein hesitate karti hai, yahan faculty supportive aur approachable hain kya?",hi,worried,TRUE
+ask_faculty_approachability,Student Support,Agar student ko class mein samajh nahi aaye toh kya woh teacher se baad mein easily baat kar sakta hai?,hi,neutral,TRUE
+ask_faculty_approachability,Student Support,Hum faculty support ko lekar pooch rahe hain because academic problem hone par teacher help karte hain ya nahi ye important hai.,hi,neutral,TRUE
+ask_faculty_approachability,Student Support,"Nanna maga swalpa shy, faculty hatra doubts kelakke hesitate madtane, teachers approachable idara?",kn,worried,TRUE
+ask_faculty_approachability,Student Support,"Class alli artha aglilla andre teacher hatra hogi kelbahuda, faculty support madtara?",kn,neutral,TRUE
+ask_faculty_approachability,Student Support,"Faculty students jothe friendly idara, academic problem idre help madtara anta gothagbekittu.",kn,neutral,TRUE
+ask_faculty_approachability,Student Support,"Teacher se doubts kelbahuda, faculty approachable ideya, because student swalpa hesitant?",kn,worried,TRUE
+ask_student_support,Student Support,"If my son struggles with a subject after joining, I wanted to know whether there is someone who can guide him or provide academic support.",en,worried,TRUE
+ask_student_support,Student Support,"We are looking for a college where students don't feel completely on their own, so does the college have mentoring or counseling support?",en,worried,TRUE
+ask_student_support,Student Support,"My daughter sometimes gets stressed during exams, so I wanted to know whether there is any counseling or student support system.",en,worried,TRUE
+ask_student_support,Student Support,"Agar mere bete ko studies mein problem hoti hai, toh college mein koi mentor ya academic support milta hai kya?",hi,worried,TRUE
+ask_student_support,Student Support,"Meri daughter exam ke time kaafi stressed ho jaati hai, kya college mein counseling ya student support available hai?",hi,worried,TRUE
+ask_student_support,Student Support,"Hum chahte hain ki student ko problem aaye toh woh kisi se guidance le sake, college mein mentoring ka system hai kya?",hi,neutral,TRUE
+ask_student_support,Student Support,"Nanna maga studies alli struggle madidre yaaru guide madtare, college alli mentoring support ideya?",kn,worried,TRUE
+ask_student_support,Student Support,Exam time stress aadre students ge counseling athava support sigutta?,kn,worried,TRUE
+ask_student_support,Student Support,"Academic problem bandaga student alone agbardu antha, college alli yava support system ide?",kn,neutral,TRUE
+ask_student_support,Student Support,"Studies mein problem idre mentor support sigutta, counseling kooda ideya?",kn,worried,TRUE
+ask_course_duration,Academics,"My son is planning to do engineering after 12th, but I just wanted to confirm how long the full B.E. course takes from start to graduation.",en,neutral,TRUE
+ask_course_duration,Academics,"We are comparing different courses and I wasn't sure whether engineering is four years or if there are additional semesters, could you clarify?",en,confused,TRUE
+ask_course_duration,Academics,"Before we plan everything I wanted to know the total duration of the B.E. program, including how many semesters students have.",en,neutral,TRUE
+ask_course_duration,Academics,"Mere bete ne 12th complete kiya hai aur engineering plan kar raha hai, B.E. complete karne mein total kitne saal lagte hain?",hi,neutral,TRUE
+ask_course_duration,Academics,"Engineering course four years ka hi hota hai na, aur total kitne semesters hote hain, ye confirm karna tha.",hi,confused,TRUE
+ask_course_duration,Academics,"Hum course duration samajhna chahte hain because future planning karni hai, B.E. kitne saal ka hai?",hi,neutral,TRUE
+ask_course_duration,Academics,"Nanna maga 12th complete madiddane, BE course complete madakke total eshtu years beku?",kn,neutral,TRUE
+ask_course_duration,Academics,"Engineering four years course alva, total semesters eshtu irutte anta confirm madbekittu.",kn,confused,TRUE
+ask_course_duration,Academics,"Course duration bagge swalpa doubt ide, admission inda graduation vargu eshtu time agutte?",kn,neutral,TRUE
+ask_course_duration,Academics,"B.E. kitne saal hai, four years taane, total semesters yestu?",kn,confused,TRUE
+ask_curriculum,Academics,"My daughter is interested in CSE but she wants to know what she will actually study, so could you give me an idea of the subjects across the course?",en,neutral,TRUE
+ask_curriculum,Academics,"Before choosing the branch we wanted to look at the curriculum, especially what students study in the first year and later semesters.",en,neutral,TRUE
+ask_curriculum,Academics,"I can understand the branch name, but I don't really know what subjects are included, so could you explain what the CSE curriculum is like?",en,confused,TRUE
+ask_curriculum,Academics,"Meri daughter CSE lena chahti hai, lekin usko actual mein kya kya subjects padhne padenge ye samajhna hai, curriculum thoda bata denge?",hi,neutral,TRUE
+ask_curriculum,Academics,"First year mein common subjects hote hain ya branch-specific subjects bhi hote hain, CSE ka curriculum kaise hai?",hi,confused,TRUE
+ask_curriculum,Academics,"Hum branch choose karne se pehle syllabus dekhna chahte hain, CSE mein main subjects kaunse aate hain?",hi,neutral,TRUE
+ask_curriculum,Academics,"Nanna daughter CSE choose madbeku antha iddale, course alli actual yava subjects padhisthare anta gothagbeku.",kn,neutral,TRUE
+ask_curriculum,Academics,"First year alli yava subjects irutte, later semesters alli CSE specific subjects hege barutte?",kn,neutral,TRUE
+ask_curriculum,Academics,"CSE syllabus bagge online nodidru confusion ide, college curriculum exact hegide anta helbahuda?",kn,confused,TRUE
+ask_curriculum,Academics,"CSE mein kaunse subjects hote hain, first year alli common subjects irutta?",kn,confused,TRUE
+ask_exam_pattern,Academics,"My daughter is worried about how the exams work because this will be very different from school, so could you explain the semester and internal exam pattern?",en,worried,TRUE
+ask_exam_pattern,Academics,I wanted to understand how marks are divided between internals and final exams because we're trying to explain the system to my son.,en,confused,TRUE
+ask_exam_pattern,Academics,Are there continuous assessments during the semester or is most of the marks based on one final examination?,en,confused,TRUE
+ask_exam_pattern,Academics,"Engineering mein exam pattern school se different hota hai na, internals aur semester exams kaise conduct hote hain?",hi,confused,TRUE
+ask_exam_pattern,Academics,"Mere bete ko internal marks kaise milte hain aur final exam ka weightage kitna hota hai, ye samajhna tha.",hi,confused,TRUE
+ask_exam_pattern,Academics,"Semester ke beech mein assessments hote hain kya, ya mainly end mein final exam hota hai?",hi,neutral,TRUE
+ask_exam_pattern,Academics,"Engineering exam pattern school gintha different irutte alva, internals mattu semester exam heg nadeyutte?",kn,confused,TRUE
+ask_exam_pattern,Academics,"Internal marks heg calculate madtare, final exam jothe yava weightage ide?",kn,confused,TRUE
+ask_exam_pattern,Academics,Semester full assessment irutta athava last exam mele mostly depend agutta?,kn,neutral,TRUE
+ask_exam_pattern,Academics,"Exam pattern kya hai, internals heg irutte mattu final exam yestu important?",kn,confused,TRUE
+ask_grading_system,Academics,"My son keeps hearing about CGPA and grades, but we're not familiar with the system, so could you explain how the grading is calculated?",en,confused,TRUE
+ask_grading_system,Academics,I wanted to know how marks become grades and eventually CGPA because school marks and college grading seem quite different.,en,confused,TRUE
+ask_grading_system,Academics,Before admission I just wanted a basic idea of how students are graded and how their semester performance is reflected in CGPA.,en,neutral,TRUE
+ask_grading_system,Academics,"Mere bete ko CGPA system samajh nahi aa raha, marks kaise grades mein convert hote hain aur final CGPA kaise banta hai?",hi,confused,TRUE
+ask_grading_system,Academics,"School mein percentage tha, college mein CGPA hai, toh ye grading system exactly kaise work karta hai?",hi,confused,TRUE
+ask_grading_system,Academics,"Semester ke marks final CGPA mein kaise count hote hain, thoda simple mein bata denge?",hi,confused,TRUE
+ask_grading_system,Academics,"Nanna maga CGPA bagge confuse agiddane, marks inda grades mattu final CGPA hege calculate madtare?",kn,confused,TRUE
+ask_grading_system,Academics,"School alli percentage, college alli CGPA antha helidru, grading system heg work agutte anta gothagbekittu.",kn,confused,TRUE
+ask_grading_system,Academics,"Semester performance final CGPA mele hege impact agutte, swalpa explain madthira?",kn,neutral,TRUE
+ask_grading_system,Academics,"CGPA kaise banta hai, semester marks hege grades ge convert agutte?",kn,confused,TRUE
+ask_academic_structure,Academics,"I keep hearing about credits and electives, but I'm not sure how much choice students actually have in their subjects, could you explain the academic structure?",en,confused,TRUE
+ask_academic_structure,Academics,"My daughter wants some flexibility in what she studies later on, so are students allowed to choose electives or is everything fixed?",en,neutral,TRUE
+ask_academic_structure,Academics,Before joining I wanted to understand how the credit system works and whether students can select additional subjects.,en,neutral,TRUE
+ask_academic_structure,Academics,"Meri daughter electives ke baare mein pooch rahi thi, kya students apne interest ke subjects choose kar sakte hain ya sab fixed hota hai?",hi,neutral,TRUE
+ask_academic_structure,Academics,"Credit system samajh nahi aa raha, college mein credits kaise count hote hain aur electives ka option hota hai kya?",hi,confused,TRUE
+ask_academic_structure,Academics,"Engineering mein academic flexibility kitni hoti hai, later semesters mein subjects choose karne ka option milta hai kya?",hi,confused,TRUE
+ask_academic_structure,Academics,"Electives choose madakke students ge option ideya, illa complete syllabus fixed agideya?",kn,neutral,TRUE
+ask_academic_structure,Academics,"Credit system heg work agutte anta swalpa confusion ide, students ge credits hege calculate madtare?",kn,confused,TRUE
+ask_academic_structure,Academics,"Later semesters alli interest prakara subjects choose madbahuda, academic flexibility ideya?",kn,neutral,TRUE
+ask_academic_structure,Academics,"Electives option ideya, credit system hege, because nanna maga flexible subjects beku antha helta iddane?",kn,confused,TRUE
+ask_research_opportunities,Academics,"My son is interested in research rather than only placements, so I wanted to know whether undergraduate students can actually work on research projects here.",en,excited,TRUE
+ask_research_opportunities,Academics,"My daughter is curious about research and higher studies, are there opportunities during B.E. to work with faculty or on projects?",en,excited,TRUE
+ask_research_opportunities,Academics,"We are thinking beyond regular coursework, so does the college encourage students to participate in research or technical projects?",en,neutral,TRUE
+ask_research_opportunities,Academics,"Mera beta research mein interested hai aur future mein higher studies bhi soch raha hai, kya B.E. ke during research projects milte hain?",hi,excited,TRUE
+ask_research_opportunities,Academics,"College mein students ko research karne ka chance milta hai kya, faculty ke saath projects bhi kar sakte hain?",hi,neutral,TRUE
+ask_research_opportunities,Academics,"Hum placement ke alawa research opportunities bhi dekh rahe hain, undergraduate students ke liye kya options hain?",hi,neutral,TRUE
+ask_research_opportunities,Academics,"Nanna maga research alli interest iddane, B.E. time alli research projects madakke opportunity sigutta?",kn,excited,TRUE
+ask_research_opportunities,Academics,"Faculty jothe research work madbahuda, undergraduate students ge yava opportunities ive?",kn,neutral,TRUE
+ask_research_opportunities,Academics,"Higher studies plan ide, college research ge encourage madutta mattu projects support ideya?",kn,excited,TRUE
+ask_research_opportunities,Academics,"Research projects kar sakte hain, faculty jothe work madakke chance ideya?",kn,neutral,TRUE
+ask_campus_placement_training,Placements,"My son is nervous about interviews because he hasn't done many before, so does the college provide proper placement training and aptitude preparation?",en,worried,TRUE
+ask_campus_placement_training,Placements,"We were wondering whether students are trained for aptitude tests, group discussions and interviews before companies start visiting campus.",en,neutral,TRUE
+ask_campus_placement_training,Placements,I wanted to know if placement preparation is something the college handles or if students have to arrange coaching themselves.,en,confused,TRUE
+ask_campus_placement_training,Placements,"Mere bete ko interviews ka experience nahi hai, toh college placement ke liye aptitude aur interview training provide karta hai kya?",hi,worried,TRUE
+ask_campus_placement_training,Placements,Companies aane se pehle students ko aptitude tests aur interview ke liye properly prepare karte hain kya?,hi,neutral,TRUE
+ask_campus_placement_training,Placements,Placement ke liye alag se coaching leni padegi ya college mein hi training aur practice hoti hai?,hi,confused,TRUE
+ask_campus_placement_training,Placements,"Nanna maga interview bagge nervous iddane, college placement training mattu aptitude practice kodutta?",kn,worried,TRUE
+ask_campus_placement_training,Placements,Companies campus ge baroke munche students ge interview preparation heg madisthare?,kn,neutral,TRUE
+ask_campus_placement_training,Placements,Placement preparation college inda sigutta athava students separate coaching togobekaa?,kn,confused,TRUE
+ask_campus_placement_training,Placements,"Aptitude mattu interview training ideya, placement ge students na proper prepare madtara?",kn,neutral,TRUE
+ask_campus_life,Campus,"My daughter is excited about college life and not just academics, so I wanted to know what students usually do outside classes and whether there are regular events.",en,excited,TRUE
+ask_campus_life,Campus,"We are trying to understand the overall college environment, like clubs, cultural events and activities apart from regular studies.",en,neutral,TRUE
+ask_campus_life,Campus,"My son wants a decent balance between studies and activities, so what is the campus atmosphere generally like?",en,neutral,TRUE
+ask_campus_life,Campus,"Meri daughter academics ke saath college life bhi enjoy karna chahti hai, yahan events aur activities regular hoti hain kya?",hi,excited,TRUE
+ask_campus_life,Campus,"College mein studies ke alawa students kya karte hain, cultural events ya technical activities hoti hain?",hi,neutral,TRUE
+ask_campus_life,Campus,"Hum campus environment ko lekar curious hain, overall student life kaisi hai aur events kaise hote hain?",hi,neutral,TRUE
+ask_campus_life,Campus,"Nanna daughter college life bagge excited iddale, studies jothe events mattu activities irutta?",kn,excited,TRUE
+ask_campus_life,Campus,"Campus alli students class bittmele en madtare, cultural athava technical events regular irutta?",kn,neutral,TRUE
+ask_campus_life,Campus,"College atmosphere hegide, studies jothe extracurricular activities ge kooda importance ideya?",kn,neutral,TRUE
+ask_campus_life,Campus,"Campus life kaisa hai, events mattu clubs irutta, because student college enjoy madbeku antha iddane?",kn,excited,TRUE
+ask_attendance_policy,Academics,"My daughter sometimes has to travel home for family reasons, so I wanted to understand how strict the attendance requirement is and what happens if she falls short.",en,worried,TRUE
+ask_attendance_policy,Academics,Before admission I wanted to ask about attendance because we don't want any issue later if the student misses a few classes.,en,worried,TRUE
+ask_attendance_policy,Academics,"I know colleges have minimum attendance rules, but could you tell me what the actual requirement is and how strictly it is followed?",en,neutral,TRUE
+ask_attendance_policy,Academics,"Mere bete ko kabhi kabhi ghar jaana pad sakta hai, toh attendance ka rule kitna strict hai aur minimum kitni chahiye?",hi,worried,TRUE
+ask_attendance_policy,Academics,"College join karne se pehle attendance policy samajhna tha, agar attendance kam ho gayi toh kya problem hoti hai?",hi,worried,TRUE
+ask_attendance_policy,Academics,"Minimum attendance kitni honi chahiye, aur medical ya genuine reason se kam ho toh koi provision hota hai kya?",hi,confused,TRUE
+ask_attendance_policy,Academics,"Nanna daughter ge occasional family reason inda leave beku agutte, attendance rule tumba strict ideya?",kn,worried,TRUE
+ask_attendance_policy,Academics,"Minimum attendance eshtu beku, kadime aadre exam ge problem agutta anta confirm madbekittu.",kn,worried,TRUE
+ask_attendance_policy,Academics,"Attendance rule hegide, genuine reason inda classes miss aadre yava option ide?",kn,confused,TRUE
+ask_attendance_policy,Academics,"Attendance kitni chahiye, family reason inda leave togondre problem agutta?",kn,worried,TRUE
+ask_working_hours,Campus,"I am planning to come to the college office for admission, but I work during the day, so could you tell me what time the office opens and closes?",en,neutral,TRUE
+ask_working_hours,Campus,"My parents may visit the campus tomorrow, and we don't want to come when the office is closed, so what are the working hours?",en,neutral,TRUE
+ask_working_hours,Campus,I wanted to check the college timings as well as the admission office timings because we may need to come in person.,en,neutral,TRUE
+ask_working_hours,Campus,"Hum admission office mein personally aana chahte hain, lekin timing clear nahi hai, office kitne baje open aur close hota hai?",hi,neutral,TRUE
+ask_working_hours,Campus,"Mere parents kal college aane wale hain, toh college ka working time kya hai, admission office kab tak available rahega?",hi,neutral,TRUE
+ask_working_hours,Campus,"Admission ke liye office jaana hai, different timings sunne ko mil rahe hain, aap exact timing confirm kar denge?",hi,confused,TRUE
+ask_working_hours,Campus,"Admission office ge personally barbeku, office yavaga open mattu close agutte anta helthira?",kn,neutral,TRUE
+ask_working_hours,Campus,"Nanna parents college ge barbeku antha iddare, working hours yenu, office yavaga available irutte?",kn,neutral,TRUE
+ask_working_hours,Campus,"College timing bagge different information sigta ide, admission office exact timing confirm madbekittu.",kn,confused,TRUE
+ask_working_hours,Campus,"Office kab open hai, admission ge barbeku, timing yenu anta swalpa helthira?",kn,neutral,TRUE
+ask_facilities_accessibility,Campus,"My son has a mobility issue, so before we consider the college I wanted to know whether the campus has accessible facilities and proper emergency support.",en,worried,TRUE
+ask_facilities_accessibility,Campus,"We are looking at the campus from a practical point of view, so I wanted to ask whether students can access medical help in case of an emergency.",en,worried,TRUE
+ask_facilities_accessibility,Campus,"My daughter may need accessible facilities, and I don't want to assume anything, so could you tell me what support is available on campus?",en,worried,TRUE
+ask_facilities_accessibility,Campus,"Mere bete ko thodi mobility difficulty hai, isliye admission se pehle dekhna tha ki campus mein accessible facilities aur emergency medical support hai kya.",hi,worried,TRUE
+ask_facilities_accessibility,Campus,"Agar campus mein emergency ho jaaye toh medical help ka arrangement hai kya, ye parents ke liye important hai.",hi,worried,TRUE
+ask_facilities_accessibility,Campus,"Disabled students ke liye ramps ya other accessibility facilities available hain kya, aap bata sakte hain?",hi,neutral,TRUE
+ask_facilities_accessibility,Campus,"Nanna maga ge mobility issue ide, campus alli accessibility facilities mattu emergency support ideya anta confirm madbekittu.",kn,worried,TRUE
+ask_facilities_accessibility,Campus,"Emergency aadre medical help yelli sigutte, college alli proper support system ideya?",kn,worried,TRUE
+ask_facilities_accessibility,Campus,"Disabled students ge campus alli yava facilities ide, accessibility proper agideya?",kn,neutral,TRUE
+ask_facilities_accessibility,Campus,"Medical support hai kya, emergency aadre help sigutta, accessibility facilities kooda ideya?",kn,worried,TRUE
+ask_contact_admission_office,Admissions,"I have a few specific questions about my daughter's admission that the general information doesn't answer, so could you tell me how I can directly contact the admission office?",en,neutral,TRUE
+ask_contact_admission_office,Admissions,"We are planning to visit but wanted to speak to someone first, is there a direct number for the admission office?",en,neutral,TRUE
+ask_contact_admission_office,Admissions,"I'm a little confused about one part of the admission process and would rather speak to the college directly, who should I contact?",en,confused,TRUE
+ask_contact_admission_office,Admissions,"Mere bete ke admission ke regarding kuch specific questions hain, admission office ka direct number mil sakta hai kya?",hi,neutral,TRUE
+ask_contact_admission_office,Admissions,"Hum kisi admission counsellor se directly baat karna chahte hain, kisko call karna hai aur contact number kya hai?",hi,neutral,TRUE
+ask_contact_admission_office,Admissions,"Online information se mera doubt clear nahi hua, admission office se directly kaise contact kar sakte hain?",hi,confused,TRUE
+ask_contact_admission_office,Admissions,"Admission bagge specific doubt ide, college admission office ge direct call madbeku, number sigutta?",kn,neutral,TRUE
+ask_contact_admission_office,Admissions,"Nanna daughter admission process bagge kelbeku, admission office contact details yelli sigutte?",kn,neutral,TRUE
+ask_contact_admission_office,Admissions,"Online alli answer siglilla, admission office jothe direct mathadakke yaarige call madbeku?",kn,confused,TRUE
+ask_contact_admission_office,Admissions,"Admission office ka number yenu, swalpa direct baat karbeku because one doubt clear agbeku?",kn,confused,TRUE
+ask_cafeteria,Campus,"My son will be spending most of the day on campus, so we wanted to know whether there is a proper canteen and what kind of food students can get.",en,neutral,TRUE
+ask_cafeteria,Campus,"I wanted to ask about food facilities because students can't always go outside during the day, is there a cafeteria on campus?",en,neutral,TRUE
+ask_cafeteria,Campus,"My daughter is particular about having basic food options available during college hours, so what is the canteen arrangement like?",en,neutral,TRUE
+ask_cafeteria,Campus,"Mere bete ko poora din college mein rehna hoga, toh campus mein canteen hai kya aur normal food options milte hain?",hi,neutral,TRUE
+ask_cafeteria,Campus,"Hum food facility ke baare mein bhi pooch rahe hain, students ke liye proper canteen ya mess available hai kya?",hi,neutral,TRUE
+ask_cafeteria,Campus,"College mein khane ka kya arrangement hai, lunch ke time students ko campus se bahar jaana padta hai kya?",hi,neutral,TRUE
+ask_cafeteria,Campus,"Nanna maga full day college alli irtane, campus alli canteen ideya mattu food options hegive?",kn,neutral,TRUE
+ask_cafeteria,Campus,"Students ge oota madakke proper place ideya, canteen alli basic food sigutta?",kn,neutral,TRUE
+ask_cafeteria,Campus,"College cafeteria bagge gothagbekittu, lunch time alli students ge yava arrangement ide?",kn,neutral,TRUE
+ask_cafeteria,Campus,"Canteen hai kya, students ge food sigutta, full day campus alli irbeku alva?",kn,neutral,TRUE
+ask_wifi,Campus,"My daughter may need to use the internet for assignments and projects, so I wanted to know whether reliable Wi-Fi is available across the campus.",en,neutral,TRUE
+ask_wifi,Campus,"We were checking the basic student facilities and campus internet is important, do students get Wi-Fi access?",en,neutral,TRUE
+ask_wifi,Campus,"Is the Wi-Fi available in classrooms and common areas as well, because students will need it for coursework?",en,neutral,TRUE
+ask_wifi,Campus,"Mere bete ko assignments aur projects ke liye internet chahiye hoga, college mein campus-wide Wi-Fi available hai kya?",hi,neutral,TRUE
+ask_wifi,Campus,"Campus mein Wi-Fi students ke liye free hai kya, aur classrooms mein bhi properly work karta hai?",hi,neutral,TRUE
+ask_wifi,Campus,"Hum facilities check kar rahe hain, internet access ka arrangement kaisa hai, students ko Wi-Fi milta hai kya?",hi,neutral,TRUE
+ask_wifi,Campus,"Nanna maga projects madbeku, campus alli Wi-Fi access students ge sigutta?",kn,neutral,TRUE
+ask_wifi,Campus,"Classroom mattu common areas alli Wi-Fi work agutta, students ge internet facility ideya?",kn,neutral,TRUE
+ask_wifi,Campus,"Campus-wide internet ideya, assignments ge students use madbahuda?",kn,neutral,TRUE
+ask_wifi,Campus,"Wi-Fi hai kya, classrooms alli kooda work agutta, because student ge projects madbeku?",kn,neutral,TRUE
+ask_parking,Campus,"My son will be travelling by bike every day, so before admission I wanted to know whether students have a proper place to park their bikes.",en,neutral,TRUE
+ask_parking,Campus,"We are not planning to use the bus, so parking is important for us, does the campus have enough space for student vehicles?",en,neutral,TRUE
+ask_parking,Campus,I wanted to check the parking arrangement because my daughter may be bringing a two-wheeler to college.,en,neutral,TRUE
+ask_parking,Campus,"Mere bete ko daily bike se college aana hai, toh students ke liye proper bike parking available hai kya?",hi,neutral,TRUE
+ask_parking,Campus,"Hum bus use nahi karenge, isliye parking important hai, campus mein student vehicles ke liye space hai kya?",hi,neutral,TRUE
+ask_parking,Campus,"College ke andar bike park kar sakte hain kya, ya bahar koi arrangement hai?",hi,confused,TRUE
+ask_parking,Campus,"Nanna maga daily bike alli college ge bartane, students ge bike parking facility ideya?",kn,neutral,TRUE
+ask_parking,Campus,"Bus use madalla, so campus parking enough ideya, student vehicles yelli park madbeku?",kn,neutral,TRUE
+ask_parking,Campus,"Bike park madakke proper place ideya, security arrangement kooda ideya?",kn,neutral,TRUE
+ask_parking,Campus,"Parking hai kya, bike yelli park madodu, because daily college ge bike alli barbeku?",kn,neutral,TRUE
+ask_infrastructure,Campus,"Before deciding the college we wanted to understand the overall infrastructure, especially classrooms, buildings and the facilities students actually use every day.",en,neutral,TRUE
+ask_infrastructure,Campus,My parents are asking whether the campus is well maintained and whether the classrooms and academic buildings are in good condition.,en,neutral,TRUE
+ask_infrastructure,Campus,I have seen some photos online but I wanted to know what the actual campus infrastructure is like for students.,en,neutral,TRUE
+ask_infrastructure,Campus,"Admission se pehle hum campus infrastructure dekh rahe hain, classrooms aur buildings properly maintained hain kya?",hi,neutral,TRUE
+ask_infrastructure,Campus,"Online photos dekhe hain but actual facilities ka idea nahi hai, college ka overall infrastructure kaisa hai?",hi,neutral,TRUE
+ask_infrastructure,Campus,"Mere parents pooch rahe hain ki classrooms, labs aur campus buildings ka standard kaisa hai, thoda bata denge?",hi,neutral,TRUE
+ask_infrastructure,Campus,"Admission ge munche campus infrastructure bagge gothagbeku, classrooms mattu buildings hegive?",kn,neutral,TRUE
+ask_infrastructure,Campus,"Photos online nodiddini, but actual campus facilities hege ive anta tilkobekittu.",kn,neutral,TRUE
+ask_infrastructure,Campus,"Classrooms well maintained ideya, students daily use madoke infrastructure sari ideya?",kn,neutral,TRUE
+ask_infrastructure,Campus,"Infrastructure kaisa hai, classrooms mattu buildings properly maintain madtara?",kn,neutral,TRUE
+ask_student_clubs,Campus,"My daughter is very interested in activities outside academics, so I wanted to know what clubs are available and whether first-year students can join them.",en,excited,TRUE
+ask_student_clubs,Campus,"My son enjoys technical activities and also wants to meet people, so are there technical, cultural or other student clubs on campus?",en,excited,TRUE
+ask_student_clubs,Campus,"We are trying to understand the student experience beyond classes, what kind of clubs and societies do students usually participate in?",en,neutral,TRUE
+ask_student_clubs,Campus,"Meri daughter ko academics ke saath activities bhi pasand hain, college mein kaun kaun se clubs hain aur first year mein join kar sakti hai kya?",hi,excited,TRUE
+ask_student_clubs,Campus,"Mere bete ko technical clubs mein interest hai, yahan students ke liye technical ya cultural societies available hain kya?",hi,excited,TRUE
+ask_student_clubs,Campus,"First year se clubs join kar sakte hain kya, ya kuch time wait karna padta hai?",hi,neutral,TRUE
+ask_student_clubs,Campus,"Nanna daughter ge activities tumba ishta, college alli yava clubs ive mattu first year inda join madbahuda?",kn,excited,TRUE
+ask_student_clubs,Campus,"Technical mattu cultural clubs idya, students ge participate madakke chances sigutta?",kn,excited,TRUE
+ask_student_clubs,Campus,"First year students kooda clubs join madbahuda, athava senior students ge matra?",kn,neutral,TRUE
+ask_student_clubs,Campus,"Clubs hain kya, technical athava cultural, first year alli join madbahuda?",kn,excited,TRUE
+ask_entrepreneurship_support,Campus,"My son has been talking about starting something of his own after college, so I wanted to know whether the college supports student startups or has an incubation facility.",en,excited,TRUE
+ask_entrepreneurship_support,Campus,"My daughter is interested in entrepreneurship rather than only getting a job, are there mentors or facilities for students who want to build a startup?",en,excited,TRUE
+ask_entrepreneurship_support,Campus,"We wanted to know whether students with a business idea can get guidance, workspace or incubation support from the college.",en,neutral,TRUE
+ask_entrepreneurship_support,Campus,"Mera beta startup ke ideas mein interested hai, kya college students ko startup shuru karne mein mentorship ya incubation support deta hai?",hi,excited,TRUE
+ask_entrepreneurship_support,Campus,"Meri daughter future mein apna business try karna chahti hai, college mein entrepreneurship ya startup support available hai kya?",hi,excited,TRUE
+ask_entrepreneurship_support,Campus,Student ke paas business idea ho toh college usko guide karta hai ya incubation center jaisa kuch hai?,hi,neutral,TRUE
+ask_entrepreneurship_support,Campus,"Nanna maga startup madbeku antha ideas iddave, college inda mentorship athava incubation support sigutta?",kn,excited,TRUE
+ask_entrepreneurship_support,Campus,"Students ge business idea idre college guide madutta, startup build madakke support ideya?",kn,neutral,TRUE
+ask_entrepreneurship_support,Campus,"Incubation center ideya, students startup work madakke space mattu guidance sigutta?",kn,neutral,TRUE
+ask_entrepreneurship_support,Campus,"Startup support hai kya, students ge mentorship athava incubation facility ideya?",kn,excited,TRUE
+greet,General,"Hello, actually I was looking for some information about the college and I thought I would call and check if you could help me.",en,neutral,TRUE
+greet,General,"Hi, sorry to bother you, I just had a couple of questions about admission and wanted to speak to someone.",en,neutral,TRUE
+greet,General,"Hello, is this the college admission help desk? I just wanted to ask something before we proceed.",en,neutral,TRUE
+greet,General,"Namaste, mujhe college admission ke baare mein thoda poochna tha, isliye call kiya hai.",hi,neutral,TRUE
+greet,General,"Namaskar, sorry thoda disturb kar raha hoon, admission ko lekar kuch information chahiye thi.",hi,neutral,TRUE
+greet,General,"Hello ji, admission ke regarding ek do doubts the, aap help kar sakte hain kya?",hi,neutral,TRUE
+greet,General,"Namaskara, college admission bagge swalpa information bekitthu, adakke call madiddini.",kn,neutral,TRUE
+greet,General,"Hello, sorry swalpa disturb madta iddini, admission bagge kelbekittu, help madthira?",kn,neutral,TRUE
+greet,General,"Namaskara sir, nanna maga admission plan madta iddane, swalpa information bekittu.",kn,neutral,TRUE
+greet,General,"Namaste, admission bagge ondu doubt ide, swalpa help madbahuda?",kn,neutral,TRUE
+fallback,General,Could you tell me whether it is going to rain this evening?,en,neutral,TRUE
+fallback,General,I was just wondering if you could help me find a good restaurant nearby.,en,neutral,TRUE
+fallback,General,do you know who won the cricket match yesterday?,en,neutral,TRUE
+fallback,General,actually mujhe train ticket book karne ka tareeka jaana tha.,hi,neutral,TRUE
+fallback,General,"lekin kal ka weather kaisa rahega, bata sakte hain?",hi,neutral,TRUE
+fallback,General,"Mujhe ek recipe chahiye thi, aap bata sakte hain?",hi,neutral,TRUE
+fallback,General," nange movie ticket book madbeku, heg madodu anta gothagbekittu.",kn,neutral,TRUE
+fallback,General,ivattu weather hegide anta nimge gotha?,kn,neutral,TRUE
+fallback,General,"Sorry sir, nanna phone repair madbeku, yelli hogbeku anta kelbekittu.",kn,neutral,TRUE
+fallback,General,"Train ticket book madbeku, online alli heg book madodu?",kn,neutral,TRUE

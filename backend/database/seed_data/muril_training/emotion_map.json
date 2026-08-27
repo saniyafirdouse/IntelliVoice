@@ -1,0 +1,7 @@
+{
+  "confused": 0,
+  "excited": 1,
+  "frustrated": 2,
+  "neutral": 3,
+  "worried": 4
+}

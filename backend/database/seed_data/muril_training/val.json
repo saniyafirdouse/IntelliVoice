@@ -1,0 +1,2558 @@
+[
+  {
+    "text": "College cafeteria bagge gothagbekittu, lunch time alli students ge yava arrangement ide?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_cafeteria",
+    "source": "messy"
+  },
+  {
+    "text": "Hey, so, is there Wi‑Fi on campus, you know, like जहाँ मैं बस लॉग इन कर सकता हूँ? I just want to check if I can surf.",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_wifi",
+    "source": "messy"
+  },
+  {
+    "text": "Um, I heard something about the college being accredited, but I'm not sure, like, does it have NBA, NAAC, or something? मैं थोड़ा उलझन में हूँ.",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_accreditation",
+    "source": "messy"
+  },
+  {
+    "text": "Bus route details kaise milenge?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_transport_routes",
+    "source": "clean"
+  },
+  {
+    "text": "What will I pay if I choose AIML?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "Library se books issue kar sakte hain kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_library",
+    "source": "clean"
+  },
+  {
+    "text": "Modern classrooms ideya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_infrastructure",
+    "source": "clean"
+  },
+  {
+    "text": "CSE ge cutoff eshtu?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_cutoff",
+    "source": "clean"
+  },
+  {
+    "text": "So, I read that there's a new curriculum for data science, but I'm not sure, like, what topics do they cover in the second semester, shri? I don't get it.",
+    "language_label": 0,
+    "emotion_label": 0,
+    "language": "en",
+    "emotion": "confused",
+    "intent_id": "ask_curriculum",
+    "source": "messy"
+  },
+  {
+    "text": "Open YouTube.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "fallback",
+    "source": "clean"
+  },
+  {
+    "text": "First year mein common subjects hote hain ya branch-specific subjects bhi hote hain, CSE ka curriculum kaise hai?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_curriculum",
+    "source": "messy"
+  },
+  {
+    "text": "SGPA aur CGPA mein kya difference hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_grading_system",
+    "source": "clean"
+  },
+  {
+    "text": "My daughter enjoys programming. Which branch would you recommend?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_recommendation",
+    "source": "clean"
+  },
+  {
+    "text": "My daughter is very interested in activities outside academics, so I wanted to know what clubs are available and whether first-year students can join them.",
+    "language_label": 0,
+    "emotion_label": 1,
+    "language": "en",
+    "emotion": "excited",
+    "intent_id": "ask_student_clubs",
+    "source": "messy"
+  },
+  {
+    "text": "Arre bhai, I was reading the syllabus and I keep seeing SGPA and CGPA. I'm not sure what the difference is, and I don't understand how the passing marks are set. Can you tell me how the grading system works, please?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_grading_system",
+    "source": "messy"
+  },
+  {
+    "text": "Just to clarify, autonomous colleges, they give more freedom to professors, right?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_autonomous",
+    "source": "messy"
+  },
+  {
+    "text": "मुझे थोड़ा चिंता है, क्या कॉलेज में इंटरनेट है? मेरे बच्चे को होमवर्क के लिए ज़रूरत है, क्या वाई‑फाई मिल सकता है?",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_wifi",
+    "source": "messy"
+  },
+  {
+    "text": "Could you give me an idea of what the cutoff for Civil Engineering was last year? I'm trying to see if we have a chance.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_cutoff",
+    "source": "messy"
+  },
+  {
+    "text": "Disabled students ge campus alli yava facilities ide, accessibility proper agideya?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_facilities_accessibility",
+    "source": "messy"
+  },
+  {
+    "text": "Mera beta research mein interested hai aur future mein higher studies bhi soch raha hai, kya B.E. ke during research projects milte hain?",
+    "language_label": 1,
+    "emotion_label": 1,
+    "language": "hi",
+    "emotion": "excited",
+    "intent_id": "ask_research_opportunities",
+    "source": "messy"
+  },
+  {
+    "text": "Hey, I was just calling, so, you know, how long does the engineering course actually take? I mean, like, years, semesters, whatever.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_course_duration",
+    "source": "messy"
+  },
+  {
+    "text": "Can you tell me if the campus has wheelchair access and medical facilities?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_facilities_accessibility",
+    "source": "messy"
+  },
+  {
+    "text": "Which core companies recruit students?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_top_recruiters",
+    "source": "clean"
+  },
+  {
+    "text": "Meri daughter academics ke saath college life bhi enjoy karna chahti hai, yahan events aur activities regular hoti hain kya?",
+    "language_label": 1,
+    "emotion_label": 1,
+    "language": "hi",
+    "emotion": "excited",
+    "intent_id": "ask_campus_life",
+    "source": "messy"
+  },
+  {
+    "text": "College internship arrange maadtara?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_internship_opportunities",
+    "source": "clean"
+  },
+  {
+    "text": "Is there a faculty mentor for every student?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_student_support",
+    "source": "clean"
+  },
+  {
+    "text": "My daughter wants to pursue an honours degree. Is it available?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_academic_structure",
+    "source": "clean"
+  },
+  {
+    "text": "What is the total expense for the AIML program?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "Hey, canteen irutte? And if yes, what time open agutte? I'm a bit confused because I can't find it on the map.",
+    "language_label": 0,
+    "emotion_label": 0,
+    "language": "en",
+    "emotion": "confused",
+    "intent_id": "ask_cafeteria",
+    "source": "messy"
+  },
+  {
+    "text": "Average student ko placement milta hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_average_student_outcome",
+    "source": "clean"
+  },
+  {
+    "text": "Placement aptitude training ideya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_campus_placement_training",
+    "source": "clean"
+  },
+  {
+    "text": "Hey, I was just wondering, kya aapke campus me research opportunities available hain?",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_research_opportunities",
+    "source": "messy"
+  },
+  {
+    "text": "AI field ge hogbeku. Yava branch best?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_recommendation",
+    "source": "clean"
+  },
+  {
+    "text": "Bhai, office timings kya hain, like kab khula aur kab band hota hai, I need to book an appointment.",
+    "language_label": 1,
+    "emotion_label": 2,
+    "language": "hi",
+    "emotion": "frustrated",
+    "intent_id": "ask_working_hours",
+    "source": "messy"
+  },
+  {
+    "text": "Does the college conduct entrepreneurship workshops?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_entrepreneurship_support",
+    "source": "clean"
+  },
+  {
+    "text": "Nanna marks ge scholarship sigutta?",
+    "language_label": 2,
+    "emotion_label": 4,
+    "language": "kn",
+    "emotion": "worried",
+    "intent_id": "ask_scholarship_eligibility",
+    "source": "clean"
+  },
+  {
+    "text": "Data Science ge cutoff enittu?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_cutoff",
+    "source": "clean"
+  },
+  {
+    "text": "Do students work on real-world projects in laboratories?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_labs",
+    "source": "clean"
+  },
+  {
+    "text": "Um, my child was sick and was absent for a week, but I think the medical leave policy might cover it. Will that be counted as attendance or not? I’m worried about falling behind.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_attendance_policy",
+    "source": "messy"
+  },
+  {
+    "text": "Um, so, teachers ki approachability kaise hai? Do they actually guide us during project?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_faculty_approachability",
+    "source": "messy"
+  },
+  {
+    "text": "Which branch has more mathematics?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_difference",
+    "source": "clean"
+  },
+  {
+    "text": "Nanna daughter ge occasional family reason inda leave beku agutte, attendance rule tumba strict ideya?",
+    "language_label": 2,
+    "emotion_label": 4,
+    "language": "kn",
+    "emotion": "worried",
+    "intent_id": "ask_attendance_policy",
+    "source": "messy"
+  },
+  {
+    "text": "I want to know how the college supports struggling students.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_student_support",
+    "source": "clean"
+  },
+  {
+    "text": "Can hardworking average students get placed in good companies?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_average_student_outcome",
+    "source": "clean"
+  },
+  {
+    "text": "Tell me today's news.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "fallback",
+    "source": "clean"
+  },
+  {
+    "text": "Backlog iddru future ideya?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_average_student_outcome",
+    "source": "clean"
+  },
+  {
+    "text": "Um, hi, can you tell me what kind of amenities they have in the hostel? Like, do they have Wi‑Fi, laundry, or maybe a gym?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_hostel_facilities",
+    "source": "messy"
+  },
+  {
+    "text": "What will be the total cost including transport?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "My daughter is anxious about joining engineering.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "express_worry",
+    "source": "clean"
+  },
+  {
+    "text": "TCS, Infosys bartava?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_top_recruiters",
+    "source": "clean"
+  },
+  {
+    "text": "I'm calling because we submitted the application but there has been no update, so is there some way to verify whether it has been processed?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_admission_status",
+    "source": "messy"
+  },
+  {
+    "text": "What time does the last class end?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_working_hours",
+    "source": "clean"
+  },
+  {
+    "text": "College autonomous ide antha helidru, adu students ge yava benefit kodutte anta gothagbekittu.",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_autonomous",
+    "source": "messy"
+  },
+  {
+    "text": "Um, I was wondering, yeh... hostel charges for the engineering branch, like, how much? And also, what about the semester fees?",
+    "language_label": 0,
+    "emotion_label": 0,
+    "language": "en",
+    "emotion": "confused",
+    "intent_id": "ask_fees_branch",
+    "source": "messy"
+  },
+  {
+    "text": "Evaluation process enu?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_grading_system",
+    "source": "clean"
+  },
+  {
+    "text": "Which certificates should I bring during admission?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_required_documents",
+    "source": "clean"
+  },
+  {
+    "text": "Faculty students ko guide karti hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_faculty_approachability",
+    "source": "clean"
+  },
+  {
+    "text": "Agar student ko class mein samajh nahi aaye toh kya woh teacher se baad mein easily baat kar sakta hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_faculty_approachability",
+    "source": "messy"
+  },
+  {
+    "text": "Later semesters alli interest prakara subjects choose madbahuda, academic flexibility ideya?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_academic_structure",
+    "source": "messy"
+  },
+  {
+    "text": "Computer interest ide, coding kooda ishta, but future ge yava branch useful anta decide madakke nimma suggestion beku.",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_branch_recommendation",
+    "source": "messy"
+  },
+  {
+    "text": "Mujhe thoda doubt hai, ki college mein labs ka kya setup hai, especially for practical sessions, kya aap bata sakte ho?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_labs",
+    "source": "messy"
+  },
+  {
+    "text": "Class timings kya hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_working_hours",
+    "source": "clean"
+  },
+  {
+    "text": "One thing we care about is whether teachers actually help students outside the classroom, especially when someone is struggling with a subject.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_faculty_approachability",
+    "source": "messy"
+  },
+  {
+    "text": "First year se clubs join kar sakte hain kya, ya kuch time wait karna padta hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_student_clubs",
+    "source": "messy"
+  },
+  {
+    "text": "Meri daughter ko engineering ke saath internship karni hai, kya college companies ke through internship opportunities provide karta hai?",
+    "language_label": 1,
+    "emotion_label": 1,
+    "language": "hi",
+    "emotion": "excited",
+    "intent_id": "ask_internship_opportunities",
+    "source": "messy"
+  },
+  {
+    "text": "Autonomous college ka naam suna hai, lekin iska actual meaning kya hai aur students ko isse kya benefit milta hai?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_autonomous",
+    "source": "messy"
+  },
+  {
+    "text": "How many students stay in one room?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_hostel_facilities",
+    "source": "clean"
+  },
+  {
+    "text": "क्या आप मुझे बता सकते हैं कि यहाँ पार्किंग की सुविधा है या नहीं? मैं थोड़ा चिंतित हूँ क्योंकि मेरे बच्चे को कल आना है.",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_parking",
+    "source": "messy"
+  },
+  {
+    "text": "Wait, so if a college becomes autonomous, does that mean the curriculum changes, or is it just the administration?",
+    "language_label": 0,
+    "emotion_label": 0,
+    "language": "en",
+    "emotion": "confused",
+    "intent_id": "ask_autonomous",
+    "source": "messy"
+  },
+  {
+    "text": "COMEDK seat ideya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_seat_availability",
+    "source": "clean"
+  },
+  {
+    "text": "Um, I wanted to know if there's a minor degree option, like something we can add on, but I'm not sure how it works, kya?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_academic_structure",
+    "source": "messy"
+  },
+  {
+    "text": "B.E. kitne saal hai, four years taane, total semesters yestu?",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_course_duration",
+    "source": "messy"
+  },
+  {
+    "text": "Sir, seat allot ho gaya hai, ab college mein report madbeku alva, documents aur fees ka process yenu?",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_admission_process",
+    "source": "messy"
+  },
+  {
+    "text": "Branch decide madoke munche placement details check madta iddivi, CSE students ge opportunities hegive?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_placement_by_branch",
+    "source": "messy"
+  },
+  {
+    "text": "Can you help me choose the right engineering branch?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_recommendation",
+    "source": "clean"
+  },
+  {
+    "text": "Engineering course kitne saal ka hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_course_duration",
+    "source": "clean"
+  },
+  {
+    "text": "Do students get internships through the college?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_internship_opportunities",
+    "source": "clean"
+  },
+  {
+    "text": "Hum kisi admission counsellor se directly baat karna chahte hain, kisko call karna hai aur contact number kya hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_contact_admission_office",
+    "source": "messy"
+  },
+  {
+    "text": "Transport charges eshtu?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_transport_routes",
+    "source": "clean"
+  },
+  {
+    "text": "Maine application submit kar diya hai aur payment bhi ho gaya, lekin abhi tak koi update nahi mila, status kaise check karun?",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_admission_status",
+    "source": "messy"
+  },
+  {
+    "text": "Mujhe thoda tension aa rahi hai, kyunki abhi job market badal raha hai. So, what is the placement percentage for Electronics and Communication? I want to know the salary packages.",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_placement_by_branch",
+    "source": "messy"
+  },
+  {
+    "text": "Research guidance sigutta?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_research_opportunities",
+    "source": "clean"
+  },
+  {
+    "text": "Mujhe thoda confusion hai, BTech Mechanical ka quota fill hua ya nahi? Seat availability?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_seat_availability",
+    "source": "messy"
+  },
+  {
+    "text": "Hey, Bangalore nalli, college timings bareyalli nanu confuse. Classes start at 8? And on holidays, do they close?",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_working_hours",
+    "source": "messy"
+  },
+  {
+    "text": "Kya aap campus placement ke liye koi training dete hain? Main thoda chintit hoon ki students ko kaunse skills sikhaaye jaate hain.",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_campus_placement_training",
+    "source": "messy"
+  },
+  {
+    "text": "How are semester exams conducted?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_exam_pattern",
+    "source": "clean"
+  },
+  {
+    "text": "Daily college travel madbeku, transport facility ideya, yava areas cover madtare anta helbahuda?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_transport_routes",
+    "source": "messy"
+  },
+  {
+    "text": "Hi, I'm calling about... um, do you have any scholarships or fee waivers available for my child? ... I’m a bit worried about the tuition cost.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_scholarship_available",
+    "source": "messy"
+  },
+  {
+    "text": "Um, nenage ondu doubt, my child will get placements after BTech, I feel like I'm losing my mind.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "express_worry",
+    "source": "messy"
+  },
+  {
+    "text": "Are innovation labs available?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_entrepreneurship_support",
+    "source": "clean"
+  },
+  {
+    "text": "My son completed document verification. Has his admission been confirmed?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_admission_status",
+    "source": "clean"
+  },
+  {
+    "text": "Nanna daughter first time mane inda horagade irbeku, hostel mattu college adjust agutta antha worry ide.",
+    "language_label": 2,
+    "emotion_label": 4,
+    "language": "kn",
+    "emotion": "worried",
+    "intent_id": "express_worry",
+    "source": "messy"
+  },
+  {
+    "text": "Are visitors allowed inside the hostel?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_hostel_facilities",
+    "source": "clean"
+  },
+  {
+    "text": "Placement se pehle internship karna compulsory hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_internship_opportunities",
+    "source": "clean"
+  },
+  {
+    "text": "We are trying to manage the overall education cost, especially with hostel expenses, so I wanted to know whether the college has any scholarship or financial support.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_scholarship_available",
+    "source": "messy"
+  },
+  {
+    "text": "Namaskara, EEE branch la seat innu available ide? I need to plan.",
+    "language_label": 2,
+    "emotion_label": 4,
+    "language": "kn",
+    "emotion": "worried",
+    "intent_id": "ask_seat_availability",
+    "source": "messy"
+  },
+  {
+    "text": "हाय, मेरा बेटा 90% 12th ले चुका है, पर हमारी आय कम है, क्या वह स्कॉलैशिप के लिए पात्र है? क्या हमें कोई दस्तावेज़ जमा करना होगा?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_scholarship_eligibility",
+    "source": "messy"
+  },
+  {
+    "text": "ISE branch ge semester fee eshtu?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "Um, so like, my daughter just got her final grades, and I’m not sure if she passed or not. I want to know how the CGPA is calculated, because I keep seeing numbers that look different. Could you explain how the grading works?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_grading_system",
+    "source": "messy"
+  },
+  {
+    "text": "Semester-wise syllabus ideya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_curriculum",
+    "source": "clean"
+  },
+  {
+    "text": "Can I submit photocopies?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_required_documents",
+    "source": "clean"
+  },
+  {
+    "text": "Hi, I want to know if there are any spots left in the Data Science course, because my child is interested.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_seat_availability",
+    "source": "messy"
+  },
+  {
+    "text": "Is attendance compulsory?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_attendance_policy",
+    "source": "clean"
+  },
+  {
+    "text": "Business ideas ge support ideya?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_entrepreneurship_support",
+    "source": "clean"
+  },
+  {
+    "text": "Mere bete ke liye branch choose kar rahe hain, aur placement important hai, toh CSE mein average package aur placement kaisa rehta hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_placement_by_branch",
+    "source": "messy"
+  },
+  {
+    "text": "Nanna daughter admission process bagge kelbeku, admission office contact details yelli sigutte?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_contact_admission_office",
+    "source": "messy"
+  },
+  {
+    "text": "My daughter scored 82% in PUC. Can she get CSE?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_cutoff",
+    "source": "clean"
+  },
+  {
+    "text": "Hi, I was thinking about the scholarship, you know, my son got 90% in 12th, and we have some low income, so does that qualify him for any? I mean, is there a quota for SC?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_scholarship_eligibility",
+    "source": "messy"
+  },
+  {
+    "text": "We are looking for a college where students don't feel completely on their own, so does the college have mentoring or counseling support?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_student_support",
+    "source": "messy"
+  },
+  {
+    "text": "I was just calling to ask about the CSE fees because I couldn't understand the fee structure properly from the information we received, so how much does it come to?",
+    "language_label": 0,
+    "emotion_label": 0,
+    "language": "en",
+    "emotion": "confused",
+    "intent_id": "ask_fees_branch",
+    "source": "messy"
+  },
+  {
+    "text": "How many semesters are there in engineering?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_course_duration",
+    "source": "clean"
+  },
+  {
+    "text": "My son is worried he may not perform well in college.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "express_worry",
+    "source": "clean"
+  },
+  {
+    "text": "Engineering 4 saal ka course hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_course_duration",
+    "source": "clean"
+  },
+  {
+    "text": "Is there a quiet study area inside the library?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_library",
+    "source": "clean"
+  },
+  {
+    "text": "I want to know whether I qualify for any scholarship schemes.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_scholarship_eligibility",
+    "source": "clean"
+  },
+  {
+    "text": "Is there a medical room available in the college?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_facilities_accessibility",
+    "source": "clean"
+  },
+  {
+    "text": "Listen, I've called this office a dozen times, and I still can't get a clear answer about whether my daughter's application is approved. This is so frustrating!",
+    "language_label": 0,
+    "emotion_label": 2,
+    "language": "en",
+    "emotion": "frustrated",
+    "intent_id": "ask_admission_status",
+    "source": "messy"
+  },
+  {
+    "text": "Autonomous college hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_university_affiliation",
+    "source": "clean"
+  },
+  {
+    "text": "My daughter wants industry experience before graduation. Does the college provide internships?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_internship_opportunities",
+    "source": "clean"
+  },
+  {
+    "text": "Can students start a company while studying?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_entrepreneurship_support",
+    "source": "clean"
+  },
+  {
+    "text": "College VTU ge affiliated agideya athava autonomous agideya anta admission ge munche confirm madbekittu.",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_university_affiliation",
+    "source": "messy"
+  },
+  {
+    "text": "Admission department contact kodi.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_contact_admission_office",
+    "source": "clean"
+  },
+  {
+    "text": "Um... hello, I'm really concerned, my child might miss out, so do you have any research programs for undergrads?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_research_opportunities",
+    "source": "messy"
+  },
+  {
+    "text": "How many classes can I miss?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_attendance_policy",
+    "source": "clean"
+  },
+  {
+    "text": "Campus life ke baare mein thoda confusion hai, kya waha mein cultural festivals hote hain, ya sports only?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_campus_life",
+    "source": "messy"
+  },
+  {
+    "text": "Cyber Security aur CSE mein kya difference hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_difference",
+    "source": "clean"
+  },
+  {
+    "text": "Are snacks available?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_cafeteria",
+    "source": "clean"
+  },
+  {
+    "text": "CGPA kam hone par placement milta hai kya?",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_average_student_outcome",
+    "source": "clean"
+  },
+  {
+    "text": "Are there student clubs?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_student_clubs",
+    "source": "clean"
+  },
+  {
+    "text": "CSE mattu Cyber Security syllabus nalli en difference ide?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_difference",
+    "source": "clean"
+  },
+  {
+    "text": "Can you suggest the most suitable engineering branch based on interests?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_recommendation",
+    "source": "clean"
+  },
+  {
+    "text": "Management quota admission ki last date kya hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_application_deadline",
+    "source": "clean"
+  },
+  {
+    "text": "I’ve been calling for days, but you never tell me the library hours. It’s frustrating!",
+    "language_label": 0,
+    "emotion_label": 2,
+    "language": "en",
+    "emotion": "frustrated",
+    "intent_id": "ask_library",
+    "source": "messy"
+  },
+  {
+    "text": "क्या कमरे में फ्रिज होता है? और क्या वाई‑फाई मुफ्त है? मैं थोड़ा परेशान हूँ क्योंकि मैं अभी तक नहीं जानता।",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_hostel_facilities",
+    "source": "messy"
+  },
+  {
+    "text": "What documents are needed for management quota admission?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_required_documents",
+    "source": "clean"
+  },
+  {
+    "text": "Class alli artha aglilla andre teacher hatra hogi kelbahuda, faculty support madtara?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_faculty_approachability",
+    "source": "messy"
+  },
+  {
+    "text": "Credit system hegide?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_academic_structure",
+    "source": "clean"
+  },
+  {
+    "text": "Exam time alli library late vargu open irutta, timing swalpa confirm madthira?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_library",
+    "source": "messy"
+  },
+  {
+    "text": "Good afternoon, I want to know if there are any financial aid options available for students.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_scholarship_available",
+    "source": "messy"
+  },
+  {
+    "text": "Can we talk?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "greet",
+    "source": "clean"
+  },
+  {
+    "text": "Nanna maga ge mobility issue ide, campus alli accessibility facilities mattu emergency support ideya anta confirm madbekittu.",
+    "language_label": 2,
+    "emotion_label": 4,
+    "language": "kn",
+    "emotion": "worried",
+    "intent_id": "ask_facilities_accessibility",
+    "source": "messy"
+  },
+  {
+    "text": "Application status kaise check karu?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_admission_status",
+    "source": "clean"
+  },
+  {
+    "text": "Admission office ge personally barbeku, office yavaga open mattu close agutte anta helthira?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_working_hours",
+    "source": "messy"
+  },
+  {
+    "text": "Can you tell me, like, what the difference is, I mean, between an autonomous college and a regular VTU affiliated one?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_autonomous",
+    "source": "messy"
+  },
+  {
+    "text": "ನಾನು ನನ್ನ ವಿದ್ಯಾರ್ಥಿಯ admission status ನೋಡಲು ಬಯಸುತ್ತೇನೆ, ಅವರ seat confirmation ಇದೆಯೇ?",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_admission_status",
+    "source": "messy"
+  },
+  {
+    "text": "We are more concerned about job security than branch popularity. Which branch is a better choice?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_placement_by_branch",
+    "source": "clean"
+  },
+  {
+    "text": "E-books available ideya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_library",
+    "source": "clean"
+  },
+  {
+    "text": "Students research maadbahuda?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_research_opportunities",
+    "source": "clean"
+  },
+  {
+    "text": "What is the KCET cutoff for CSE?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_cutoff",
+    "source": "clean"
+  },
+  {
+    "text": "Scholarship aadmele fee eshtu barutte?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "हाय, मैं जानना चाहूंगा कि ग्रेडिंग सिस्टम में CGPA कैसे निकाला जाता है और पासिंग मार्क्स क्या हैं? मुझे समझ नहीं आ रहा कि यह सब कैसे काम करता है।",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_grading_system",
+    "source": "messy"
+  },
+  {
+    "text": "My daughter has all her marks cards but I'm not sure about the other certificates, so could you tell me the complete document list for admission?",
+    "language_label": 0,
+    "emotion_label": 0,
+    "language": "en",
+    "emotion": "confused",
+    "intent_id": "ask_required_documents",
+    "source": "messy"
+  },
+  {
+    "text": "Campus life hegide?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_campus_life",
+    "source": "clean"
+  },
+  {
+    "text": "Arre, ek minute, please. Exam pattern ke baare mein thoda confusion hai. Kya semester mein practical test bhi hote hain? Yeh kaise evaluate kiya jata hai?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_exam_pattern",
+    "source": "messy"
+  },
+  {
+    "text": "We are not planning to use the bus, so parking is important for us, does the campus have enough space for student vehicles?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_parking",
+    "source": "messy"
+  },
+  {
+    "text": "Hey, can you tell me a joke or something, just to lighten up? I'm feeling a bit tired.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "fallback",
+    "source": "messy"
+  },
+  {
+    "text": "Is medical assistance available for hostel students?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_hostel_facilities",
+    "source": "clean"
+  },
+  {
+    "text": "What are the criteria for fee concessions?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_scholarship_eligibility",
+    "source": "clean"
+  },
+  {
+    "text": "Neevu, I don't know, can you explain to me how the internship process works, because I keep seeing different words, like 'placements', 'internship', etc.",
+    "language_label": 0,
+    "emotion_label": 0,
+    "language": "en",
+    "emotion": "confused",
+    "intent_id": "ask_internship_opportunities",
+    "source": "messy"
+  },
+  {
+    "text": "Which branch is more theory-oriented?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_difference",
+    "source": "clean"
+  },
+  {
+    "text": "Hey, can you, like, show me a simple python code snippet to sort a list, because I need to teach my son.",
+    "language_label": 0,
+    "emotion_label": 2,
+    "language": "en",
+    "emotion": "frustrated",
+    "intent_id": "fallback",
+    "source": "messy"
+  },
+  {
+    "text": "Hi dost",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "greet",
+    "source": "clean"
+  },
+  {
+    "text": "We are not expecting a huge package, but we do want to know whether students from this branch generally get placed and what the average outcome looks like.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_placement_by_branch",
+    "source": "messy"
+  },
+  {
+    "text": "Amazon aur Infosys aate hain kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_top_recruiters",
+    "source": "clean"
+  },
+  {
+    "text": "How are placements for Data Science students?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_placement_by_branch",
+    "source": "clean"
+  },
+  {
+    "text": "OMG, can you tell me who I should reach out to for admission questions? I don't have a number.",
+    "language_label": 0,
+    "emotion_label": 1,
+    "language": "en",
+    "emotion": "excited",
+    "intent_id": "ask_contact_admission_office",
+    "source": "messy"
+  },
+  {
+    "text": "Hostel Wi-Fi ideya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_wifi",
+    "source": "clean"
+  },
+  {
+    "text": "Last date for COMEDK admission?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_application_deadline",
+    "source": "clean"
+  },
+  {
+    "text": "We were wondering whether students are trained for aptitude tests, group discussions and interviews before companies start visiting campus.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_campus_placement_training",
+    "source": "messy"
+  },
+  {
+    "text": "Are communication skills training sessions conducted?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_campus_placement_training",
+    "source": "clean"
+  },
+  {
+    "text": "My son wants to know how engineering students are evaluated.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_exam_pattern",
+    "source": "clean"
+  },
+  {
+    "text": "क्या आप बता सकते हैं कि कॉलेज का बस कौन से रूट पर चलती है और किस समय निकलती है?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_transport_routes",
+    "source": "messy"
+  },
+  {
+    "text": "Engineering ke liye total budget kitna rakhna chahiye?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "Is there any fee concession scheme?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_scholarship_available",
+    "source": "clean"
+  },
+  {
+    "text": "Elective subjects choose kar sakte hain kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_academic_structure",
+    "source": "clean"
+  },
+  {
+    "text": "Hey, can you tell me if this college is accredited? Um, I'm kinda anxious because my kid's future depends on it.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_accreditation",
+    "source": "messy"
+  },
+  {
+    "text": "My daughter is taking admission. What documents should we carry?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_required_documents",
+    "source": "clean"
+  },
+  {
+    "text": "Namaskara, college admission bagge swalpa information bekitthu, adakke call madiddini.",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "greet",
+    "source": "messy"
+  },
+  {
+    "text": "I want to know whether students can comfortably approach faculty.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_faculty_approachability",
+    "source": "clean"
+  },
+  {
+    "text": "Hostel mein study room hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_hostel_facilities",
+    "source": "clean"
+  },
+  {
+    "text": "Admission office ka number chahiye.",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_contact_admission_office",
+    "source": "clean"
+  },
+  {
+    "text": "I think I am not good enough for engineering.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "express_worry",
+    "source": "clean"
+  },
+  {
+    "text": "Application last date yavaga?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_application_deadline",
+    "source": "clean"
+  },
+  {
+    "text": "We were a little late in deciding the branch, and now I'm worried that CSE might already be full, so could you check if seats are still available?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_seat_availability",
+    "source": "messy"
+  },
+  {
+    "text": "Placement bagge check madta iddivi, college ge yava companies recruitment ge bartave anta helbahuda?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_top_recruiters",
+    "source": "messy"
+  },
+  {
+    "text": "Is CGPA calculated every semester?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_grading_system",
+    "source": "clean"
+  },
+  {
+    "text": "Compare CSE and ISE.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_difference",
+    "source": "clean"
+  },
+  {
+    "text": "Data Science course ka total fee structure kya hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "Is 75% attendance compulsory for every subject?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_attendance_policy",
+    "source": "clean"
+  },
+  {
+    "text": "We are planning for admission. What is the application deadline?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_application_deadline",
+    "source": "clean"
+  },
+  {
+    "text": "Admission application ge last date bagge different information sigta ide, correct date yavudu anta helthira?",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_application_deadline",
+    "source": "messy"
+  },
+  {
+    "text": "Hey, um, I don't know if this is the right number, but I just wanted to say hi and…?",
+    "language_label": 0,
+    "emotion_label": 0,
+    "language": "en",
+    "emotion": "confused",
+    "intent_id": "greet",
+    "source": "messy"
+  },
+  {
+    "text": "We are planning to come for admission next week, so I just wanted to make sure we bring everything, what documents and certificates will be required?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_required_documents",
+    "source": "messy"
+  },
+  {
+    "text": "Financial aid ka koi option hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_scholarship_available",
+    "source": "clean"
+  },
+  {
+    "text": "Actually this is our first child going for engineering, so we are not really familiar with the procedure, after the seat is allotted what exactly do we have to do?",
+    "language_label": 0,
+    "emotion_label": 0,
+    "language": "en",
+    "emotion": "confused",
+    "intent_id": "ask_admission_process",
+    "source": "messy"
+  },
+  {
+    "text": "Hum branch choose karne se pehle syllabus dekhna chahte hain, CSE mein main subjects kaunse aate hain?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_curriculum",
+    "source": "messy"
+  },
+  {
+    "text": "Main topper nahi hoon, kya main successful ho sakta hoon?",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_average_student_outcome",
+    "source": "clean"
+  },
+  {
+    "text": "My son enjoys technical activities and also wants to meet people, so are there technical, cultural or other student clubs on campus?",
+    "language_label": 0,
+    "emotion_label": 1,
+    "language": "en",
+    "emotion": "excited",
+    "intent_id": "ask_student_clubs",
+    "source": "messy"
+  },
+  {
+    "text": "NAAC grade kya hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_accreditation",
+    "source": "clean"
+  },
+  {
+    "text": "I'm really anxious about my daughter, she's interested in engineering, but I'm not sure what the curriculum looks like, can you give me an overview?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_curriculum",
+    "source": "messy"
+  },
+  {
+    "text": "Nanna maga research alli interest iddane, B.E. time alli research projects madakke opportunity sigutta?",
+    "language_label": 2,
+    "emotion_label": 1,
+    "language": "kn",
+    "emotion": "excited",
+    "intent_id": "ask_research_opportunities",
+    "source": "messy"
+  },
+  {
+    "text": "Hey, I tried to find info about entrepreneurship, but nothing clear. I want to know if there's a business mentoring program. Naanu ee school alli startup support iruvudilla?",
+    "language_label": 2,
+    "emotion_label": 2,
+    "language": "kn",
+    "emotion": "frustrated",
+    "intent_id": "ask_entrepreneurship_support",
+    "source": "messy"
+  },
+  {
+    "text": "ನನ್ನ ಮಗನು ಕೋಡಿಂಗ್ ಅನ್ನು ಪ್ರೀತಿಸುತ್ತಾನೆ, but he also loves hardware, so which engineering branch is best?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_recommendation",
+    "source": "messy"
+  },
+  {
+    "text": "अच्छा, B.Tech का duration कितना है? 4 साल का है, पर मुझे पूरी तरह से समझ नहीं आया।",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_course_duration",
+    "source": "messy"
+  },
+  {
+    "text": "College startup ko support karta hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_entrepreneurship_support",
+    "source": "clean"
+  },
+  {
+    "text": "Transport facility available hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_transport_routes",
+    "source": "clean"
+  },
+  {
+    "text": "Admission se pehle hum campus infrastructure dekh rahe hain, classrooms aur buildings properly maintained hain kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_infrastructure",
+    "source": "messy"
+  },
+  {
+    "text": "Hey assistant",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "greet",
+    "source": "clean"
+  },
+  {
+    "text": "How does the grading system work?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_grading_system",
+    "source": "clean"
+  },
+  {
+    "text": "Are there scholarships for economically weaker students?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_scholarship_available",
+    "source": "clean"
+  },
+  {
+    "text": "What is the credit system?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_academic_structure",
+    "source": "clean"
+  },
+  {
+    "text": "Education cost swalpa heavy agutte, scholarship athava financial help yavadadru ideya?",
+    "language_label": 2,
+    "emotion_label": 4,
+    "language": "kn",
+    "emotion": "worried",
+    "intent_id": "ask_scholarship_available",
+    "source": "messy"
+  },
+  {
+    "text": "Which branch has better career opportunities?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_placement_by_branch",
+    "source": "clean"
+  },
+  {
+    "text": "Nanna daughter college life bagge excited iddale, studies jothe events mattu activities irutta?",
+    "language_label": 2,
+    "emotion_label": 1,
+    "language": "kn",
+    "emotion": "excited",
+    "intent_id": "ask_campus_life",
+    "source": "messy"
+  },
+  {
+    "text": "Admission office ka email kya hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_contact_admission_office",
+    "source": "clean"
+  },
+  {
+    "text": "Admission office location?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_contact_admission_office",
+    "source": "clean"
+  },
+  {
+    "text": "My daughter may need to use the internet for assignments and projects, so I wanted to know whether reliable Wi-Fi is available across the campus.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_wifi",
+    "source": "messy"
+  },
+  {
+    "text": "Kaun scholarship ke liye apply kar sakta hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_scholarship_eligibility",
+    "source": "clean"
+  },
+  {
+    "text": "Canteen ka food kaisa hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_cafeteria",
+    "source": "clean"
+  },
+  {
+    "text": "Which branch focuses more on software development?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_difference",
+    "source": "clean"
+  },
+  {
+    "text": "Topper nahi hoon, average student iddini, engineering aadmele job sigutta antha swalpa tension ide.",
+    "language_label": 2,
+    "emotion_label": 4,
+    "language": "kn",
+    "emotion": "worried",
+    "intent_id": "ask_average_student_outcome",
+    "source": "messy"
+  },
+  {
+    "text": "Lab facilities kaisi hain, equipment proper ideya, practical exposure sigutta?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_labs",
+    "source": "messy"
+  },
+  {
+    "text": "Arre, I keep hearing different things, is this college VTU affiliated, or is it autonomous? It's so confusing.",
+    "language_label": 1,
+    "emotion_label": 2,
+    "language": "hi",
+    "emotion": "frustrated",
+    "intent_id": "ask_university_affiliation",
+    "source": "messy"
+  },
+  {
+    "text": "Degree mattu exams VTU under barutta antha parents kelidru, swalpa clear madthira?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_university_affiliation",
+    "source": "messy"
+  },
+  {
+    "text": "Bhai, IPL ka match ka score kya tha last night, you know?",
+    "language_label": 1,
+    "emotion_label": 1,
+    "language": "hi",
+    "emotion": "excited",
+    "intent_id": "fallback",
+    "source": "messy"
+  },
+  {
+    "text": "Can you explain the examination process?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_exam_pattern",
+    "source": "clean"
+  },
+  {
+    "text": "Um, can you tell me about the campus? Like, how big is it, and do they have smart classrooms?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_infrastructure",
+    "source": "messy"
+  },
+  {
+    "text": "Students ge oota madakke proper place ideya, canteen alli basic food sigutta?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_cafeteria",
+    "source": "messy"
+  },
+  {
+    "text": "I keep seeing different course names, like, is it the same as the old curriculum, kya difference hai?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_curriculum",
+    "source": "messy"
+  },
+  {
+    "text": "Is the college still under VTU?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_university_affiliation",
+    "source": "clean"
+  },
+  {
+    "text": "Banni, I'm a bit frustrated because I keep hearing about internal assessments but no clear pattern. Could you explain how many internal exams we have? And what’s the evaluation scheme?",
+    "language_label": 0,
+    "emotion_label": 2,
+    "language": "en",
+    "emotion": "frustrated",
+    "intent_id": "ask_exam_pattern",
+    "source": "messy"
+  },
+  {
+    "text": "First year mein marks kam aaye toh future kharab ho jayega kya?",
+    "language_label": 1,
+    "emotion_label": 4,
+    "language": "hi",
+    "emotion": "worried",
+    "intent_id": "ask_average_student_outcome",
+    "source": "clean"
+  },
+  {
+    "text": "AICTE approval ideya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_accreditation",
+    "source": "clean"
+  },
+  {
+    "text": "Could you tell me about the placement rates for the engineering program?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "express_worry",
+    "source": "messy"
+  },
+  {
+    "text": "Kaunsi companies placement ke liye aati hain?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_top_recruiters",
+    "source": "clean"
+  },
+  {
+    "text": "Original documents compulsory hain kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_required_documents",
+    "source": "clean"
+  },
+  {
+    "text": "Does the library have previous-year question papers?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_library",
+    "source": "clean"
+  },
+  {
+    "text": "I got 18,000 rank in KCET. Which branches are available for me?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_cutoff",
+    "source": "clean"
+  },
+  {
+    "text": "Companies campus ge baroke munche students ge interview preparation heg madisthare?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_campus_placement_training",
+    "source": "messy"
+  },
+  {
+    "text": "What annual events are conducted on campus?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_campus_life",
+    "source": "clean"
+  },
+  {
+    "text": "COMEDK moolaka admission hege?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_admission_process",
+    "source": "clean"
+  },
+  {
+    "text": "Train ticket book madbeku, online alli heg book madodu?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "fallback",
+    "source": "messy"
+  },
+  {
+    "text": "Namaste, admission bagge ondu doubt ide, swalpa help madbahuda?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "greet",
+    "source": "messy"
+  },
+  {
+    "text": "What are the working hours?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_working_hours",
+    "source": "clean"
+  },
+  {
+    "text": "Placement ge software companies bartava?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_top_recruiters",
+    "source": "clean"
+  },
+  {
+    "text": "Teacher se doubts kelbahuda, faculty approachable ideya, because student swalpa hesitant?",
+    "language_label": 2,
+    "emotion_label": 4,
+    "language": "kn",
+    "emotion": "worried",
+    "intent_id": "ask_faculty_approachability",
+    "source": "messy"
+  },
+  {
+    "text": "Hey, so, is there a way to do the whole admission online, or do we need to visit the campus? I feel a bit stressed.",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_admission_process",
+    "source": "messy"
+  },
+  {
+    "text": "Is campus life fun and engaging?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_campus_life",
+    "source": "clean"
+  },
+  {
+    "text": "How can I apply for CSE?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_admission_process",
+    "source": "clean"
+  },
+  {
+    "text": "Hello, can you please confirm if there's still a seat in the ECE branch? I keep hearing about some openings.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_seat_availability",
+    "source": "messy"
+  },
+  {
+    "text": "College ke andar bike park kar sakte hain kya, ya bahar koi arrangement hai?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_parking",
+    "source": "messy"
+  },
+  {
+    "text": "Nanna maga practical work ge interest iddane, college laboratories hegive, equipment sariyagi ideya?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_labs",
+    "source": "messy"
+  },
+  {
+    "text": "Maga first time mane inda horagade irtane, hostel safe ideya, accommodation hegide anta kelbekittu.",
+    "language_label": 2,
+    "emotion_label": 4,
+    "language": "kn",
+    "emotion": "worried",
+    "intent_id": "ask_hostel_facilities",
+    "source": "messy"
+  },
+  {
+    "text": "Before joining I wanted to understand how the credit system works and whether students can select additional subjects.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_academic_structure",
+    "source": "messy"
+  },
+  {
+    "text": "Naanu next week apply maadbahuda?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_application_deadline",
+    "source": "clean"
+  },
+  {
+    "text": "Naanu ondu confusion, internal exams kadhadare. Semester pattern nalli internal assessments yeh? Evaluation scheme elli?",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_exam_pattern",
+    "source": "messy"
+  },
+  {
+    "text": "I wanted to understand whether students actually get enough practical exposure, because laboratory facilities are quite important for engineering.",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_labs",
+    "source": "messy"
+  },
+  {
+    "text": "Management quota seat kaise milti hai?",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_admission_process",
+    "source": "clean"
+  },
+  {
+    "text": "Can KCET students apply for merit scholarships?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_scholarship_eligibility",
+    "source": "clean"
+  },
+  {
+    "text": "I can't find any info on placement prep, and I'm getting frustrated. Do they really have mock interviews or resume workshops?",
+    "language_label": 0,
+    "emotion_label": 2,
+    "language": "en",
+    "emotion": "frustrated",
+    "intent_id": "ask_campus_placement_training",
+    "source": "messy"
+  },
+  {
+    "text": "Agar marks average hain toh bhi achi company mil sakti hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_average_student_outcome",
+    "source": "clean"
+  },
+  {
+    "text": "Placement ke liye kaunsi branch best hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_placement_by_branch",
+    "source": "clean"
+  },
+  {
+    "text": "Mere bete ko daily bike se college aana hai, toh students ke liye proper bike parking available hai kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_parking",
+    "source": "messy"
+  },
+  {
+    "text": "Exam pattern kya hai, internals heg irutte mattu final exam yestu important?",
+    "language_label": 2,
+    "emotion_label": 0,
+    "language": "kn",
+    "emotion": "confused",
+    "intent_id": "ask_exam_pattern",
+    "source": "messy"
+  },
+  {
+    "text": "Um, hi, I'm calling because my kid is feeling a bit overwhelmed, and I just wanted to know if there are any mentoring programs or like counseling services on campus?",
+    "language_label": 0,
+    "emotion_label": 4,
+    "language": "en",
+    "emotion": "worried",
+    "intent_id": "ask_student_support",
+    "source": "messy"
+  },
+  {
+    "text": "Namma area ge bus barutta?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_transport_routes",
+    "source": "clean"
+  },
+  {
+    "text": "CSE aur AIML ke subjects mein kya difference hai?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_branch_difference",
+    "source": "clean"
+  },
+  {
+    "text": "What happens if attendance is low?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_attendance_policy",
+    "source": "clean"
+  },
+  {
+    "text": "CSE mein seats available hain kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_seat_availability",
+    "source": "clean"
+  },
+  {
+    "text": "Ella 4 years fee same irutta?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "Hey, I was wondering, like, kya documents bring karna padega admission ke liye? I heard some certificates but I'm not sure.",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_required_documents",
+    "source": "messy"
+  },
+  {
+    "text": "Can I pay the fees in installments?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "My daughter will apply next week. Will admissions still be open?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_application_deadline",
+    "source": "clean"
+  },
+  {
+    "text": "Does the college have modern laboratories?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_labs",
+    "source": "clean"
+  },
+  {
+    "text": "COMEDK closing rank for AIML?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_cutoff",
+    "source": "clean"
+  },
+  {
+    "text": "Does every branch have a different syllabus?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_curriculum",
+    "source": "clean"
+  },
+  {
+    "text": "Tuition bere yavudadhru charges idiya?",
+    "language_label": 2,
+    "emotion_label": 3,
+    "language": "kn",
+    "emotion": "neutral",
+    "intent_id": "ask_fees_branch",
+    "source": "clean"
+  },
+  {
+    "text": "Online alag alag information mil rahi hai, isliye confirm karna tha ki engineering courses properly accredited hain ya nahi.",
+    "language_label": 1,
+    "emotion_label": 0,
+    "language": "hi",
+    "emotion": "confused",
+    "intent_id": "ask_accreditation",
+    "source": "messy"
+  },
+  {
+    "text": "What support services are available for students?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_student_support",
+    "source": "clean"
+  },
+  {
+    "text": "Is the hostel available for first-year students?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_hostel_facilities",
+    "source": "clean"
+  },
+  {
+    "text": "How is the college infrastructure?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_infrastructure",
+    "source": "clean"
+  },
+  {
+    "text": "Admission online check kar sakta hoon kya?",
+    "language_label": 1,
+    "emotion_label": 3,
+    "language": "hi",
+    "emotion": "neutral",
+    "intent_id": "ask_admission_status",
+    "source": "clean"
+  },
+  {
+    "text": "My son wants a paid internship. Does the college help students?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_internship_opportunities",
+    "source": "clean"
+  },
+  {
+    "text": "Are there anti-ragging measures in place?",
+    "language_label": 0,
+    "emotion_label": 3,
+    "language": "en",
+    "emotion": "neutral",
+    "intent_id": "ask_student_support",
+    "source": "clean"
+  }
+]

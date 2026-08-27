@@ -1,0 +1,141 @@
+query,dataset,expected_intent,st_intent,st_confidence,st_correct,groq_intent,groq_correct,agree,at_least_one_correct
+What is the annual fee for CSE?,100_regression,ask_fees_branch,ask_fees_branch,0.981,True,ask_fees_branch,True,True,True
+CSE ki fees kitni hai bhai?,100_regression,ask_fees_branch,ask_fees_branch,0.769,True,ask_fees_branch,True,True,True
+AIML ge fee eshtu?,100_regression,ask_fees_branch,ask_fees_branch,0.708,True,ask_fees_branch,True,True,True
+I really need to know what kind of money situation I am looking at for joining the computer branch,100_regression,ask_fees_branch,ask_fees_branch,0.881,True,ask_fees_branch,True,True,True
+What is the KCET cutoff for CSE?,100_regression,ask_cutoff,ask_cutoff,0.938,True,ask_cutoff,True,True,True
+My daughter scored 82% in PUC. Can she get CSE?,100_regression,ask_cutoff,ask_cutoff,0.932,True,ask_cutoff,True,True,True
+Management quota seat kaise milti hai?,100_regression,ask_admission_process,ask_admission_process,0.997,True,ask_admission_process,True,True,True
+What documents are required for admission?,100_regression,ask_required_documents,ask_required_documents,1.0,True,ask_required_documents,True,True,True
+Is a migration certificate required?,100_regression,ask_required_documents,ask_required_documents,1.0,True,ask_required_documents,True,True,True
+What is the last date to apply?,100_regression,ask_application_deadline,ask_application_deadline,1.0,True,ask_application_deadline,True,True,True
+Has my seat been allotted?,100_regression,ask_admission_status,ask_admission_status,1.0,True,ask_admission_status,True,True,True
+Are seats available in CSE?,100_regression,ask_seat_availability,ask_seat_availability,0.979,True,ask_seat_availability,True,True,True
+How are placements in CSE?,100_regression,ask_placement_by_branch,ask_placement_by_branch,0.971,True,ask_placement_by_branch,True,True,True
+"Which branch gets better placements, CSE or ISE?",100_regression,ask_placement_by_branch,ask_placement_by_branch,0.827,True,ask_placement_by_branch,True,True,True
+Does TCS visit the campus?,100_regression,ask_top_recruiters,ask_top_recruiters,0.973,True,ask_top_recruiters,True,True,True
+Are scholarships available?,100_regression,ask_scholarship_available,ask_scholarship_available,1.0,True,ask_scholarship_available,True,True,True
+My family's income is below ₹3 lakh. Can my son get a scholarship?,100_regression,ask_scholarship_eligibility,ask_scholarship_eligibility,1.0,True,ask_scholarship_eligibility,True,True,True
+What is the difference between CSE and AIML?,100_regression,ask_branch_difference,ask_branch_difference,0.948,True,ask_branch_difference,True,True,True
+I like coding. Which branch is best for me?,100_regression,ask_branch_recommendation,ask_branch_recommendation,0.999,True,ask_branch_recommendation,True,True,True
+I am worried about my future.,100_regression,express_worry,express_worry,1.0,True,express_worry,True,True,True
+Mujhe dar lag raha hai ki placement nahi milega.,100_regression,express_worry,ask_average_student_outcome,0.804,False,express_worry,True,False,True
+My daughter is not a topper. Will she still have good opportunities?,100_regression,ask_average_student_outcome,ask_average_student_outcome,1.0,True,ask_average_student_outcome,True,True,True
+Is the college NBA accredited?,100_regression,ask_accreditation,ask_accreditation,0.869,True,ask_accreditation,True,True,True
+Is SVIT affiliated to VTU?,100_regression,ask_university_affiliation,ask_university_affiliation,0.876,True,ask_university_affiliation,True,True,True
+What are the benefits of studying in an autonomous college?,100_regression,ask_autonomous,ask_autonomous,1.0,True,ask_autonomous,True,True,True
+What facilities are available in the hostel?,100_regression,ask_hostel_facilities,ask_hostel_facilities,1.0,True,ask_hostel_facilities,True,True,True
+Is there a separate hostel for girls?,100_regression,ask_hostel_facilities,ask_hostel_facilities,1.0,True,ask_hostel_facilities,True,True,True
+My son is coming from another city. Is hostel accommodation comfortable?,100_regression,ask_hostel_facilities,ask_hostel_facilities,0.999,True,ask_hostel_facilities,True,True,True
+Does the college bus cover Electronic City?,100_regression,ask_transport_routes,ask_transport_routes,0.986,True,ask_transport_routes,True,True,True
+Namma area ge bus barutta?,100_regression,ask_transport_routes,ask_transport_routes,0.864,True,ask_transport_routes,True,True,True
+Does the library have technical journals?,100_regression,ask_library,ask_library,1.0,True,ask_library,True,True,True
+Is there an AI and Machine Learning lab?,100_regression,ask_labs,ask_labs,0.943,True,ask_labs,True,True,True
+Are labs accessible after class hours?,100_regression,ask_labs,ask_labs,1.0,True,ask_labs,True,True,True
+Is career counseling available?,100_regression,ask_student_support,ask_student_support,1.0,True,ask_student_support,True,True,True
+My son is shy and may need guidance during the first year.,100_regression,ask_student_support,ask_student_support,1.0,True,ask_student_support,True,True,True
+Are the faculty members approachable?,100_regression,ask_faculty_approachability,ask_faculty_approachability,1.0,True,ask_faculty_approachability,True,True,True
+Class ke baad faculty doubts clear karti hai kya?,100_regression,ask_faculty_approachability,ask_faculty_approachability,0.999,True,ask_faculty_approachability,True,True,True
+How many years is engineering?,100_regression,ask_course_duration,ask_course_duration,1.0,True,ask_course_duration,True,True,True
+MBA course duration?,100_regression,ask_course_duration,ask_course_duration,0.76,True,ask_course_duration,True,True,True
+Does the college conduct placement preparation classes?,100_regression,ask_campus_placement_training,ask_campus_placement_training,1.0,True,ask_campus_placement_training,True,True,True
+Mock interviews available?,100_regression,ask_campus_placement_training,ask_campus_placement_training,0.93,True,ask_campus_placement_training,True,True,True
+Are there cultural fests?,100_regression,ask_campus_life,ask_campus_life,1.0,True,ask_campus_life,True,True,True
+Does the college organize hackathons and technical events?,100_regression,ask_campus_life,ask_campus_life,1.0,True,ask_campus_life,True,True,True
+Is 75 percent attendance mandatory?,100_regression,ask_attendance_policy,ask_attendance_policy,1.0,True,ask_attendance_policy,True,True,True
+Can medical leave be considered for attendance?,100_regression,ask_attendance_policy,ask_attendance_policy,1.0,True,ask_attendance_policy,True,True,True
+What are college timings?,100_regression,ask_working_hours,ask_working_hours,1.0,True,ask_working_hours,True,True,True
+Is the college open on Sundays?,100_regression,ask_working_hours,ask_working_hours,0.972,True,ask_working_hours,True,True,True
+Is the campus wheelchair accessible?,100_regression,ask_facilities_accessibility,ask_facilities_accessibility,1.0,True,ask_facilities_accessibility,True,True,True
+Is there a health center on campus?,100_regression,ask_facilities_accessibility,ask_facilities_accessibility,1.0,True,ask_facilities_accessibility,True,True,True
+Can I pay the fees in installments?,100_regression,ask_fees_branch,ask_fees_branch,0.999,True,ask_fees_branch,True,True,True
+Can I submit photocopies?,100_regression,ask_required_documents,ask_required_documents,0.999,True,ask_required_documents,True,True,True
+TC aur migration certificate chahiye kya?,100_regression,ask_required_documents,ask_required_documents,0.943,True,ask_required_documents,True,True,True
+Which documents are needed for management quota admission?,100_regression,ask_required_documents,ask_required_documents,0.994,True,ask_required_documents,True,True,True
+When does the admission process end?,100_regression,ask_application_deadline,ask_application_deadline,1.0,True,ask_application_deadline,True,True,True
+Is late admission allowed?,100_regression,ask_application_deadline,ask_application_deadline,0.999,True,ask_admission_process,False,False,True
+KCET admission kab band honge?,100_regression,ask_application_deadline,ask_application_deadline,0.973,True,ask_application_deadline,True,True,True
+How do I track my application?,100_regression,ask_admission_status,ask_admission_status,1.0,True,ask_admission_status,True,True,True
+Meri application approve hui kya?,100_regression,ask_admission_status,ask_admission_status,0.969,True,ask_admission_status,True,True,True
+My daughter has submitted her application. How can we check the status?,100_regression,ask_admission_status,ask_admission_status,1.0,True,ask_admission_status,True,True,True
+Any seats left in Computer Science?,100_regression,ask_seat_availability,ask_seat_availability,0.998,True,ask_seat_availability,True,True,True
+Is Cyber Security full?,100_regression,ask_seat_availability,ask_seat_availability,0.998,True,ask_seat_availability,True,True,True
+Can I get a seat through KCET?,100_regression,ask_seat_availability,ask_seat_availability,0.914,True,ask_admission_process,False,False,True
+Admission office number?,100_regression,ask_contact_admission_office,ask_contact_admission_office,0.997,True,ask_contact_admission_office,True,True,True
+Can I visit the admission office?,100_regression,ask_contact_admission_office,ask_contact_admission_office,1.0,True,ask_contact_admission_office,True,True,True
+Admission office se kaise contact karu?,100_regression,ask_contact_admission_office,ask_contact_admission_office,0.997,True,ask_contact_admission_office,True,True,True
+What subjects are taught in AIML?,100_regression,ask_curriculum,ask_curriculum,0.95,True,ask_curriculum,True,True,True
+Can I download the syllabus?,100_regression,ask_curriculum,ask_curriculum,0.999,True,ask_curriculum,True,True,True
+How many internal exams are there?,100_regression,ask_exam_pattern,ask_exam_pattern,1.0,True,ask_exam_pattern,True,True,True
+Theory practical marks ratio?,100_regression,ask_exam_pattern,ask_exam_pattern,0.986,True,ask_curriculum,False,False,True
+How is CGPA calculated?,100_regression,ask_grading_system,ask_grading_system,0.968,True,ask_grading_system,True,True,True
+What is the difference between SGPA and CGPA?,100_regression,ask_grading_system,ask_grading_system,0.947,True,ask_grading_system,True,True,True
+Can I choose elective subjects?,100_regression,ask_academic_structure,ask_academic_structure,0.997,True,ask_academic_structure,True,True,True
+Is there a Choice Based Credit System?,100_regression,ask_academic_structure,ask_academic_structure,0.988,True,ask_curriculum,False,False,True
+Are paid internships available?,100_regression,ask_internship_opportunities,ask_internship_opportunities,1.0,True,ask_internship_opportunities,True,True,True
+Does the college help students find internships?,100_regression,ask_internship_opportunities,ask_internship_opportunities,1.0,True,ask_internship_opportunities,True,True,True
+Is there a cafeteria?,100_regression,ask_cafeteria,ask_cafeteria,1.0,True,ask_cafeteria,True,True,True
+Is vegetarian food available?,100_regression,ask_cafeteria,ask_cafeteria,1.0,True,ask_cafeteria,True,True,True
+Is campus Wi-Fi free?,100_regression,ask_wifi,ask_wifi,0.987,True,ask_wifi,True,True,True
+Hostel Wi-Fi ideya?,100_regression,ask_wifi,ask_wifi,0.928,True,ask_wifi,True,True,True
+Is bike parking available?,100_regression,ask_parking,ask_parking,1.0,True,ask_parking,True,True,True
+Are there parking charges?,100_regression,ask_parking,ask_parking,1.0,True,ask_parking,True,True,True
+How big is the campus?,100_regression,ask_infrastructure,ask_infrastructure,1.0,True,ask_infrastructure,True,True,True
+Are smart classrooms available?,100_regression,ask_infrastructure,ask_infrastructure,1.0,True,ask_infrastructure,True,True,True
+Is there a coding club?,100_regression,ask_student_clubs,ask_student_clubs,1.0,True,ask_student_clubs,True,True,True
+Are cultural clubs available?,100_regression,ask_student_clubs,ask_student_clubs,1.0,True,ask_student_clubs,True,True,True
+Is there an incubation center?,100_regression,ask_entrepreneurship_support,ask_entrepreneurship_support,1.0,True,ask_entrepreneurship_support,True,True,True
+Can students start a company while studying?,100_regression,ask_entrepreneurship_support,ask_entrepreneurship_support,1.0,True,ask_entrepreneurship_support,True,True,True
+My son wants to start his own company after engineering. Does the college support entrepreneurship?,100_regression,ask_entrepreneurship_support,ask_entrepreneurship_support,1.0,True,ask_entrepreneurship_support,True,True,True
+Are research opportunities available?,100_regression,ask_research_opportunities,ask_research_opportunities,1.0,True,ask_research_opportunities,True,True,True
+Can undergraduate students do research?,100_regression,ask_research_opportunities,ask_research_opportunities,1.0,True,ask_research_opportunities,True,True,True
+Can students publish research papers?,100_regression,ask_research_opportunities,ask_research_opportunities,1.0,True,ask_research_opportunities,True,True,True
+Hi,100_regression,greet,greet,0.999,True,greet,True,True,True
+Good morning,100_regression,greet,greet,0.999,True,greet,True,True,True
+Namaskara,100_regression,greet,greet,0.87,True,greet,True,True,True
+"Hi, I have a question.",100_regression,greet,greet,0.997,True,greet,True,True,True
+What's the weather today?,100_regression,fallback,fallback,1.0,True,fallback,True,True,True
+Who won the IPL?,100_regression,fallback,fallback,0.924,True,fallback,True,True,True
+Ek joke sunao.,100_regression,fallback,fallback,0.935,True,fallback,True,True,True
+Write Python code.,100_regression,fallback,fallback,0.993,True,fallback,True,True,True
+What is the capital of Japan?,100_regression,fallback,fallback,0.999,True,fallback,True,True,True
+hello sir actually my son he got some rank in KCET i dont remember exactly around fifteen thousand i think can he get into computer science or not,40_generalization,ask_cutoff,ask_average_student_outcome,0.604,False,ask_cutoff,True,False,True
+yaar CSE mein itna paisa lagta hai kya seriously total kitna,40_generalization,ask_fees_branch,ask_branch_difference,0.771,False,ask_fees_branch,True,False,True
+sir woh CSE ka jo fee hai na total kitna lagta hai poora four saal ka,40_generalization,ask_fees_branch,ask_fees_branch,0.75,True,ask_fees_branch,True,True,True
+I already called someone yesterday but nobody explained properly so what exactly does computer science cost per year,40_generalization,ask_fees_branch,ask_fees_branch,0.784,True,ask_fees_branch,True,True,True
+hi umm my daughter is in twelfth now we are thinking engineering so what all papers do we need to bring when we come,40_generalization,ask_required_documents,ask_required_documents,0.564,True,ask_required_documents,True,True,True
+actually can you just tell me by when we must finish the whole application otherwise we miss it,40_generalization,ask_application_deadline,ask_application_deadline,0.687,True,ask_application_deadline,True,True,True
+we submitted everything last week nobody is telling us if it went through or not,40_generalization,ask_admission_status,ask_required_documents,0.421,False,ask_admission_status,True,False,True
+is computer branch already full or can my son still try,40_generalization,ask_seat_availability,ask_labs,0.524,False,ask_seat_availability,True,False,True
+honestly which branch gets the good jobs these days not the old ones tell me straight,40_generalization,ask_placement_by_branch,ask_placement_by_branch,0.739,True,ask_placement_by_branch,True,True,True
+does infosys wale log yahan aate hain job dene ke liye,40_generalization,ask_top_recruiters,ask_average_student_outcome,0.651,False,ask_top_recruiters,True,False,True
+we are not that well off financially is there anything that can help with the money side,40_generalization,ask_scholarship_available,ask_scholarship_available,0.532,True,ask_scholarship_available,True,True,True
+so my husband and I both dont earn much will that count for anything on the fee side,40_generalization,ask_scholarship_eligibility,ask_fees_branch,0.646,False,ask_scholarship_eligibility,True,False,True
+everyone keeps telling me different things about computer science and this AI one what is actually not the same about them,40_generalization,ask_branch_difference,ask_branch_difference,0.503,True,ask_branch_difference,True,True,True
+he is good with numbers and likes building stuff not really into computers though what do you suggest,40_generalization,ask_branch_recommendation,ask_average_student_outcome,0.388,False,ask_branch_recommendation,True,False,True
+I keep thinking what if he cannot handle it there and just gives up halfway,40_generalization,express_worry,express_worry,0.436,True,express_worry,True,True,True
+she is not the topper type never has been will that hold her back later in life,40_generalization,ask_average_student_outcome,ask_average_student_outcome,0.595,True,ask_average_student_outcome,True,True,True
+is this place actually recognized properly or just some random college,40_generalization,ask_accreditation,ask_university_affiliation,0.659,False,ask_accreditation,True,False,True
+somebody told me you people are not under the state university anymore is that true,40_generalization,ask_university_affiliation,ask_university_affiliation,0.642,True,ask_university_affiliation,True,True,True
+she will be staying there alone first time away from home is it actually safe and comfortable,40_generalization,ask_hostel_facilities,ask_transport_routes,0.482,False,ask_hostel_facilities,True,False,True
+we stay quite far like near electronic city does anything come from that side,40_generalization,ask_transport_routes,ask_transport_routes,0.523,True,ask_transport_routes,True,True,True
+who do i even talk to about all this nobody is picking up the general number,40_generalization,ask_contact_admission_office,ask_contact_admission_office,0.367,True,ask_contact_admission_office,True,True,True
+hii,40_generalization,greet,greet,0.921,True,greet,True,True,True
+good evening sorry to call so late,40_generalization,greet,greet,0.784,True,greet,True,True,True
+can you tell me todays cricket score,40_generalization,fallback,fallback,0.328,True,fallback,True,True,True
+sorry wrong question ignore that tell me a recipe for dinner,40_generalization,fallback,ask_cafeteria,0.449,False,fallback,True,False,True
+kya AIML branch ka total kharcha zyada hota hai normal CS se,40_generalization,ask_fees_branch,ask_branch_difference,0.713,False,ask_fees_branch,True,False,True
+last year how much rank was needed roughly for the AI branch through kcet,40_generalization,ask_cutoff,ask_cutoff,0.711,True,ask_cutoff,True,True,True
+management ke through lena hai to kya karna padta hai poora process bata do,40_generalization,ask_admission_process,ask_academic_structure,0.66,False,ask_admission_process,True,False,True
+do we need to get his caste papers or not we are general category,40_generalization,ask_required_documents,ask_required_documents,0.585,True,ask_required_documents,True,True,True
+kitne tak time hai abhi bhi form bhar sakte hain kya,40_generalization,ask_application_deadline,ask_seat_availability,0.84,False,ask_application_deadline,True,False,True
+any chance still left in mechanical or that branch also closed now,40_generalization,ask_seat_availability,ask_cutoff,0.529,False,ask_seat_availability,True,False,True
+does amazon or these big product companies even bother coming to a college like this,40_generalization,ask_top_recruiters,ask_top_recruiters,0.675,True,ask_top_recruiters,True,True,True
+she scored around ninety percent will she qualify for anything on fees,40_generalization,ask_scholarship_eligibility,ask_scholarship_eligibility,0.666,True,ask_scholarship_eligibility,True,True,True
+everybody says data science is trending is it actually that different from normal cse subjects wise,40_generalization,ask_branch_difference,ask_branch_difference,0.73,True,ask_branch_difference,True,True,True
+honestly i dont even know what half these branch names mean can you just guide us based on what he likes,40_generalization,ask_branch_recommendation,ask_cutoff,0.466,False,ask_branch_recommendation,True,False,True
+what happens to the kids who are just average not brilliant do they even get jobs after,40_generalization,ask_average_student_outcome,ask_average_student_outcome,0.601,True,ask_average_student_outcome,True,True,True
+is it under vtu still or something changed recently i heard something,40_generalization,ask_university_affiliation,ask_university_affiliation,0.693,True,ask_university_affiliation,True,True,True
+girls hostel wahan safe hai na proper security vagera,40_generalization,ask_hostel_facilities,ask_hostel_facilities,0.903,True,ask_hostel_facilities,True,True,True
+office khula rehta hai kya sunday ke din bhi,40_generalization,ask_working_hours,ask_average_student_outcome,0.768,False,ask_working_hours,True,False,True
+if for some reason i cannot reach anyone on call is there another way to ask something,40_generalization,ask_contact_admission_office,greet,0.426,False,ask_contact_admission_office,True,False,True

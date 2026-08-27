@@ -1,0 +1,199 @@
+
+============================================================
+Run started: 2026-08-26T11:18:49.999793
+============================================================
+45 total intents | 0 already done | 45 remaining
+Running pre-flight check (1 tiny test call)...
+
+============================================================
+Run started: 2026-08-26T11:21:59.468405
+============================================================
+45 total intents | 0 already done | 45 remaining
+Running pre-flight check (1 tiny test call)...
+✅ Quota available — proceeding with the real run.
+
+  [ask_fees_branch] 9 messy variants generated
+  [ask_cutoff] 9 messy variants generated (1/44 intents this run)
+  [ask_admission_process] 9 messy variants generated (2/44 intents this run)
+  [ask_placement_by_branch] 9 messy variants generated (3/44 intents this run)
+  [ask_top_recruiters] 9 messy variants generated (4/44 intents this run)
+  [ask_scholarship_available] 9 messy variants generated (5/44 intents this run)
+  [ask_scholarship_eligibility] 9 messy variants generated (6/44 intents this run)
+  [ask_branch_difference] 9 messy variants generated (7/44 intents this run)
+  [express_worry] 9 messy variants generated (8/44 intents this run)
+  ⚠️ [ask_average_student_outcome] Groq response had no JSON array. Raw response:
+     [
+  {"text": "Hey, quick question about placements for students who aren't top of the class, just wondering what the chances look like.", "language": "en", "emotion": "neutral"},
+  {"text": "Um, so I'm kinda worried about my son, like, if he only does average in exams, can he still get a good job af
+  ⚠️ [ask_average_student_outcome] generation failed, will retry on next run
+  [ask_accreditation] 9 messy variants generated (9/44 intents this run)
+  [ask_university_affiliation] 9 messy variants generated (10/44 intents this run)
+  ⚠️ [ask_autonomous] Groq response had no JSON array. Raw response:
+     [
+  {"text": "Hey, I was reading about autonomous colleges, but I keep wondering if it really changes the exam pattern... can you explain that? Yeh kya fark padta hai?", "language": "hi", "emotion": "worried"},
+  {"text": "Bhai, autonomous college ka matlab kya hota hai? And how is it different from
+  ⚠️ [ask_autonomous] generation failed, will retry on next run
+  ⚠️ [ask_branch_recommendation] Groq response had no JSON array. Raw response:
+     
+  ⚠️ [ask_branch_recommendation] generation failed, will retry on next run
+  ⚠️ [ask_hostel_facilities] Groq response had no JSON array. Raw response:
+     [
+  {"text":"Hey, so I'm calling to ask, like, what kind of things are there in the hostel? Is there Wi‑Fi? I mean, I'm not sure if food is included. Can you tell me?", "language":"en", "emotion":"worried"},
+  {"text":"Um, 나는 ಕೇಳಲು ಬಯಸುತ್ತೇನೆ, ಹಾಸ್ಟಲ್‌ನಲ್ಲಿ ನಿಜವಾಗಿಯೂ ಯಾವ ಸೌಲಭ್ಯಗಳು ಇವೆ? 나는 ಭದ್ರತೆ ಬಗ್
+  ⚠️ [ask_hostel_facilities] generation failed, will retry on next run
+  [ask_transport_routes] 9 messy variants generated (11/44 intents this run)
+  [ask_library] 9 messy variants generated (12/44 intents this run)
+  [ask_labs] 9 messy variants generated (13/44 intents this run)
+  [ask_student_support] 9 messy variants generated (14/44 intents this run)
+  [ask_faculty_approachability] 9 messy variants generated (15/44 intents this run)
+  ⚠️ [ask_course_duration] Groq response had no JSON array. Raw response:
+     [
+  {
+    "text": "Hey, so, I'm calling to know, um, how many years does it take for a student to finish a B.Tech in Electronics
+  ⚠️ [ask_course_duration] generation failed, will retry on next run
+  [ask_campus_placement_training] 9 messy variants generated (16/44 intents this run)
+  [ask_campus_life] 9 messy variants generated (17/44 intents this run)
+  ⚠️ [ask_attendance_policy] Groq response had no JSON array. Raw response:
+     [
+  {"text":"Hey, so I'm trying to figure out if there's a minimum attendance requirement for the semester, like what percentage I need to hit to pass?", "language":"en", "emotion":"neutral"},
+  {"text":"Um, I'm kinda worried, because my kid's been sick lately, and I was wondering, like, क्या minimu
+  ⚠️ [ask_attendance_policy] generation failed, will retry on next run
+  [ask_working_hours] 9 messy variants generated (18/44 intents this run)
+  [ask_facilities_accessibility] 9 messy variants generated (19/44 intents this run)
+  ⚠️ [ask_required_documents] Groq response had no JSON array. Raw response:
+     [
+  {"text":"Um, hi, I was just calling because I'm a bit lost on what papers I need to bring for the admission? Like, do I need the old school report card, certificates? मुझे नहीं पता क्या लाना है...", "language":"en", "emotion":"neutral"},
+  {"text":"Hey, I know it's like last minute but can you t
+  ⚠️ [ask_required_documents] generation failed, will retry on next run
+  ⚠️ [ask_application_deadline] Groq response had no JSON array. Raw response:
+     [
+  {"text": "Um, just checking, when does the application period end for this year?", "language": "en", "emotion": "neutral"},
+  {"text": "I don't know if we can still apply, are we still in the window, or is it over?", "language": "en", "emotion": "worried"},
+  {"text": "I've been looking at the s
+  ⚠️ [ask_application_deadline] generation failed, will retry on next run
+  [ask_admission_status] 9 messy variants generated (20/44 intents this run)
+  ⚠️ [ask_seat_availability] Groq response had no JSON array. Raw response:
+     
+  ⚠️ [ask_seat_availability] generation failed, will retry on next run
+  ⚠️ [ask_contact_admission_office] Groq response had no JSON array. Raw response:
+     [
+  {"text":"Hi, could you tell me where I can reach the admissions desk? I think they have a phone number but not sure. Thanks.", "language":"en", "emotion":"neutral"},
+  {"text":"Um, I need to call the admission office, but I keep forgetting their number. Kya aap mujhe bata sakte hain? I'm worried
+  ⚠️ [ask_contact_admission_office] generation failed, will retry on next run
+  ⚠️ [ask_curriculum] Groq response had no JSON array. Raw response:
+     
+  ⚠️ [ask_curriculum] generation failed, will retry on next run
+  ⚠️ [ask_exam_pattern] Groq response had no JSON array. Raw response:
+     [
+  {
+    "text": "Can you tell me about the exam pattern, like how the semester exams are scheduled? I'm just trying to plan.",
+    "language": "en",
+    "emotion": "neutral"
+  },
+  {
+    "text": "Um, I'm a bit worried. Could you explain the exam pattern? I'm not sure how the internal assessments f
+  ⚠️ [ask_exam_pattern] generation failed, will retry on next run
+  [ask_grading_system] 9 messy variants generated (21/44 intents this run)
+  [ask_academic_structure] 9 messy variants generated (22/44 intents this run)
+  [ask_internship_opportunities] 9 messy variants generated (23/44 intents this run)
+  [ask_cafeteria] 9 messy variants generated (24/44 intents this run)
+  [ask_wifi] 9 messy variants generated (25/44 intents this run)
+  [ask_parking] 9 messy variants generated (26/44 intents this run)
+  [ask_infrastructure] 9 messy variants generated (27/44 intents this run)
+  [ask_student_clubs] 9 messy variants generated (28/44 intents this run)
+  ⚠️ [ask_entrepreneurship_support] Groq response had no JSON array. Raw response:
+     [
+  {
+    "text": "Um, hi, I was just calling because I'm trying to find out if the college has any programs that help students launch startups, like an incubator or maybe mentorship.",
+    "language": "en",
+    "emotion": "neutral"
+  },
+  {
+    "text": "Namaste, mujhe thoda tension ho raha hai, kya
+  ⚠️ [ask_entrepreneurship_support] generation failed, will retry on next run
+  ⚠️ [ask_research_opportunities] Groq response had no JSON array. Raw response:
+     [
+  {"text":"Um, hi, I was just calling and, you know, I was wondering if there are any research opportunities available for students?", "language":"en", "emotion":"neutral"},
+  {"text":"Hey, I was thinking, like, do we have any research projects available for undergrads? I'm a bit worried because m
+  ⚠️ [ask_research_opportunities] generation failed, will retry on next run
+  ⚠️ [greet] Groq response had no JSON array. Raw response:
+     
+  ⚠️ [greet] generation failed, will retry on next run
+  [fallback] 9 messy variants generated (29/44 intents this run)
+
+✅ 29 intents processed this run
+   15 intents still remaining
+
+Full history: Z:\intellivoice\backend\tests\muril\..\..\database\seed_data\muril_training\messy_generation_log.txt
+
+============================================================
+Run started: 2026-08-26T11:38:31.143312
+============================================================
+45 total intents | 30 already done | 15 remaining
+  [ask_average_student_outcome] 9 messy variants generated (1/15 intents this run)
+  [ask_autonomous] 9 messy variants generated (2/15 intents this run)
+  [ask_branch_recommendation] 9 messy variants generated (3/15 intents this run)
+  [ask_hostel_facilities] 9 messy variants generated (4/15 intents this run)
+  [ask_course_duration] 9 messy variants generated (5/15 intents this run)
+  [ask_attendance_policy] 9 messy variants generated (6/15 intents this run)
+  ⚠️ [ask_required_documents] Groq response had no JSON array. Raw response:
+     
+  ⚠️ [ask_required_documents] generation failed, will retry on next run
+  [ask_application_deadline] 9 messy variants generated (7/15 intents this run)
+  [ask_seat_availability] 9 messy variants generated (8/15 intents this run)
+  ⚠️ [ask_contact_admission_office] Groq response had no JSON array. Raw response:
+     [
+  {
+    "text": "Hey, I was wondering if you could tell me how to get in touch with the admissions office? I need to talk to someone.",
+    "language": "en",
+    "emotion": "neutral"
+  },
+  {
+    "text": "Um, mujhe admission office ka number pata karna hai, please? I'm a bit worried because the ap
+  ⚠️ [ask_contact_admission_office] generation failed, will retry on next run
+  ⚠️ [ask_curriculum] Groq response had no JSON array. Raw response:
+     
+  ⚠️ [ask_curriculum] generation failed, will retry on next run
+  [ask_exam_pattern] 9 messy variants generated (9/15 intents this run)
+  ⚠️ [ask_entrepreneurship_support] Groq response had no JSON array. Raw response:
+     
+  ⚠️ [ask_entrepreneurship_support] generation failed, will retry on next run
+  [ask_research_opportunities] 9 messy variants generated (10/15 intents this run)
+  ⚠️ [greet] Groq response had no JSON array. Raw response:
+     
+  ⚠️ [greet] generation failed, will retry on next run
+
+✅ 10 intents processed this run
+   5 intents still remaining
+
+Full history: Z:\intellivoice\backend\tests\muril\..\..\database\seed_data\muril_training\messy_generation_log.txt
+
+============================================================
+Run started: 2026-08-26T11:45:58.955301
+============================================================
+45 total intents | 40 already done | 5 remaining
+  [ask_required_documents] 9 messy variants generated (1/5 intents this run)
+  [ask_contact_admission_office] 9 messy variants generated (2/5 intents this run)
+  ⚠️ [ask_curriculum] Groq response had no JSON array. Raw response:
+     
+  ⚠️ [ask_curriculum] generation failed, will retry on next run
+  [ask_entrepreneurship_support] 9 messy variants generated (3/5 intents this run)
+  [greet] 9 messy variants generated (4/5 intents this run)
+
+✅ 4 intents processed this run
+   1 intents still remaining
+
+Full history: Z:\intellivoice\backend\tests\muril\..\..\database\seed_data\muril_training\messy_generation_log.txt
+
+============================================================
+Run started: 2026-08-26T11:46:50.113056
+============================================================
+45 total intents | 44 already done | 1 remaining
+  [ask_curriculum] 9 messy variants generated (1/1 intents this run)
+
+✅ 1 intents processed this run
+   0 intents still remaining
+
+🎉 All done! Next: review messy_examples.csv, then merge with candidate_labels.csv
+
+Full history: Z:\intellivoice\backend\tests\muril\..\..\database\seed_data\muril_training\messy_generation_log.txt

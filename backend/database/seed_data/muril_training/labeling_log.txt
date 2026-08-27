@@ -1,0 +1,98 @@
+
+============================================================
+Run started: 2026-08-25T11:32:09.545189
+============================================================
+
+============================================================
+Run started: 2026-08-25T13:08:35.788403
+============================================================
+Running pre-flight check (1 tiny test call)...
+✅ Quota available — proceeding with the real run.
+
+1166 total examples | 0 already labeled | 1166 remaining
+  [25/1166] processed this run... (25 succeeded)
+  [50/1166] processed this run... (50 succeeded)
+  [75/1166] processed this run... (75 succeeded)
+
+✅ 91 labeled successfully this run
+   1075 still remaining
+
+⏳ Hit today's quota mid-run. Next reset: 2026-08-26 00:00 UTC (= 2026-08-26 05:30 IST)
+   Run this exact same command after that time — it will
+   automatically continue from where it stopped.
+
+Full history: Z:\intellivoice\backend\tests\muril\..\..\database\seed_data\muril_training\labeling_log.txt
+
+============================================================
+Run started: 2026-08-25T13:34:52.245242
+============================================================
+Running pre-flight check (1 tiny test call)...
+✅ Quota available — proceeding with the real run.
+
+1166 total examples | 91 already labeled | 1075 remaining
+  [25/1075] processed this run... (25 succeeded)
+  [50/1075] processed this run... (50 succeeded)
+  [75/1075] processed this run... (75 succeeded)
+  [100/1075] processed this run... (100 succeeded)
+  [125/1075] processed this run... (125 succeeded)
+  [150/1075] processed this run... (150 succeeded)
+  [175/1075] processed this run... (175 succeeded)
+  [200/1075] processed this run... (200 succeeded)
+  [225/1075] processed this run... (225 succeeded)
+  [250/1075] processed this run... (250 succeeded)
+  [275/1075] processed this run... (275 succeeded)
+  [300/1075] processed this run... (300 succeeded)
+  [325/1075] processed this run... (325 succeeded)
+  [350/1075] processed this run... (350 succeeded)
+  [375/1075] processed this run... (375 succeeded)
+  [400/1075] processed this run... (400 succeeded)
+  [425/1075] processed this run... (425 succeeded)
+  [450/1075] processed this run... (450 succeeded)
+  [475/1075] processed this run... (475 succeeded)
+  [500/1075] processed this run... (500 succeeded)
+  [525/1075] processed this run... (525 succeeded)
+  [550/1075] processed this run... (550 succeeded)
+  [575/1075] processed this run... (575 succeeded)
+  [600/1075] processed this run... (600 succeeded)
+
+✅ 604 labeled successfully this run
+   471 still remaining
+
+⏳ Hit today's quota mid-run. Next reset: 2026-08-26 00:00 UTC (= 2026-08-26 05:30 IST)
+   Run this exact same command after that time — it will
+   automatically continue from where it stopped.
+
+Full history: Z:\intellivoice\backend\tests\muril\..\..\database\seed_data\muril_training\labeling_log.txt
+
+============================================================
+Run started: 2026-08-25T19:11:23.933466
+============================================================
+Running pre-flight check (1 tiny test call)...
+✅ Quota available — proceeding with the real run.
+
+1166 total examples | 695 already labeled | 471 remaining
+  [25/471] processed this run... (25 succeeded)
+  [50/471] processed this run... (50 succeeded)
+  [75/471] processed this run... (75 succeeded)
+  [100/471] processed this run... (100 succeeded)
+  [125/471] processed this run... (125 succeeded)
+  [150/471] processed this run... (150 succeeded)
+  [175/471] processed this run... (175 succeeded)
+  [200/471] processed this run... (200 succeeded)
+  [225/471] processed this run... (225 succeeded)
+  [250/471] processed this run... (250 succeeded)
+  [275/471] processed this run... (275 succeeded)
+  [300/471] processed this run... (300 succeeded)
+  [325/471] processed this run... (325 succeeded)
+  [350/471] processed this run... (350 succeeded)
+  [375/471] processed this run... (375 succeeded)
+  [400/471] processed this run... (400 succeeded)
+  [425/471] processed this run... (425 succeeded)
+  [450/471] processed this run... (450 succeeded)
+
+✅ 471 labeled successfully this run
+   0 still remaining
+
+🎉 All done! Next: review candidate_labels.csv, then run finalize_labels.py
+
+Full history: Z:\intellivoice\backend\tests\muril\..\..\database\seed_data\muril_training\labeling_log.txt
