@@ -5,3 +5,4 @@ __pycache__/
 *.pyo
 .DS_Store
 backend/models/muril_multitask/model_weights.pt
+*.wav

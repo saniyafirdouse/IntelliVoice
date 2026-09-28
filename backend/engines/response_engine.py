@@ -11,6 +11,7 @@ decisions were already made by Engines 2 and 3.
 import os
 from groq import Groq
 from dotenv import load_dotenv
+from engines.kannada_translator import translate_to_kannada
 
 load_dotenv()
 
@@ -136,6 +137,11 @@ KANNADA_EMOTION_EXAMPLES = {
     },
 }
 
+KANNADA_ESCALATION_HANDOFF = {
+    "romanized": "Naanu nimmanna admission office jothe connect maadthini, avaru nimge sariyada information kodtare.",
+    "native": "ನಾನು ನಿಮ್ಮನ್ನ admission office ಜೊತೆ connect ಮಾಡ್ತೀನಿ, ಅವರು ನಿಮಗೆ ಸರಿಯಾದ information ಕೊಡ್ತಾರೆ.",
+}
+
 SYSTEM_PROMPT_BASE = """You are IntelliVoice, SVIT college's admissions assistant — replacing a human staff member on a phone call, not acting like a typical chatbot.
 
 ABSOLUTE RULES:
@@ -146,7 +152,8 @@ ABSOLUTE RULES:
 5. When comparing or recommending branches, never favor one — present facts, let the person decide.
 6. If the user asks about a multi-year or total cost and you only have a per-year figure: state the current per-year figure as an exact fact, THEN clearly mention that fees can change year to year (institutional decisions, renovations, policy changes — real and common). If a rough multi-year estimate is genuinely useful, phrase it as an approximation only — using words like "roughly," "approximately," "as of now this could be around" — never state a calculated multi-year total as if it were a confirmed, precise fact.
 7. Pay attention to the SPECIFIC words the user used in their own question (e.g., if they said "yearly," say "yearly" back; if they used a Hindi/Kannada word like "varshik," use that same word back). Mirror their own vocabulary and register as closely as natural, rather than substituting your own formal or casual synonym.
-8. {language_instruction}
+8. NEVER use markdown formatting — no asterisks for bold, no bullet points/dashes, no headers, no literal "\\n" newline characters. Write ONLY as plain, natural spoken sentences and paragraphs, exactly the way a person would actually talk on a phone call. If comparing multiple things, weave them into flowing sentences (e.g. "CSE focuses on... while AIML focuses on...") instead of a list structure.
+9. {language_instruction}
 """
 
 RESPONSE_MODE_INSTRUCTIONS = {
@@ -213,6 +220,190 @@ def format_retrieved_data(knowledge_result: dict) -> str:
     return str(data)
 
 
+async def _self_check_kannada(text: str) -> str:
+    """
+    Safety net for Kannada output specifically, since free-generation has
+    shown real grammatical failures in complex sentences. This is a
+    second Groq call that reviews and corrects the Kannada text before
+    it's returned to the user — an ongoing quality gate for ANY future
+    query, not just ones we happened to manually test.
+    """
+    check_prompt = f"""Review this Kannada sentence for grammatical correctness and natural flow. Kannada speakers should find it clear and natural, not confusing or garbled.
+
+If it is already correct and natural, return it EXACTLY unchanged.
+If there is a grammar mistake, confusing phrasing, or incorrect word usage, rewrite it correctly — keep the same meaning, keep any English/technical terms (branch names, numbers, KCET, etc.) exactly as they are, just fix the Kannada grammar/flow.
+
+Text: {text}
+
+Respond with ONLY the final Kannada text, nothing else — no explanation."""
+
+    try:
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[{"role": "user", "content": check_prompt}],
+            temperature=0.2,
+            max_tokens=1500,  # reasoning model spends tokens on internal
+                               # thinking before the visible answer —
+                               # 600 wasn't enough headroom for both
+        )
+        checked_text = response.choices[0].message.content.strip()
+
+        # Safety net: if the check somehow still comes back empty
+        # (e.g. hit length limit again), never return blank —
+        # fall back to the original, already-good text instead
+        if not checked_text:
+            return text
+
+        return checked_text
+    except Exception:
+        return text
+
+async def _casualize_kannada(formal_kannada: str) -> str:
+    """
+    Takes Sarvam AI's translated Kannada (code-mixed mode) and asks Groq
+    to rebalance the English-to-Kannada ratio toward Kannada-dominant,
+    accessible spoken language — a constrained edit, not free
+    composition. Much safer for Groq than generating Kannada from
+    scratch, since correctness is already guaranteed going in.
+    """
+    prompt = f"""You are refining a Kannada response for IntelliVoice, a college admissions voice assistant. The response will be SPOKEN to a parent over a phone call.
+YOUR GOAL:
+Rewrite the response so it sounds like NATURAL, SIMPLE, SPOKEN KARNATAKA KANNADA used by a real college counselor talking to a parent.
+The response should feel warm, reassuring, clear, and conversational — NOT like a formal written Kannada response or a translated English paragraph.
+LENGTH — VERY IMPORTANT:
+Keep the response SHORT and easy to listen to.
+- The final response should usually be around 3-4 medium to short  sentences.
+- dontst mean evrytime the response must restrict to 3 lines itself it can be more or less depending on the query asked.
+- It should roughly fit within 3 spoken lines.(dont try to fit every sentence forcefully into 3 lines. keep it natural)
+- Do NOT give long explanations.
+- Do NOT repeat the same point in different ways.
+- Remove unnecessary details or repetition while preserving the important meaning. dont give unwanted words to make the sentence look long.
+- The parent should be able to listen to the complete response comfortably without getting bored.
+LANGUAGE:
+Kannada must be the MAIN language.
+Use roughly 70-80% Kannada and 20-30% natural English as a general guideline.
+Use only a small amount of commonly used English where it sounds natural, such as:
+CSE, college, students, marks, fee, admission, course, faculty, support, guidance, performance, placement, campus, branch, future, worry, doubt, etc.
+IMPORTANT: never translate these English words into kannada.
+-keep all technical or college related terms in English.
+-copy and match the style and tone of the parent/student.
+-if they speak more formalised stiff kannada match them.
+-if they use English words in between the sentence retain those words in the response, dont replace them with translated kannada.
+Do NOT force English into every sentence.
+Do NOT use long English phrases such as:
+- "right support, guidance, and focused study plan"
+- "anxious feel aagodu completely normal"
+- "chosen branch-nalli succeed aagabahudu"
+- "academic support services"
+Instead, use Kannada sentence structure with only a few natural English words.
+
+
+IMPORTANT BALANCE:
+Do NOT make the response too English-heavy.
+WRONG:
+"Nimma magana future bagge worry aagodu understandable. College alli proper support and guidance sigutte, so he can improve his performance."
+Do NOT make it too formal or difficult Kannada either.
+WRONG:
+"ನಿಮ್ಮ ಮಗನ ಪ್ರಸ್ತುತ ಅಂಕಗಳು ಮತ್ತು ಸಿ.ಎಸ್.ಇ.ಯಲ್ಲಿ ನಿರ್ವಹಿಸುವ ಬಗ್ಗೆ ಅವನಿಗೆ ಇರುವ ಚಿಂತೆಗಳ ಬಗ್ಗೆ ನೀವು ಹೇಗೆ ಭಾವಿಸುತ್ತೀರಿ ಎಂಬುದು ನನಗೆ ಅರ್ಥವಾಗುತ್ತದೆ."
+NATURAL STYLE:
+"Nimma magana marks kadime ide, CSE alli manage maadtaana antha nimge worry ide antha nanage artha aagutte. Marks swalpa kadime iddru chinte maadbeda. Proper support mattu guidance sikkre, avanu improve maadkobahudu."
+SPOKEN KANNADA:
+Use simple, everyday Karnataka Kannada that sounds natural when spoken aloud.
+AVOID:
+- difficult Kannada words
+- highly formal Kannada
+- literary Kannada
+- textbook Kannada
+- newspaper-style Kannada
+- government/official Kannada
+- heavily Sanskritized Kannada
+- complicated sentence structures
+- unnatural direct translations from English
+- overly casual slang
+- Gen-Z slang
+The parent may be elderly, from a rural area, or comfortable mainly in Kannada. The response must therefore be understandable even with very little English knowledge.
+PARENT TONE:
+- Be respectful and warm.
+- Sound like a helpful college counselor.
+- Do not sound robotic.
+- Do not sound overly professional.
+- Do not speak to the child directly.
+- Do not use slang-heavy language.
+The ideal style is:
+A Kannada-speaking college counselor naturally reassuring a parent during a phone call.
+NOT:
+An AI reading out a translated paragraph.
+NATURALNESS:
+Do not simply preserve the original sentence structure if it sounds formal or unnatural.
+For example:
+FORMAL:
+"ನಿಮ್ಮ ಚಿಂತೆಯನ್ನು ನಾನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳುತ್ತೇನೆ."
+NATURAL:
+"Nimma worry nanage artha aagutte."
+FORMAL:
+"ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ಶೈಕ್ಷಣಿಕ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಬೆಂಬಲವನ್ನು ಒದಗಿಸಲಾಗುತ್ತದೆ."
+NATURAL:
+"Students-ge proper guidance mattu support sigutte."
+FORMAL:
+"ವಿದ್ಯಾರ್ಥಿಗಳು ತಮ್ಮ ಶೈಕ್ಷಣಿಕ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಿಕೊಳ್ಳಬಹುದು."
+NATURAL:
+"Students improve maadkobahudu."
+FORMAL:
+"ನಿಮಗೆ ಇನ್ನೂ ಯಾವುದೇ ಪ್ರಶ್ನೆಗಳಿದ್ದರೆ, ದಯವಿಟ್ಟು ಕೇಳಿ."
+NATURAL:
+"Innu yaavudadru doubt idre keliri."
+Do not blindly copy these examples. Use them only as examples of the desired level of simplicity and formality.
+
+
+MEANING AND FACTS:
+- Preserve the core meaning of the original response.
+- Do NOT add new information.
+- Do NOT invent facts, advice, promises, or reassurance.
+- Preserve every important number, date, name, branch, course, exam name, fee, percentage, and factual detail exactly.
+- Do not change the intent or emotional meaning.
+- Do not invent difficult or unusual Kannada words.
+- If a commonly used English term is clearer and more natural, keep that term.
+IMPORTANT:
+You may shorten the response when necessary to meet the 2-3 sentence limit, but do NOT remove important facts or change the meaning.
+FINAL CHECK:
+Before returning the response, silently check:
+1. Is it SHORT enough to comfortably hear on a phone call?
+2. Is it around 2-3 short sentences?
+3. Is Kannada clearly the main language?
+4. Is the English limited and natural?
+5. Is the Kannada simple and easy to understand?
+6. Does it sound like SPOKEN Karnataka Kannada?
+7. Does it avoid formal/textbook Kannada?
+8. Does it sound respectful and warm toward a parent?
+9. Did I preserve the important meaning and facts?
+10. Would a real Kannada-speaking counselor actually say this?
+OUTPUT:
+Return ONLY the final refined response.
+Do not provide explanations.
+Do not provide alternatives.
+Do not provide translations.
+Do not provide Romanization.
+Do not use quotation marks.
+Do not use bullet points.
+Do not use markdown.
+Do not add line breaks.
+Response to refine:
+{formal_kannada}
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=1500,
+        )
+        result = response.choices[0].message.content.strip()
+        return result if result else formal_kannada
+    except Exception:
+        return formal_kannada
+
+
 async def generate_response(
     engine2_result: dict,
     knowledge_result: dict,
@@ -252,23 +443,14 @@ async def generate_response(
         )
 
     # ── Normal path — build the full constrained prompt ────────────────
-    language_instruction = LANGUAGE_INSTRUCTIONS.get(language, LANGUAGE_INSTRUCTIONS["en"]).get(
+    # Kannada is generated in English first, then translated + polished
+    # via the 3-step pipeline at the end of this function — Groq does
+    # not attempt direct Kannada composition anymore.
+    effective_language = "en" if language == "kn" else language
+    language_instruction = LANGUAGE_INSTRUCTIONS.get(effective_language, LANGUAGE_INSTRUCTIONS["en"]).get(
         script, LANGUAGE_INSTRUCTIONS["en"]["romanized"]
     )
 
-    # Kannada gets real native-speaker-sourced examples for the specific
-    # detected emotion, since free-form Kannada generation was producing
-    # incoherent sentences — concrete patterns fix this reliably.
-    if language == "kn":
-        examples = KANNADA_EMOTION_EXAMPLES.get(script, {}).get(emotion, [])
-        if examples:
-            example_block = "\n".join(f"- {ex}" for ex in examples)
-            language_instruction += (
-                f"\n\nFollow this exact tone and simple sentence style "
-                f"(adapt naturally to the specific question, don't copy "
-                f"verbatim):\n{example_block}"
-            )
-            
     system_prompt = SYSTEM_PROMPT_BASE.format(language_instruction=language_instruction)
 
     mode_instruction = RESPONSE_MODE_INSTRUCTIONS.get(
@@ -300,11 +482,19 @@ Generate the response now, following all rules above."""
                               # structured responses, especially in Hindi/Kannada
                               # where tokenization uses more tokens per word
         )
+
         text = response.choices[0].message.content.strip()
+
+        if language == "kn":
+            formal_kannada = translate_to_kannada(text)
+            if formal_kannada:
+                text = await _casualize_kannada(formal_kannada)
+
         return {"response_text": text, "success": True}
 
     except Exception as e:
         print(f"❌ Response generation error: {e}")
+
         return {
             "response_text": (
                 "I'm sorry, I'm having trouble generating a response right now. "
@@ -337,8 +527,9 @@ async def _generate_simple(instruction: str, language: str, query: str) -> dict:
         )
         text = response.choices[0].message.content.strip()
         return {"response_text": text, "success": True}
+    
     except Exception as e:
-        print(f"❌ Simple response generation error: {e}")
+        print(f"❌ Response generation error: {e}")
         return {
             "response_text": "Hello! How can I help you with your SVIT admission questions today?",
             "success": False,
