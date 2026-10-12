@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- global base ---------- */
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #121414;
+    color: #ffffff;
+  }
+  body {
+    font-family: Inter, "Noto Sans Kannada", "Noto Sans Devanagari", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Kannada / Hindi text always gets a font that has the right glyphs */
+  :lang(kn) { font-family: "Noto Sans Kannada", Inter, sans-serif; }
+  :lang(hi) { font-family: "Noto Sans Devanagari", Inter, sans-serif; }
+}
+
+/* Material Symbols icon font */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* used by the shared footer on every page */
+.glass-text-glow {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 2px 8px rgba(0, 0, 0, 0.65);
+}
+
+/* visible keyboard focus for accessibility */
+:focus-visible {
+  outline: 2px solid #bfc2ff;
+  outline-offset: 2px;
+}
