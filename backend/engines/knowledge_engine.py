@@ -10,9 +10,105 @@ filters are under-specified and match multiple documents (e.g. "CSE
 fee" with no exam/quota given — matches KCET, COMEDK, and Management
 entries), returns ALL matching documents so Engine 5 can present the
 options honestly instead of guessing one.
+
+2026-10-09 (speed): each collection is kept in memory, so a lookup no
+longer waits for a round trip to MongoDB Atlas (~0.8 s measured). The
+collections are small (fees: 24 documents). Matching and the "broaden
+the search" step work exactly as before — only where the documents come
+from changed.
+  - The cached copy is refreshed every CACHE_TTL_SECONDS (60 s): an
+    edit made in the admin panel shows up within about a minute.
+    The admin routes can call invalidate_cache("fees") after saving to
+    make it show up immediately.
+  - Queries the cache can't answer exactly (operators like $gt, dotted
+    field names) and very large collections go to MongoDB as before.
+  - USE_CACHE = False turns the cache off completely.
+Previous version: knowledge_engine_backup_2026-10-09-speed.py
 """
 
+import asyncio
+import time
+
 from database.connection import get_database
+
+USE_CACHE = True
+CACHE_TTL_SECONDS = 60
+CACHE_MAX_DOCS = 2000          # larger collections are not cached
+
+_cache = {}                    # collection name -> {"docs": [...], "loaded_at": float, "refreshing": bool}
+_locks = {}
+
+
+def invalidate_cache(collection_name: str | None = None) -> None:
+    """Forget the cached copy (one collection, or all) — the next lookup reloads it."""
+    if collection_name is None:
+        _cache.clear()
+    else:
+        _cache.pop(collection_name, None)
+
+
+async def _load_collection(db, name: str):
+    docs = await db[name].find({}).to_list(length=CACHE_MAX_DOCS + 1)
+    if len(docs) > CACHE_MAX_DOCS:
+        return None
+    for doc in docs:
+        doc["_id"] = str(doc["_id"])
+    return docs
+
+
+async def _refresh(db, name: str) -> None:
+    try:
+        docs = await _load_collection(db, name)
+        if docs is None:
+            _cache.pop(name, None)
+        else:
+            _cache[name] = {"docs": docs, "loaded_at": time.monotonic(), "refreshing": False}
+    except Exception as e:
+        print(f"⚠️  Knowledge cache refresh failed for '{name}': {e}")
+        if name in _cache:
+            _cache[name]["refreshing"] = False
+
+
+async def _cached_docs(db, name: str):
+    """All documents of a collection from memory, or None if it can't be cached."""
+    entry = _cache.get(name)
+    if entry is not None:
+        if time.monotonic() - entry["loaded_at"] > CACHE_TTL_SECONDS and not entry["refreshing"]:
+            # Serve the current copy now, refresh in the background.
+            entry["refreshing"] = True
+            asyncio.create_task(_refresh(db, name))
+        return entry["docs"]
+    lock = _locks.setdefault(name, asyncio.Lock())
+    async with lock:
+        if name not in _cache:
+            await _refresh(db, name)
+        entry = _cache.get(name)
+        return entry["docs"] if entry else None
+
+
+def _cacheable(query: dict) -> bool:
+    return all("." not in k and not k.startswith("$") and not isinstance(v, dict)
+               for k, v in query.items())
+
+
+def _field_matches(value, wanted) -> bool:
+    # MongoDB equality: same value, or the value is a list containing it.
+    return value == wanted or (isinstance(value, list) and wanted in value)
+
+
+async def _find(db, collection_name: str, query: dict, limit: int = 10) -> list:
+    """Same result as db[collection].find(query).limit(limit), from memory when possible."""
+    if USE_CACHE and _cacheable(query):
+        docs = await _cached_docs(db, collection_name)
+        if docs is not None:
+            matches = [dict(d) for d in docs
+                       if all(_field_matches(d.get(k), v) for k, v in query.items())]
+            return matches[:limit]
+    cursor = db[collection_name].find(query).limit(limit)
+    documents = await cursor.to_list(length=limit)
+    for doc in documents:
+        doc["_id"] = str(doc["_id"])
+    return documents
 
 
 async def retrieve_knowledge(collection_name: str, filters: dict) -> dict:
@@ -23,14 +119,10 @@ async def retrieve_knowledge(collection_name: str, filters: dict) -> dict:
     if db is None:
         return {"found": False, "reason": "database_not_connected", "data": None}
 
-    collection = db[collection_name]
     query = {k: v for k, v in (filters or {}).items() if v is not None}
 
     try:
-        cursor = collection.find(query).limit(10)
-        documents = await cursor.to_list(length=10)
-        for doc in documents:
-            doc["_id"] = str(doc["_id"])
+        documents = await _find(db, collection_name, query)
 
         if len(documents) == 1:
             return {"found": True, "match_type": "single", "data": documents[0], "query_used": query}
@@ -47,10 +139,7 @@ async def retrieve_knowledge(collection_name: str, filters: dict) -> dict:
 
         if len(query) > 1:
             broader_query = dict(list(query.items())[:1])
-            cursor = collection.find(broader_query).limit(10)
-            documents = await cursor.to_list(length=10)
-            for doc in documents:
-                doc["_id"] = str(doc["_id"])
+            documents = await _find(db, collection_name, broader_query)
 
             if len(documents) == 1:
                 return {"found": True, "match_type": "single", "data": documents[0], "query_used": broader_query, "note": "broadened_search"}

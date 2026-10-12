@@ -96,15 +96,33 @@ EXTRACTABLE_ENTITY_TYPES = [
 ]
 
 
+# Kannada and Devanagari letters. Used to detect where a native-script
+# word starts, since \\b does not work with these scripts (their vowel
+# signs and viramas are not "word" characters in Python's regex).
+_INDIC_LETTER = r"[\u0C80-\u0CFF\u0900-\u097F]"
+_ZERO_WIDTH = re.compile(r"[\u200b\u200c\u200d]")  # ZWSP/ZWNJ/ZWJ typed inside words
+
+
 def find_entity_word_boundary(text_lower: str, lookup_pairs: list) -> str | None:
     """
     Matches an alias only as a whole word/phrase, using \\b boundaries.
     This is the fix for the earlier bug where "ce" matched inside
     "accessible" and "st" matched inside "hostel" — plain substring
     search (`alias in text`) does not respect word boundaries, regex does.
+
+    2026-10-06: aliases written in Kannada/Devanagari script use a
+    different rule — the alias must START a word (not be preceded by
+    another Kannada/Hindi letter), and may be followed by a suffix,
+    because Kannada attaches case endings directly
+    (e.g. "ಕೆಸಿಇಟಿಯಲ್ಲಿ" still means KCET). English aliases are matched
+    exactly as before.
     """
+    text_lower = _ZERO_WIDTH.sub("", text_lower)
     for alias, canonical in lookup_pairs:
-        pattern = r"\b" + re.escape(alias) + r"\b"
+        if alias.isascii():
+            pattern = r"\b" + re.escape(alias) + r"\b"
+        else:
+            pattern = r"(?<!" + _INDIC_LETTER + r")" + re.escape(_ZERO_WIDTH.sub("", alias))
         if re.search(pattern, text_lower):
             return canonical
     return None
@@ -266,7 +284,19 @@ def determine_needs_memory(text: str, entities: dict, confidence_zone: str) -> b
 
 
 # ── Main intent classification — the locked Engine 2 contract ─────────────
-async def classify_intent(text: str, normalized_text: str = None, language: str = "en") -> dict:
+async def classify_intent(text: str, normalized_text: str = None, language: str = "en",
+                          confirmed_intent: str = None) -> dict:
+    """
+    confirmed_intent (2026-10-09, speed): the voice route first classifies
+    Whisper's raw text, then — if the transcript corrector changed a few
+    words — classifies the corrected text again. It passes the intent the
+    first run settled on (already checked by Groq, or confident). If
+    Sentence Transformers picks the SAME intent for the corrected text,
+    the two agree and the second Groq call (~1 s) is skipped. If they
+    differ, Groq is asked exactly as before. Entities, emotion etc. are
+    always recomputed from the corrected text.
+    Previous version: intelligence_engine_backup_2026-10-09c.py
+    """
     query_for_matching = normalized_text if normalized_text else text
     query_for_matching = strip_conversational_filler(query_for_matching)
 
@@ -304,8 +334,17 @@ async def classify_intent(text: str, normalized_text: str = None, language: str 
     st_confidence = best_score
 
     # ── Hybrid arbitration — the only new decision point ──────────────
-    groq_result = await classify_intent_groq(text)
-    groq_intent_id = groq_result["intent"]
+    # 2026-10-08 speed-up with IDENTICAL decisions: when ST confidence is
+    # already >= the threshold, arbitrate_intent() always keeps ST's
+    # intent whatever Groq says — so the Groq call is skipped (~0.6 s
+    # saved). Below the threshold Groq is called exactly as before.
+    if st_confidence >= HYBRID_ST_CONFIDENCE_THRESHOLD:
+        groq_intent_id = st_intent_id
+    elif confirmed_intent is not None and confirmed_intent == st_intent_id:
+        groq_intent_id = confirmed_intent      # agreed by the first run — no second Groq call
+    else:
+        groq_result = await classify_intent_groq(text)
+        groq_intent_id = groq_result["intent"]
 
     final_intent_id, _decision_source = await arbitrate_intent(
         st_intent_id, st_confidence, groq_intent_id

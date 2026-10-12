@@ -6,3 +6,9 @@ __pycache__/
 .DS_Store
 backend/models/muril_multitask/model_weights.pt
 *.wav
+
+*.pt
+*_backup_*.py
+tests/output_audio/
+*.mp4
+*_backup_*.json

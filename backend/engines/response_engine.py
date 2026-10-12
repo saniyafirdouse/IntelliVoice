@@ -1,23 +1,173 @@
 """
-Engine 5 — Response Generation
+Engine 5 — Response Generation + Voice Output
 
 Takes Engine 2's classification output + Engine 3's retrieved knowledge,
 and generates a natural, empathetic response using Groq — strictly
 constrained to only use provided facts (RAG principle), never invent
 information. This is a communication layer only; all facts and
 decisions were already made by Engines 2 and 3.
+
+Flow per language:
+    en: Groq writes English                              -> TTS (en)
+    hi: Groq writes Hindi in the chosen script           -> TTS (hi)
+    kn: Groq writes English
+        -> Sarvam Mayura translates (code-mixed)
+        -> Groq polishes into simple spoken Kannada, in Kannada script
+        -> TTS always speaks the Kannada-script text
+        -> if romanized display was chosen, Sarvam transliterates the
+           Kannada-script text to Roman letters for the screen only
+
+Script options (the `script` argument):
+    "native"    — Kannada script / Devanagari
+    "romanized" — Roman letters
+    None        — language default: Kannada -> native, Hindi -> romanized
+
+2026-10-02 changes (original kept in response_engine_backup_2026-10-02.py):
+    - Added voice output (Sarvam Bulbul v3, see tts_engine.py)
+    - Kannada script by default, romanized as a display option
+    - Greetings/fallbacks for Kannada now use the same
+      English -> Sarvam -> polish pipeline (were direct Groq Kannada)
+    - Fixed greet/fallback prompt receiving a raw dict as its
+      language instruction
+    - Escalation now takes priority over the fallback redirect
+    - Groq/Sarvam calls run in worker threads (no longer block the server)
+    - Raised max_tokens: gpt-oss-20b is a reasoning model and spends
+      tokens thinking before answering — low limits returned empty text
+    - Removed unused code (_self_check_kannada, Kannada example
+      dictionaries, Kannada direct-generation instructions)
+
+2026-10-03 changes:
+    - Added rule 10: spoken-length limit for all languages (English
+      fee answers were ~53s because every fee field was read out)
+    - Shortened the comparison and escalation mode instructions
+
+2026-10-06 changes:
+    - Kannada polish now receives the user's own question and MIRRORS it:
+      English only for the user's own words, names/abbreviations/numbers,
+      and a short list of college words (college, fee, admission, branch,
+      hostel, placement, course, semester). Replaced the old
+      "20-30% English" rule and English-heavy examples.
+    - Kannada polish now uses openai/gpt-oss-120b (falls back to 20B),
+      edits Sarvam's grammatical sentences instead of rewriting them,
+      follows correct sentence patterns, and writes the user's
+      romanized Kannada words in Kannada script.
+
+2026-10-08 changes:
+    - Faster plain factual replies, greetings and off-topic redirects
+      (reasoning_effort="low"). Emotional / confused / escalation /
+      comparison / recommendation replies and the Kannada polish keep
+      full thinking — quality first.
+    - Worried/confused replies no longer repeat the parent's situation
+      back ("your son has low marks and you are tense, I understand");
+      they acknowledge in a few words. Possibilities are never turned
+      into promises ("can manage", not "will manage").
+
+2026-10-08 (second set; previous version in response_engine_backup_2026-10-08b.py):
+    - The assistant no longer says it will connect/transfer the parent to
+      the admission office (it cannot) — it suggests contacting the office
+      instead (rule 2, escalation mode, Kannada polish pattern).
+    - Kannada polish: "to you" is always ನಿಮಗೆ, never ನಿಮ್ಮಿಗೆ.
+    - Per-step timings (generate / translate / polish / romanize / tts)
+      are returned in debug["timings_ms"] to see where time goes.
+
+2026-10-08 (third set; previous version in response_engine_backup_2026-10-08c.py):
+    - Kannada polish no longer adds "don't worry" / comfort lines when the
+      reply being refined has none (a calm fee question got "tension
+      ಮಾಡ್ಕೋಬೇಡಿ").
+    - Fee answers: semester fee, early-bird fee, payment mode and
+      installments are left out of the data given to the model unless the
+      parent asked about them — prompt rules alone did not stop them being
+      read out.
+
+2026-10-09 (previous version in response_engine_backup_2026-10-09.py):
+    - Kannada polish keeps quota/exam names in English: "Management quota"
+      had become "ಸ್ವಂತ ಕೋಟಾ" ("own quota"), which a parent would not
+      recognise. Added management, quota, seat, exam, rank, cutoff to the
+      English college words.
+
+2026-10-09 (speed set; previous version in response_engine_backup_2026-10-09-speed.py):
+    - Kannada polish never repeats/restates the parent's question
+      (a reply began "fee ಎಷ್ಟು ಎಂದು ಕೇಳಿದ್ದೀರಾ." — "you asked how much the fee is").
+    - Returns "speech_language" so the voice route can make audio
+      sentence-by-sentence for play-as-you-go.
+
+2026-10-09 (b; previous version in response_engine_backup_2026-10-09b.py):
+    - "Which branch?" safety net: a fee / cutoff / placement-by-branch
+      question with no recognised branch gets a short question back
+      ("Which branch are you asking about?") instead of an answer about a
+      misheard name ("no information on the LCC branch") or a long list
+      of every branch.
+
+2026-10-09 (c; previous version in response_engine_backup_2026-10-09c.py):
+    - KANNADA_PIPELINE setting: "translate_polish" (Sarvam translation +
+      120B polish — the tested default) or "direct" (the 120B model
+      writes the final Kannada from the English answer in ONE step,
+      following the same rules; ~1 s faster). Compare both with
+      tests/compare_kannada.py before switching. "direct" falls back to
+      translate+polish automatically if it fails.
+    - Sentence pattern for asking which branch; ಯಾವುದು (not ಯಾವದು).
+
+2026-10-09 (d; previous version in response_engine_backup_2026-10-09d.py):
+    - Kannada polish instructions rewritten compactly: the same rules and
+      examples in well under half the length, so each Kannada reply uses
+      far fewer Groq tokens (the free plan allows ~8K tokens/minute per
+      model) and the polish is quicker. Added: never add facts/subjects
+      that are not in the response (a CSE-vs-AIML reply had invented CSE
+      subjects); technical words (AI, machine learning...) stay English.
+    - Reply cache: repeated factual questions reuse the earlier reply.
+
+2026-10-09 (e; previous version in response_engine_backup_2026-10-09e.py):
+    - Polish: never mention son/daughter or the parent's situation unless
+      the response does (a reply said ಮಗ to a mother asking about her
+      daughter); no Kannada word left in English letters (mane, tumba);
+      "office ಅನ್ನು", never "office ನನ್ನು".
 """
 
+import asyncio
+import hashlib
+import json
 import os
-from groq import Groq
+import re
+import time
+from collections import OrderedDict
+
 from dotenv import load_dotenv
+from groq import Groq
+
 from engines.kannada_translator import translate_to_kannada
+from engines.transliterator import romanize
+from engines.tts_engine import synthesize_speech
 
 load_dotenv()
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 MODEL = "openai/gpt-oss-20b"  # same model already validated for intent classification
 
+# Kannada polish only: the larger model builds Kannada sentences far more
+# reliably than the 20B one (20B produced awkward grammar like
+# "...ಅಂತ ಕೇಳಿ ನನಗೆ ಅರ್ಥ ಆಗುತ್ತೆ"). If it fails, falls back to MODEL.
+KANNADA_POLISH_MODEL = "openai/gpt-oss-120b"
+
+# How much the gpt-oss models "think" before answering. "low" roughly
+# halves the time of a call (measured 0.6 s vs 1.3 s) and is used ONLY
+# for simple, low-risk replies. Emotional, confused, escalation,
+# comparison and recommendation replies — and the Kannada polish — keep
+# the model's default (fuller) thinking, so quality is not traded for
+# speed where it matters most.
+# How the Kannada reply is made (see changelog 2026-10-09 c):
+#   "translate_polish" — Sarvam translates, 120B polishes (default, tested)
+#   "direct"           — 120B writes the Kannada in one step (faster)
+KANNADA_PIPELINE = "translate_polish"
+
+FAST_REASONING = "low"
+FAST_RESPONSE_MODES = {"informational"}
+
+SUPPORTED_LANGUAGES = {"en", "hi", "kn"}
+VALID_SCRIPTS = {"native", "romanized"}
+DEFAULT_SCRIPT = {"en": "native", "hi": "romanized", "kn": "native"}
+
+# Kannada is never generated directly by Groq (it can't produce reliable
+# Kannada grammar), so only English and Hindi instructions exist here.
 LANGUAGE_INSTRUCTIONS = {
     "en": {
         "romanized": "Respond in clear, natural English.",
@@ -44,116 +194,22 @@ LANGUAGE_INSTRUCTIONS = {
             "formal/literary vocabulary."
         ),
     },
-    "kn": {
-        "romanized": (
-            "Respond in natural, conversational Kannada WRITTEN IN ROMAN/"
-            "ENGLISH LETTERS, NOT Kannada script. The way real people actually "
-            "text/speak on a phone call. Keep technical terms and numbers in "
-            "English/numerals.\n"
-            "Example of RIGHT: 'CSE fee 145000 rupees ide, yearly.'"
-            "When responding in reassurance mode specifically, use simple sentence "
-            "patterns like these (adapt naturally, don't copy word-for-word):\n"
-            "- Acknowledge: 'Nimma chinte arthaagutte' (I understand your worry)\n"
-            "- Normalize: 'Tumba parents ge idee thara chinte irutte' (many parents "
-            "have this same worry)\n"
-            "- Reassure: 'SVIT alli mentors mattu faculty support ide, students ge "
-            "sahaya maaduttare' (SVIT has mentor and faculty support, they help "
-            "students)\n"
-            "- Invite more: 'Innu yenadaru kelbeku antha anisidre, keliri' (if you "
-            "want to ask anything else, please ask)\n"
-            "Keep grammar SIMPLE — avoid complex sentence structures, since overly "
-            "elaborate Kannada grammar is more likely to come out wrong."
-        ),
-        "native": (
-            "Respond in natural, conversational Kannada WRITTEN IN KANNADA "
-            "SCRIPT (ಕನ್ನಡ ಲಿಪಿ), for readers who read Kannada script. Even in "
-            "Kannada script, keep technical terms (branch names, exam names, "
-            "quota names, course names, and numbers) in English/Roman letters "
-            "and numerals — do not transliterate them into Kannada script."
-            "When responding in reassurance mode specifically, use simple sentence "
-            "patterns like these (adapt naturally, don't copy word-for-word):\n"
-            "- Acknowledge: 'Nimma chinte arthaagutte' (I understand your worry)\n"
-            "- Normalize: 'Tumba parents ge idee thara chinte irutte' (many parents "
-            "have this same worry)\n"
-            "- Reassure: 'SVIT alli mentors mattu faculty support ide, students ge "
-            "sahaya maaduttare' (SVIT has mentor and faculty support, they help "
-            "students)\n"
-            "- Invite more: 'Innu yenadaru kelbeku antha anisidre, keliri' (if you "
-            "want to ask anything else, please ask)\n"
-            "Keep grammar SIMPLE — avoid complex sentence structures, since overly "
-            "elaborate Kannada grammar is more likely to come out wrong."
-        ),
-    },
-}
-
-# Native-speaker-provided example phrases, indexed by emotion, so the
-# model has concrete Kannada patterns to follow instead of composing
-# complex grammar from scratch (which was producing incoherent output).
-# NOTE: sourced from ChatGPT, pending final Bhuvana verification.
-KANNADA_EMOTION_EXAMPLES = {
-    "romanized": {
-        "worried": [
-            "Nimma chinte artha agutte. Nimma magu admission bagge worry aagodu sahajave.",
-            "Marks bagge chinte maadodu understandable. Students ge college alli guidance mattu support sigutte.",
-        ],
-        "confused": [
-            "Nimge confusion ide anta artha agutte. Naanu simple aagi explain maadthini.",
-            "Parvagilla, idanna step by step nodona.",
-        ],
-        "frustrated": [
-            "Nimge frustration aagirodu artha agutte. Naanu nimge clear aagi information kodthini.",
-            "Sorry, nimge sariyagi information siglilla andre, naavu idanna clear maadona.",
-        ],
-        "excited": [
-            "Howdu, adu olleya vishaya. Nimma maguvige tumba olleya opportunity aagabahudu.",
-            "Super, nimge information helpful aagide anta khushi.",
-        ],
-        "neutral": [
-            "Howdu, nimma question ge answer helthini.",
-            "Sure, ee information na nimge clear aagi helthini.",
-        ],
-    },
-    "native": {
-        "worried": [
-            "ನಿಮ್ಮ ಚಿಂತೆ ಅರ್ಥ ಆಗುತ್ತದೆ. ನಿಮ್ಮ ಮಗು admission ಬಗ್ಗೆ worry ಆಗೋದು ಸಹಜವೇ.",
-            "Marks ಬಗ್ಗೆ ಚಿಂತೆ ಮಾಡೋದು understandable. Students ಗೆ college ಅಲ್ಲಿ guidance ಮತ್ತು support ಸಿಗುತ್ತದೆ.",
-        ],
-        "confused": [
-            "ನಿಮಗೆ confusion ಇದೆ ಅಂತ ಅರ್ಥ ಆಗುತ್ತದೆ. ನಾನು simple ಆಗಿ explain ಮಾಡ್ತೀನಿ.",
-            "ಪರವಾಗಿಲ್ಲ, ಇದನ್ನ step by step ನೋಡೋಣ.",
-        ],
-        "frustrated": [
-            "ನಿಮಗೆ frustration ಆಗಿರೋದು ಅರ್ಥ ಆಗುತ್ತದೆ. ನಾನು ನಿಮಗೆ clear ಆಗಿ information ಕೊಡ್ತೀನಿ.",
-            "Sorry, ನಿಮಗೆ ಸರಿಯಾಗಿ information ಸಿಗ್ಲಿಲ್ಲ ಅಂದ್ರೆ, ನಾವು ಇದನ್ನ clear ಮಾಡೋಣ.",
-        ],
-        "excited": [
-            "ಹೌದು, ಅದು ಒಳ್ಳೆಯ ವಿಷಯ. ನಿಮ್ಮ ಮಗುವಿಗೆ ತುಂಬಾ ಒಳ್ಳೆಯ opportunity ಆಗಬಹುದು.",
-            "Super, ನಿಮಗೆ information helpful ಆಗಿದೆ ಅಂತ ಖುಷಿ.",
-        ],
-        "neutral": [
-            "ಹೌದು, ನಿಮ್ಮ question ಗೆ answer ಹೇಳ್ತೀನಿ.",
-            "Sure, ಈ information ನ ನಿಮಗೆ clear ಆಗಿ ಹೇಳ್ತೀನಿ.",
-        ],
-    },
-}
-
-KANNADA_ESCALATION_HANDOFF = {
-    "romanized": "Naanu nimmanna admission office jothe connect maadthini, avaru nimge sariyada information kodtare.",
-    "native": "ನಾನು ನಿಮ್ಮನ್ನ admission office ಜೊತೆ connect ಮಾಡ್ತೀನಿ, ಅವರು ನಿಮಗೆ ಸರಿಯಾದ information ಕೊಡ್ತಾರೆ.",
 }
 
 SYSTEM_PROMPT_BASE = """You are IntelliVoice, SVIT college's admissions assistant — replacing a human staff member on a phone call, not acting like a typical chatbot.
 
 ABSOLUTE RULES:
 1. Use ONLY the facts given to you in "Retrieved Data" below. Never invent a number, fee, cutoff, or any fact not explicitly provided.
-2. If Retrieved Data says NOT FOUND, say plainly you don't have that information right now and offer to connect them to the admission office — never guess.
+2. If Retrieved Data says NOT FOUND, say plainly you don't have that information right now and suggest they contact the SVIT admission office directly — never guess. You CANNOT connect, transfer or call anyone: never say "I will connect you", "I will transfer you" or "someone will call you".
 3. If multiple options are given, present ALL of them honestly — never pick one and pretend it's the only answer.
 4. Never say anything negative about another college.
 5. When comparing or recommending branches, never favor one — present facts, let the person decide.
+6a. Never promise outcomes about a student (admission, results, placement, success). Say what is possible ("can", "may"), never what "will" happen.
 6. If the user asks about a multi-year or total cost and you only have a per-year figure: state the current per-year figure as an exact fact, THEN clearly mention that fees can change year to year (institutional decisions, renovations, policy changes — real and common). If a rough multi-year estimate is genuinely useful, phrase it as an approximation only — using words like "roughly," "approximately," "as of now this could be around" — never state a calculated multi-year total as if it were a confirmed, precise fact.
 7. Pay attention to the SPECIFIC words the user used in their own question (e.g., if they said "yearly," say "yearly" back; if they used a Hindi/Kannada word like "varshik," use that same word back). Mirror their own vocabulary and register as closely as natural, rather than substituting your own formal or casual synonym.
 8. NEVER use markdown formatting — no asterisks for bold, no bullet points/dashes, no headers, no literal "\\n" newline characters. Write ONLY as plain, natural spoken sentences and paragraphs, exactly the way a person would actually talk on a phone call. If comparing multiple things, weave them into flowing sentences (e.g. "CSE focuses on... while AIML focuses on...") instead of a list structure.
 9. {language_instruction}
+10. This answer will be SPOKEN on a phone call, so keep it SHORT: usually 2-4 short sentences. Answer only what was asked, and mention only the details that answer the question. For example, for a fee question give the annual fee for each option — do not read out semester fees, early-bird fees, installments, or payment mode unless the user asked about them. Do not repeat the question back, and do not add long closing lines.
 """
 
 RESPONSE_MODE_INSTRUCTIONS = {
@@ -165,8 +221,11 @@ RESPONSE_MODE_INSTRUCTIONS = {
 
     "reassurance": (
         "The person is feeling {emotion}. Follow this exact structure:\n"
-        "1. Acknowledge their concern genuinely (1 sentence) — do not jump "
-        "straight to facts.\n"
+        "1. Acknowledge the feeling in a FEW words only (e.g. 'Please don't "
+        "worry' / 'I understand your concern'). Do NOT repeat back the details "
+        "of what they told you (never 'I understand that your son has low marks "
+        "and you are tense...') — they know what they said; restating it is "
+        "slow and sounds robotic.\n"
         "2. Normalize it — make clear this is a common, understandable concern.\n"
         "3. If Retrieved Data has relevant facts, weave them in as reassurance. "
         "If Retrieved Data says NOT FOUND, do NOT dwell on that or apologize "
@@ -174,14 +233,16 @@ RESPONSE_MODE_INSTRUCTIONS = {
         "lookup. Simply reassure them in general, genuine terms (e.g. that "
         "support systems, mentorship, and guidance exist for exactly this "
         "kind of concern) without needing a specific database fact.\n"
-        "4. End by inviting them to ask anything else — leave the door open."
+        "4. End by inviting them to ask anything else — leave the door open.\n"
+        "Never promise an outcome (never 'he WILL succeed'); say what is "
+        "possible ('he CAN do well with the right support')."
     ),
 
     "comparison": (
-        "Present the requested comparison using only the retrieved facts about "
-        "each branch. Structure it clearly (e.g., by subject focus, career "
-        "scope). End by noting the right choice depends on the student's own "
-        "interests — never state one branch is objectively \"better.\""
+        "Compare using only the retrieved facts: one short sentence per branch "
+        "on its main focus, then one short sentence saying the right choice "
+        "depends on the student's own interests — never state one branch is "
+        "objectively \"better.\""
     ),
 
     "recommendation": (
@@ -191,267 +252,293 @@ RESPONSE_MODE_INSTRUCTIONS = {
     ),
 
     "escalation": (
-        "Acknowledge whatever you could answer using retrieved facts (if any). "
-        "Then clearly and warmly let them know you're connecting them with the "
-        "admission office for full support, and that this is normal — not a "
-        "failure to help them."
+        "Answer in about 2 short sentences: first, briefly and warmly "
+        "acknowledge their concern in a few words, without repeating back what "
+        "they said (and give any directly relevant retrieved "
+        "fact, if there is one); second, suggest they speak to the SVIT "
+        "admission office directly, who can help them fully. Never say you "
+        "are connecting or transferring them, or that someone will call "
+        "them — you cannot do that."
     ),
 }
 
+GREET_INSTRUCTION = (
+    "The user is greeting you. Respond with a warm, brief welcome "
+    "and invite them to ask their question. No facts needed."
+)
 
-def format_retrieved_data(knowledge_result: dict) -> str:
-    """
-    Formats Engine 3's output into the exact text block the prompt needs.
-    Handles all three real cases Engine 3 actually produces: single match,
-    multiple matches (ambiguous query), and not found.
-    """
-    if not knowledge_result or not knowledge_result.get("found"):
-        return "NOT FOUND — no matching record exists yet."
+# Questions that can only be answered for a specific branch. If Engine 2
+# found no branch (not said, or misheard), the parent is asked which one.
+BRANCH_SPECIFIC_INTENTS = {"ask_fees_branch", "ask_cutoff", "ask_placement_by_branch"}
 
-    match_type = knowledge_result.get("match_type", "single")
-    data = knowledge_result["data"]
+ASK_BRANCH_INSTRUCTION = (
+    "The parent asked about fees, cutoff or placement, but it is not clear "
+    "which branch they mean (the branch name was not said, or was not heard "
+    "clearly). Do NOT give any numbers. In ONE short, polite sentence, ask "
+    "which branch they are asking about, mentioning a few examples: CSE, "
+    "ISE, ECE, AIML. Do not mention any branch name from their question "
+    "that is not one of these, and do not say you could not hear them."
+)
 
-    if match_type == "multiple":
-        lines = ["Multiple options — present all of them:"]
-        for i, item in enumerate(data, 1):
-            lines.append(f"{i}. {item}")
-        return "\n".join(lines)
+FALLBACK_INSTRUCTION = (
+    "The user's question is unrelated to SVIT admissions (e.g. "
+    "weather, sports, general knowledge). Politely acknowledge "
+    "it's outside what you can help with, and gently steer the "
+    "conversation back to admissions topics. Never attempt to "
+    "actually answer the unrelated question."
+)
 
-    return str(data)
+# Shown (and spoken) only if Groq fails completely.
+# NOTE: Hindi/Kannada versions pending native-speaker check by the team.
+ERROR_MESSAGES = {
+    ("en", "native"): "I'm sorry, I'm having trouble answering right now. Please contact the SVIT admission office directly for help.",
+    ("en", "romanized"): "I'm sorry, I'm having trouble answering right now. Please contact the SVIT admission office directly for help.",
+    ("hi", "romanized"): "Maaf kijiye, abhi jawab dene mein dikkat ho rahi hai. Kripya SVIT admission office se seedha contact kijiye.",
+    ("hi", "native"): "माफ़ कीजिए, अभी जवाब देने में दिक्कत हो रही है। कृपया SVIT admission office से सीधे contact कीजिए।",
+    ("kn", "romanized"): "Kshamisi, eega uttara kodoke tondare aagtide. Dayavittu SVIT admission office annu neravaagi contact maadi.",
+    ("kn", "native"): "ಕ್ಷಮಿಸಿ, ಈಗ ಉತ್ತರ ಕೊಡೋಕೆ ತೊಂದರೆ ಆಗ್ತಿದೆ. ದಯವಿಟ್ಟು SVIT admission office ಅನ್ನು ನೇರವಾಗಿ contact ಮಾಡಿ.",
+}
 
-
-async def _self_check_kannada(text: str) -> str:
-    """
-    Safety net for Kannada output specifically, since free-generation has
-    shown real grammatical failures in complex sentences. This is a
-    second Groq call that reviews and corrects the Kannada text before
-    it's returned to the user — an ongoing quality gate for ANY future
-    query, not just ones we happened to manually test.
-    """
-    check_prompt = f"""Review this Kannada sentence for grammatical correctness and natural flow. Kannada speakers should find it clear and natural, not confusing or garbled.
-
-If it is already correct and natural, return it EXACTLY unchanged.
-If there is a grammar mistake, confusing phrasing, or incorrect word usage, rewrite it correctly — keep the same meaning, keep any English/technical terms (branch names, numbers, KCET, etc.) exactly as they are, just fix the Kannada grammar/flow.
-
-Text: {text}
-
-Respond with ONLY the final Kannada text, nothing else — no explanation."""
-
-    try:
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=[{"role": "user", "content": check_prompt}],
-            temperature=0.2,
-            max_tokens=1500,  # reasoning model spends tokens on internal
-                               # thinking before the visible answer —
-                               # 600 wasn't enough headroom for both
-        )
-        checked_text = response.choices[0].message.content.strip()
-
-        # Safety net: if the check somehow still comes back empty
-        # (e.g. hit length limit again), never return blank —
-        # fall back to the original, already-good text instead
-        if not checked_text:
-            return text
-
-        return checked_text
-    except Exception:
-        return text
-
-async def _casualize_kannada(formal_kannada: str) -> str:
-    """
-    Takes Sarvam AI's translated Kannada (code-mixed mode) and asks Groq
-    to rebalance the English-to-Kannada ratio toward Kannada-dominant,
-    accessible spoken language — a constrained edit, not free
-    composition. Much safer for Groq than generating Kannada from
-    scratch, since correctness is already guaranteed going in.
-    """
-    prompt = f"""You are refining a Kannada response for IntelliVoice, a college admissions voice assistant. The response will be SPOKEN to a parent over a phone call.
+KANNADA_POLISH_PROMPT = """You are refining a Kannada response for IntelliVoice, a college admissions voice assistant. The response will be SPOKEN to a parent on a phone call.
 YOUR GOAL:
-Rewrite the response so it sounds like NATURAL, SIMPLE, SPOKEN KARNATAKA KANNADA used by a real college counselor talking to a parent.
-The response should feel warm, reassuring, clear, and conversational — NOT like a formal written Kannada response or a translated English paragraph.
-LENGTH — VERY IMPORTANT:
-Keep the response SHORT and easy to listen to.
-- The final response should usually be around 3-4 medium to short  sentences.
-- dontst mean evrytime the response must restrict to 3 lines itself it can be more or less depending on the query asked.
-- It should roughly fit within 3 spoken lines.(dont try to fit every sentence forcefully into 3 lines. keep it natural)
-- Do NOT give long explanations.
-- Do NOT repeat the same point in different ways.
-- Remove unnecessary details or repetition while preserving the important meaning. dont give unwanted words to make the sentence look long.
-- The parent should be able to listen to the complete response comfortably without getting bored.
-LANGUAGE:
-Kannada must be the MAIN language.
-Use roughly 70-80% Kannada and 20-30% natural English as a general guideline.
-Use only a small amount of commonly used English where it sounds natural, such as:
-CSE, college, students, marks, fee, admission, course, faculty, support, guidance, performance, placement, campus, branch, future, worry, doubt, etc.
-IMPORTANT: never translate these English words into kannada.
--keep all technical or college related terms in English.
--copy and match the style and tone of the parent/student.
--if they speak more formalised stiff kannada match them.
--if they use English words in between the sentence retain those words in the response, dont replace them with translated kannada.
-Do NOT force English into every sentence.
-Do NOT use long English phrases such as:
-- "right support, guidance, and focused study plan"
-- "anxious feel aagodu completely normal"
-- "chosen branch-nalli succeed aagabahudu"
-- "academic support services"
-Instead, use Kannada sentence structure with only a few natural English words.
+Rewrite the response so it sounds like NATURAL, SIMPLE, SPOKEN KARNATAKA KANNADA, the way a warm college counselor talks to a parent who may be elderly, rural, or comfortable mainly in Kannada. Not formal, textbook, literary or Sanskritized Kannada; not a translated English paragraph; not slang.
+LENGTH: usually 2-4 short sentences. No long explanations, no repeating a point, no filler.
 
+LANGUAGE — MIRROR THE USER'S WORDS (MOST IMPORTANT RULE):
+Kannada is the main language. Use English ONLY for:
+1. words the USER said in English (e.g. worry, tension, marks, manage);
+2. names, abbreviations and numbers (CSE, AIML, KCET, COMEDK, SVIT, 120000, 2026-27);
+3. college words Kannada speakers say in English: college, fee, admission, office, branch, hostel, placement, course, semester, management, quota, seat, exam, rank, cutoff;
+4. technical subject names: AI, artificial intelligence, machine learning, deep learning, data science, programming, coding, software.
+Say everything else in simple spoken Kannada, even if the response uses English for it (e.g. concern, normal, future, support, guidance, improve, succeed, questions). If the user used a Kannada word (bhaya, chinte, duddu), use that same word back.
+Never translate quota/exam names or technical words: "Management quota", "KCET", "COMEDK", "NRI quota", "Government quota", "machine learning". WRONG: ಸ್ವಂತ ಕೋಟಾ, ಆಡಳಿತ ಕೋಟಾ, ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆ, ಯಂತ್ರ ಕಲಿಕೆ, ಶಾಖೆ. Say "seat ಸಿಕ್ಕವರಿಗೆ", not "ಸ್ಥಾನ ಪಡೆಯುವ ಅಭ್ಯರ್ಥಿಗಳಿಗೆ".
+SCRIPT: Kannada words in Kannada script, English words in English letters, numbers as digits. Kannada words the user typed in Roman letters (alli, eshtu, mane, tumba, maga) are written in Kannada script (ಅಲ್ಲಿ, ಎಷ್ಟು, ಮನೆ, ತುಂಬಾ, ಮಗ). Before answering, check that NO Kannada word is left in English letters.
 
-IMPORTANT BALANCE:
-Do NOT make the response too English-heavy.
-WRONG:
-"Nimma magana future bagge worry aagodu understandable. College alli proper support and guidance sigutte, so he can improve his performance."
-Do NOT make it too formal or difficult Kannada either.
-WRONG:
-"ನಿಮ್ಮ ಮಗನ ಪ್ರಸ್ತುತ ಅಂಕಗಳು ಮತ್ತು ಸಿ.ಎಸ್.ಇ.ಯಲ್ಲಿ ನಿರ್ವಹಿಸುವ ಬಗ್ಗೆ ಅವನಿಗೆ ಇರುವ ಚಿಂತೆಗಳ ಬಗ್ಗೆ ನೀವು ಹೇಗೆ ಭಾವಿಸುತ್ತೀರಿ ಎಂಬುದು ನನಗೆ ಅರ್ಥವಾಗುತ್ತದೆ."
-NATURAL STYLE:
-"Nimma magana marks kadime ide, CSE alli manage maadtaana antha nimge worry ide antha nanage artha aagutte. Marks swalpa kadime iddru chinte maadbeda. Proper support mattu guidance sikkre, avanu improve maadkobahudu."
-SPOKEN KANNADA:
-Use simple, everyday Karnataka Kannada that sounds natural when spoken aloud.
-AVOID:
-- difficult Kannada words
-- highly formal Kannada
-- literary Kannada
-- textbook Kannada
-- newspaper-style Kannada
-- government/official Kannada
-- heavily Sanskritized Kannada
-- complicated sentence structures
-- unnatural direct translations from English
-- overly casual slang
-- Gen-Z slang
-The parent may be elderly, from a rural area, or comfortable mainly in Kannada. The response must therefore be understandable even with very little English knowledge.
-PARENT TONE:
-- Be respectful and warm.
-- Sound like a helpful college counselor.
-- Do not sound robotic.
-- Do not sound overly professional.
-- Do not speak to the child directly.
-- Do not use slang-heavy language.
-The ideal style is:
-A Kannada-speaking college counselor naturally reassuring a parent during a phone call.
-NOT:
-An AI reading out a translated paragraph.
-NATURALNESS:
-Do not simply preserve the original sentence structure if it sounds formal or unnatural.
-For example:
-FORMAL:
-"ನಿಮ್ಮ ಚಿಂತೆಯನ್ನು ನಾನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳುತ್ತೇನೆ."
-NATURAL:
-"Nimma worry nanage artha aagutte."
-FORMAL:
-"ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ಶೈಕ್ಷಣಿಕ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಬೆಂಬಲವನ್ನು ಒದಗಿಸಲಾಗುತ್ತದೆ."
-NATURAL:
-"Students-ge proper guidance mattu support sigutte."
-FORMAL:
-"ವಿದ್ಯಾರ್ಥಿಗಳು ತಮ್ಮ ಶೈಕ್ಷಣಿಕ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಿಕೊಳ್ಳಬಹುದು."
-NATURAL:
-"Students improve maadkobahudu."
-FORMAL:
-"ನಿಮಗೆ ಇನ್ನೂ ಯಾವುದೇ ಪ್ರಶ್ನೆಗಳಿದ್ದರೆ, ದಯವಿಟ್ಟು ಕೇಳಿ."
-NATURAL:
-"Innu yaavudadru doubt idre keliri."
-Do not blindly copy these examples. Use them only as examples of the desired level of simplicity and formality.
+EDIT, DON'T REWRITE — VERY IMPORTANT FOR GRAMMAR:
+The response you are refining is already grammatically correct Kannada. Keep its sentence structure wherever it is correct and natural.
+Mainly SWAP WORDS: replace unwanted English with simple Kannada, and use the user's own words where they fit.
+Only restructure a sentence if it is genuinely formal, stiff, or textbook-like — and then use one of the CORRECT SENTENCE PATTERNS below.
+A short, simple, grammatically correct sentence is always better than a clever one with broken grammar.
 
+CORRECT SENTENCE PATTERNS:
+- Acknowledge a worry ONLY if the response already does — a few words, with the user's own word: "ನಿಮ್ಮ ಚಿಂತೆ ಅರ್ಥ ಆಗುತ್ತೆ." / "tension ಮಾಡ್ಕೋಬೇಡಿ." A calm question gets NO "don't worry" line. WRONG (repeats their situation): "ನಿಮ್ಮ ಮಗನಿಗೆ ಕಡಿಮೆ marks ಬಂದಿರೋದ್ರಿಂದ ನಿಮಗೆ tension ಆಗ್ತಿರೋದು ನನಗೆ ಅರ್ಥ ಆಗುತ್ತೆ."
+- Normalize: "ತುಂಬಾ ಜನ ತಂದೆ-ತಾಯಿಗೆ ಇದೇ ಚಿಂತೆ ಇರುತ್ತೆ."
+- Reassure with a possibility, never a promise: "ಸರಿಯಾದ ಸಹಾಯ ಸಿಕ್ಕರೆ ಅವನು ಚೆನ್ನಾಗಿ ಮಾಡ್ಕೋಬಹುದು." WRONG: "ಅವನು manage ಮಾಡ್ತಾನೆ."
+- A fact: "2026-27 ಕ್ಕೆ KCET ಮೂಲಕ CSE fee 120000 ರೂಪಾಯಿ."
+- Not available: "ಈ ಮಾಹಿತಿ ಈಗ ನನ್ನ ಹತ್ತಿರ ಇಲ್ಲ. ದಯವಿಟ್ಟು SVIT admission office ಅಲ್ಲಿ ಕೇಳಿ." WRONG: "ನಾನು ನಿಮ್ಮನ್ನು admission office-ಗೆ ಸಂಪರ್ಕಿಸುತ್ತೇನೆ." (the assistant cannot connect anyone)
+- Which branch: "ಯಾವ branch ಬಗ್ಗೆ ಕೇಳ್ತಿದ್ದೀರಾ? ಉದಾಹರಣೆಗೆ CSE, ISE, ECE, AIML."
+- More questions: "ಇನ್ನೇನಾದ್ರೂ ಕೇಳಬೇಕಿದ್ರೆ ಕೇಳಿ." WRONG: "ನೀವು ಇನ್ನೇನಾದರೂ ಪ್ರಶ್ನೆಗಳಿದ್ದರೆ ಕೇಳಿ."
+- Spelling: ನಿಮಗೆ (never ನಿಮ್ಮಿಗೆ), ಯಾವುದು (never ಯಾವದು), "office ಅನ್ನು" / "office ಅಲ್ಲಿ" (never "office ನನ್ನು").
+- Formal -> natural: "ನಿಮ್ಮ ಚಿಂತೆಯನ್ನು ನಾನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳುತ್ತೇನೆ." -> "ನಿಮ್ಮ ಚಿಂತೆ ನನಗೆ ಅರ್ಥ ಆಗುತ್ತೆ."   "ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ಶೈಕ್ಷಣಿಕ ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಬೆಂಬಲವನ್ನು ಒದಗಿಸಲಾಗುತ್ತದೆ." -> "ಮಕ್ಕಳಿಗೆ ಸರಿಯಾದ ಸಹಾಯ ಸಿಗುತ್ತೆ."
+Full example (the user said only marks, CSE, manage, tension): "tension ಮಾಡ್ಕೋಬೇಡಿ, ಇದು ತುಂಬಾ ತಂದೆ-ತಾಯಿಗೆ ಇರೋ ಚಿಂತೆನೇ. Marks ಸ್ವಲ್ಪ ಕಡಿಮೆ ಇದ್ರೂ, ಸರಿಯಾದ ಸಹಾಯ ಸಿಕ್ಕರೆ ಅವನು CSE ಅಲ್ಲಿ ಚೆನ್ನಾಗಿ manage ಮಾಡ್ಕೋಬಹುದು."
 
 MEANING AND FACTS:
-- Preserve the core meaning of the original response.
-- Do NOT add new information.
-- Do NOT invent facts, advice, promises, or reassurance.
-- Preserve every important number, date, name, branch, course, exam name, fee, percentage, and factual detail exactly.
-- Do not change the intent or emotional meaning.
-- Do not invent difficult or unusual Kannada words.
-- If a commonly used English term is clearer and more natural, keep that term.
-IMPORTANT:
-You may shorten the response when necessary to meet the 2-3 sentence limit, but do NOT remove important facts or change the meaning.
-FINAL CHECK:
-Before returning the response, silently check:
-1. Is it SHORT enough to comfortably hear on a phone call?
-2. Is it around 2-3 short sentences?
-3. Is Kannada clearly the main language?
-4. Is the English limited and natural?
-5. Is the Kannada simple and easy to understand?
-6. Does it sound like SPOKEN Karnataka Kannada?
-7. Does it avoid formal/textbook Kannada?
-8. Does it sound respectful and warm toward a parent?
-9. Did I preserve the important meaning and facts?
-10. Would a real Kannada-speaking counselor actually say this?
-OUTPUT:
-Return ONLY the final refined response.
-Do not provide explanations.
-Do not provide alternatives.
-Do not provide translations.
-Do not provide Romanization.
-Do not use quotation marks.
-Do not use bullet points.
-Do not use markdown.
-Do not add line breaks.
+- Keep every number, date, name, branch, exam and fee exactly. Keep the meaning and the emotional tone.
+- Add NOTHING that is not in the response: no new facts, subjects, details, advice, promises or comfort.
+- Never turn "can/may" (ಮಾಡ್ಕೋಬಹುದು) into "will" (ಮಾಡ್ತಾನೆ) about a student's results, admission or placement.
+- Never repeat or restate the parent's question or situation ("...ಎಂದು ಕೇಳಿದ್ದೀರಾ"). Start with the answer. Mirroring means reusing their words, not their question.
+- Never say the assistant will connect, transfer or call anyone. Do not speak to the child directly.
+- Never mention the student as son or daughter (ಮಗ / ಮಗಳು), and never describe the parent's situation, unless the response itself does — and then use exactly what it says.
+
+OUTPUT: only the final Kannada response as one paragraph — no explanations, alternatives, translations, romanization, quotes, bullets, markdown or line breaks.
+
+User's question (mirror these words):
+{user_query}
+
 Response to refine:
 {formal_kannada}
 """
 
-    try:
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
-            max_tokens=1500,
-        )
-        result = response.choices[0].message.content.strip()
-        return result if result else formal_kannada
-    except Exception:
-        return formal_kannada
+
+def _build_direct_prompt(polish_prompt: str) -> str:
+    """Same rules as the polish prompt, but the input is the ENGLISH answer."""
+    p = polish_prompt
+    replacements = [
+        ("You are refining a Kannada response for IntelliVoice",
+         "You are writing a Kannada response for IntelliVoice"),
+        ("Rewrite the response so it sounds like NATURAL, SIMPLE, SPOKEN KARNATAKA KANNADA",
+         "Write the English answer given at the end as NATURAL, SIMPLE, SPOKEN KARNATAKA KANNADA"),
+        ("""EDIT, DON'T REWRITE — VERY IMPORTANT FOR GRAMMAR:
+The response you are refining is already grammatically correct Kannada. Keep its sentence structure wherever it is correct and natural.
+Mainly SWAP WORDS: replace unwanted English with simple Kannada, and use the user's own words where they fit.
+Only restructure a sentence if it is genuinely formal, stiff, or textbook-like — and then use one of the CORRECT SENTENCE PATTERNS below.
+A short, simple, grammatically correct sentence is always better than a clever one with broken grammar.""",
+         """GRAMMAR — VERY IMPORTANT:
+Write short, simple sentences, each one grammatically correct. Build them like the CORRECT SENTENCE PATTERNS below.
+Say exactly what the English answer says — the same facts and meaning — nothing added, nothing left out.
+A short, simple, grammatically correct sentence is always better than a clever one with broken grammar."""),
+        ("Response to refine:\n{formal_kannada}", "English answer to write in Kannada:\n{formal_kannada}"),
+    ]
+    for old, new in replacements:
+        assert p.count(old) == 1, f"direct prompt: could not find {old[:40]!r}"
+        p = p.replace(old, new)
+    return p
 
 
-async def generate_response(
-    engine2_result: dict,
-    knowledge_result: dict,
-    conversation_context: list = None,
-    script: str = "romanized",  # "romanized" (default) or "native"
-) -> dict:
+KANNADA_DIRECT_PROMPT = _build_direct_prompt(KANNADA_POLISH_PROMPT)
+
+
+# ── Reply cache ─────────────────────────────────────────────────────────
+# 2026-10-09: a plain factual question that was already answered (same
+# intent, same branch/exam/quota, same language and script, and the SAME
+# database facts) gets the earlier reply instantly — no Groq or Sarvam
+# calls, so it is fast and uses none of the free-plan allowance.
+#   - Never used for worried / confused / escalation / comparison /
+#     recommendation replies, greetings or off-topic questions: those are
+#     always written fresh.
+#   - The database facts are part of the key, so if a fee changes in
+#     MongoDB the old reply is simply never used again.
+#   - Trade-off: a repeated reply does not mirror the new parent's exact
+#     words (it mirrors the first parent's). Facts are identical.
+# REPLY_CACHE_ENABLED = False turns it off.
+REPLY_CACHE_ENABLED = True
+REPLY_CACHE_TTL_SECONDS = 3600
+REPLY_CACHE_MAX_ENTRIES = 200
+_reply_cache = OrderedDict()
+
+
+def _reply_cache_key(engine2_result: dict, knowledge_result: dict,
+                     language: str, script: str, query: str):
+    if not REPLY_CACHE_ENABLED:
+        return None
+    intent_id = engine2_result.get("intent")
+    if intent_id in (None, "greet", "fallback"):
+        return None
+    if (engine2_result.get("needs_escalation")
+            or engine2_result.get("emotion", "neutral") != "neutral"
+            or engine2_result.get("response_mode", "informational") != "informational"):
+        return None
+    facts = format_retrieved_data(knowledge_result, query)
+    raw = json.dumps([intent_id, language, script, engine2_result.get("entities") or {}, facts],
+                     sort_keys=True, ensure_ascii=False, default=str)
+    return hashlib.sha1(raw.encode("utf-8")).hexdigest()
+
+
+def _reply_cache_get(key):
+    if key is None or key not in _reply_cache:
+        return None
+    entry = _reply_cache[key]
+    if time.monotonic() - entry["at"] > REPLY_CACHE_TTL_SECONDS:
+        _reply_cache.pop(key, None)
+        return None
+    _reply_cache.move_to_end(key)
+    return entry["value"]
+
+
+def _reply_cache_put(key, value) -> None:
+    _reply_cache[key] = {"value": value, "at": time.monotonic()}
+    _reply_cache.move_to_end(key)
+    while len(_reply_cache) > REPLY_CACHE_MAX_ENTRIES:
+        _reply_cache.popitem(last=False)
+
+
+# ── Small helpers ───────────────────────────────────────────────────────
+
+def _ms(started: float) -> int:
+    return int((time.perf_counter() - started) * 1000)
+
+
+def _resolve_language(language: str) -> str:
+    return language if language in SUPPORTED_LANGUAGES else "en"
+
+
+def _resolve_script(language: str, script: str | None) -> str:
+    if script in VALID_SCRIPTS:
+        return script
+    return DEFAULT_SCRIPT[language]
+
+
+def _language_instruction(language: str, script: str) -> str:
+    """Kannada is generated in English first, so it gets the English instruction."""
+    generation_language = "en" if language == "kn" else language
+    return LANGUAGE_INSTRUCTIONS[generation_language][script]
+
+
+async def _groq_chat(messages: list, temperature: float, max_tokens: int,
+                     model: str = MODEL, reasoning_effort: str | None = None) -> str:
     """
-    Main entry point for Engine 5.
-
-    engine2_result:      full output from classify_intent() (Engine 2)
-    knowledge_result:    full output from fetch_knowledge() (Engine 3)
-    conversation_context: optional — for future Memory Engine integration.
-                          Defaults to None until Bhuvana's Engine 4 is ready;
-                          adding it later requires no redesign here.
+    Runs the (synchronous) Groq client in a worker thread so the
+    FastAPI event loop stays free for other requests.
+    Raises ValueError on an empty answer, so callers never return blank text.
     """
-    intent_id = engine2_result["intent"]
-    language = engine2_result.get("language", "en")
+    extra = {"reasoning_effort": reasoning_effort} if reasoning_effort else {}
+    response = await asyncio.to_thread(
+        client.chat.completions.create,
+        model=model,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        **extra,
+    )
+    text = (response.choices[0].message.content or "").strip()
+    if not text:
+        raise ValueError("Groq returned an empty response (token limit hit during reasoning?)")
+    return text
+
+
+# Fee records also carry details a parent rarely needs on a call. Each is
+# kept only if the parent's question contains one of its words; otherwise
+# it is removed before the model sees the data (prompt rules alone did not
+# stop the model reading them out).
+OPTIONAL_DETAIL_FIELDS = {
+    "semester_fee":   ["semester", "sem"],
+    "early_bird_fee": ["early", "bird", "discount", "concession"],
+    "payment_mode":   ["payment", "pay", "installment", "instalment", "emi", "kantu", "kisht"],
+    "installments":   ["payment", "pay", "installment", "instalment", "emi", "kantu", "kisht"],
+}
+
+
+def _drop_unasked_details(doc: dict, query: str) -> dict:
+    words = set(re.findall(r"[a-z]+", (query or "").lower()))
+    joined = (query or "").lower()
+    def asked(keywords):
+        return any(k in words or (" " in k and k in joined) for k in keywords)
+    return {k: v for k, v in doc.items()
+            if k not in OPTIONAL_DETAIL_FIELDS or asked(OPTIONAL_DETAIL_FIELDS[k])}
+
+
+def format_retrieved_data(knowledge_result: dict, query: str = "") -> str:
+    """
+    Formats Engine 3's output into the exact text block the prompt needs.
+    Handles all three real cases Engine 3 actually produces: single match,
+    multiple matches (ambiguous query), and not found.
+    MongoDB's internal _id is dropped — it's meaningless to the user.
+    """
+    if not knowledge_result or not knowledge_result.get("found"):
+        return "NOT FOUND — no matching record exists yet."
+
+    def clean(doc):
+        if isinstance(doc, dict):
+            doc = {k: v for k, v in doc.items() if k != "_id"}
+            return _drop_unasked_details(doc, query)
+        return doc
+
+    def to_text(doc):
+        return json.dumps(clean(doc), ensure_ascii=False, default=str)
+
+    data = knowledge_result.get("data")
+    if knowledge_result.get("match_type") == "multiple" and isinstance(data, list):
+        lines = ["Multiple options — present all of them:"]
+        for i, item in enumerate(data, 1):
+            lines.append(f"{i}. {to_text(item)}")
+        return "\n".join(lines)
+
+    return to_text(data)
+
+
+# ── Text generation ─────────────────────────────────────────────────────
+
+async def _generate_grounded(engine2_result: dict, knowledge_result: dict,
+                             language: str, script: str) -> str:
+    """Normal path — full RAG-constrained prompt with Engine 3's data."""
+    intent_id = engine2_result.get("intent", "fallback")
     emotion = engine2_result.get("emotion", "neutral")
     response_mode = engine2_result.get("response_mode", "informational")
     query = engine2_result.get("query", "")
 
-    # ── Special paths with no knowledge lookup at all ──────────────────
-    if intent_id == "greet":
-        return await _generate_simple(
-            "The user is greeting you. Respond with a warm, brief welcome "
-            "and invite them to ask their question. No facts needed.",
-            language, query,
-        )
-    if intent_id == "fallback":
-        return await _generate_simple(
-            "The user's question is unrelated to SVIT admissions (e.g. "
-            "weather, sports, general knowledge). Politely acknowledge "
-            "it's outside what you can help with, and gently steer the "
-            "conversation back to admissions topics. Never attempt to "
-            "actually answer the unrelated question.",
-            language, query,
-        )
-
-    # ── Normal path — build the full constrained prompt ────────────────
-    # Kannada is generated in English first, then translated + polished
-    # via the 3-step pipeline at the end of this function — Groq does
-    # not attempt direct Kannada composition anymore.
-    effective_language = "en" if language == "kn" else language
-    language_instruction = LANGUAGE_INSTRUCTIONS.get(effective_language, LANGUAGE_INSTRUCTIONS["en"]).get(
-        script, LANGUAGE_INSTRUCTIONS["en"]["romanized"]
+    system_prompt = SYSTEM_PROMPT_BASE.format(
+        language_instruction=_language_instruction(language, script)
     )
-
-    system_prompt = SYSTEM_PROMPT_BASE.format(language_instruction=language_instruction)
 
     mode_instruction = RESPONSE_MODE_INSTRUCTIONS.get(
         response_mode, RESPONSE_MODE_INSTRUCTIONS["informational"]
@@ -459,79 +546,303 @@ async def generate_response(
     if response_mode == "reassurance":
         mode_instruction = mode_instruction.format(emotion=emotion)
 
-    retrieved_data_text = format_retrieved_data(knowledge_result)
-
     user_message = f"""User's question: {query}
 
 Intent: {intent_id}
 Response mode instructions: {mode_instruction}
 
-Retrieved Data: {retrieved_data_text}
+Retrieved Data: {format_retrieved_data(knowledge_result, query)}
 
 Generate the response now, following all rules above."""
 
-    try:
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message},
-            ],
-            temperature=0.4,  # factual consistency matters more than creativity here
-            max_tokens=600,  # reassurance/escalation modes need room for 4-part
-                              # structured responses, especially in Hindi/Kannada
-                              # where tokenization uses more tokens per word
-        )
-
-        text = response.choices[0].message.content.strip()
-
-        if language == "kn":
-            formal_kannada = translate_to_kannada(text)
-            if formal_kannada:
-                text = await _casualize_kannada(formal_kannada)
-
-        return {"response_text": text, "success": True}
-
-    except Exception as e:
-        print(f"❌ Response generation error: {e}")
-
-        return {
-            "response_text": (
-                "I'm sorry, I'm having trouble generating a response right now. "
-                "Please contact the SVIT admission office directly for help."
-            ),
-            "success": False,
-            "error": str(e),
-        }
-
-
-async def _generate_simple(instruction: str, language: str, query: str) -> dict:
-    """Simplified path for greet/fallback — no retrieved data involved."""
-    language_instruction = LANGUAGE_INSTRUCTIONS.get(language, LANGUAGE_INSTRUCTIONS["en"])
-    system_prompt = (
-        f"You are IntelliVoice, SVIT college's admissions assistant.\n"
-        f"{instruction}\n"
-        f"{language_instruction}\n"
-        f"Keep it brief — 1-2 sentences."
+    return await _groq_chat(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ],
+        temperature=0.4,   # factual consistency matters more than creativity
+        max_tokens=1500,   # reasoning model: needs headroom for thinking + answer
+        # Plain factual answers think less (faster); every emotional or
+        # complex mode keeps full thinking.
+        reasoning_effort=FAST_REASONING if response_mode in FAST_RESPONSE_MODES else None,
     )
 
+
+async def _generate_simple(instruction: str, language: str, script: str, query: str) -> str:
+    """Greet/fallback path — no retrieved data involved."""
+    system_prompt = (
+        "You are IntelliVoice, SVIT college's admissions assistant.\n"
+        f"{instruction}\n"
+        f"{_language_instruction(language, script)}\n"
+        "Keep it brief — 1-2 sentences. Plain spoken sentences, no markdown."
+    )
+    return await _groq_chat(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query or "Hello"},
+        ],
+        temperature=0.5,
+        max_tokens=800,    # was 150 — too low for a reasoning model
+        reasoning_effort=FAST_REASONING,   # greeting / off-topic redirect: simple
+    )
+
+
+# ── Kannada pipeline ────────────────────────────────────────────────────
+
+async def _polish_kannada(formal_kannada: str, user_query: str = "") -> tuple[str, bool]:
+    """
+    Takes Sarvam's translated Kannada (code-mixed mode) and asks Groq to
+    rebalance it toward Kannada-dominant, simple spoken language — a
+    constrained edit, not free composition. Returns (text, polished_ok);
+    on any failure the unpolished Sarvam translation is used.
+    """
+    messages = [{"role": "user", "content": KANNADA_POLISH_PROMPT.format(
+        formal_kannada=formal_kannada,
+        user_query=user_query or "(not available)",
+    )}]
+    for model in (KANNADA_POLISH_MODEL, MODEL):
+        try:
+            text = await _groq_chat(messages, temperature=0.3, max_tokens=2000, model=model)
+            return text, True
+        except Exception as e:
+            print(f"⚠️  Kannada polish failed with {model}: {e}")
+    print("⚠️  Using raw Sarvam translation for this reply")
+    return formal_kannada, False
+
+
+async def _direct_kannada(english_text: str, user_query: str = ""):
+    """One step: the 120B model writes the final Kannada. None on failure."""
+    messages = [{"role": "user", "content": KANNADA_DIRECT_PROMPT.format(
+        formal_kannada=english_text,
+        user_query=user_query or "(not available)",
+    )}]
     try:
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": query},
-            ],
-            temperature=0.5,
-            max_tokens=150,
-        )
-        text = response.choices[0].message.content.strip()
-        return {"response_text": text, "success": True}
-    
+        text = await _groq_chat(messages, temperature=0.3, max_tokens=2000, model=KANNADA_POLISH_MODEL)
+        # Must actually be Kannada (not English left as-is).
+        if sum("\u0C80" <= ch <= "\u0CFF" for ch in text) < 5:
+            print("⚠️  Direct Kannada came back without Kannada script — using translate+polish")
+            return None
+        return text
     except Exception as e:
-        print(f"❌ Response generation error: {e}")
+        print(f"⚠️  Direct Kannada failed ({e}) — using translate+polish")
+        return None
+
+
+async def _localize(text: str, language: str, script: str, user_query: str = "",
+                    pipeline_mode: str | None = None) -> dict:
+    """
+    Turns Groq's output into what the user sees and hears.
+    For en/hi the text is already final. For Kannada this runs
+    translate -> polish -> (optional) romanize.
+    """
+    if language != "kn":
         return {
-            "response_text": "Hello! How can I help you with your SVIT admission questions today?",
-            "success": False,
-            "error": str(e),
+            "display_text": text,
+            "speech_text": text,
+            "speech_language": language,
+            "kannada_pipeline": None,
+            "timings": {},
         }
+
+    pipeline = {"translated": False, "polished": False, "romanized": False}
+    timings = {}
+    mode = pipeline_mode or KANNADA_PIPELINE
+
+    kannada = None
+    if mode == "direct":
+        started = time.perf_counter()
+        kannada = await _direct_kannada(text, user_query)
+        timings["direct"] = _ms(started)
+        pipeline["direct"] = kannada is not None
+
+    if kannada is None:
+        kannada = await _translate_and_polish(text, user_query, pipeline, timings)
+        if kannada is None:
+            # Never silently answer a Kannada speaker in English — log it loudly.
+            print("⚠️  Sarvam translation failed — replying in English for this Kannada query")
+            pipeline["fallback"] = "english"
+            return {
+                "display_text": text,
+                "speech_text": text,
+                "speech_language": "en",
+                "kannada_pipeline": pipeline,
+                "timings": timings,
+            }
+
+    display_text = kannada
+    if script == "romanized":
+        started = time.perf_counter()
+        roman = await asyncio.to_thread(romanize, kannada, "kn")
+        timings["romanize"] = _ms(started)
+        if roman:
+            display_text = roman
+            pipeline["romanized"] = True
+        else:
+            print("⚠️  Romanization failed — showing Kannada script instead")
+
+    return {
+        "display_text": display_text,
+        "speech_text": kannada,         # TTS always gets Kannada script
+        "speech_language": "kn",
+        "kannada_pipeline": pipeline,
+        "timings": timings,
+    }
+
+
+async def _translate_and_polish(text: str, user_query: str, pipeline: dict, timings: dict):
+    """Sarvam translation, then the 120B polish. None if translation fails."""
+    started = time.perf_counter()
+    kannada = await asyncio.to_thread(translate_to_kannada, text)
+    timings["translate"] = _ms(started)
+    if not kannada:
+        return None
+    pipeline["translated"] = True
+
+    started = time.perf_counter()
+    kannada, pipeline["polished"] = await _polish_kannada(kannada, user_query)
+    timings["polish"] = _ms(started)
+    return kannada
+
+
+async def _make_reply_text(engine2_result, knowledge_result, language, script, query,
+                           intent_id, needs_escalation, debug, timings):
+    """Steps 1 (English/Hindi text) and 2 (Kannada pipeline / script)."""
+    # ── 1. Generate the base text ────────────────────────────────────
+    generation_ok = True
+    started = time.perf_counter()
+    try:
+        if intent_id == "greet":
+            debug["path"] = "greet"
+            base_text = await _generate_simple(GREET_INSTRUCTION, language, script, query)
+        elif (intent_id in BRANCH_SPECIFIC_INTENTS and not needs_escalation
+              and not (engine2_result.get("entities") or {}).get("branch")):
+            # (A very worried parent still gets the warm grounded reply.)
+            debug["path"] = "ask_branch"
+            base_text = await _generate_simple(ASK_BRANCH_INSTRUCTION, language, script, query)
+        elif intent_id == "fallback" and not needs_escalation:
+            # A worried/frustrated user with an out-of-scope question
+            # gets escalation (grounded path below), not a polite redirect.
+            debug["path"] = "fallback"
+            base_text = await _generate_simple(FALLBACK_INSTRUCTION, language, script, query)
+        else:
+            debug["path"] = "grounded"
+            base_text = await _generate_grounded(engine2_result, knowledge_result, language, script)
+    except Exception as e:
+        print(f"❌ Response generation error: {type(e).__name__}: {e}")
+        generation_ok = False
+        debug["error"] = str(e)
+    timings["generate"] = _ms(started)
+
+    # ── 2. Localize (Kannada pipeline / script) ──────────────────────
+    if generation_ok:
+        localized = await _localize(base_text, language, script, query)
+        debug["kannada_pipeline"] = localized["kannada_pipeline"]
+        timings.update(localized.get("timings", {}))
+    else:
+        message = ERROR_MESSAGES[(language, script)]
+        native_message = ERROR_MESSAGES[(language, "native")]
+        localized = {
+            "display_text": message,
+            "speech_text": native_message if language == "kn" else message,
+            "speech_language": language,
+        }
+
+    return generation_ok, localized
+
+
+# ── Main entry point ────────────────────────────────────────────────────
+
+async def generate_response(
+    engine2_result: dict,
+    knowledge_result: dict,
+    conversation_context: list = None,
+    script: str | None = None,
+    include_audio: bool = True,
+) -> dict:
+    """
+    Main entry point for Engine 5.
+
+    engine2_result:       full output from classify_intent() (Engine 2)
+    knowledge_result:     full output from fetch_knowledge() (Engine 3);
+                          may be None for greet/fallback
+    conversation_context: reserved for the Memory Engine (Engine 4) —
+                          not used yet; adding it later needs no redesign here
+    script:               "native", "romanized", or None for the language default
+    include_audio:        False skips TTS (faster, for text-only testing)
+
+    Returns:
+        {
+          "success": bool,              # False only if Groq generation failed
+          "response_text": str,         # what to SHOW (in the chosen script)
+          "response_text_native": str,  # native-script text (what was spoken)
+          "language": "en" | "hi" | "kn",
+          "script": "native" | "romanized",
+          "audio_base64": str | None,   # WAV audio, base64
+          "audio_format": "wav" | None,
+          "tts_success": bool,
+          "debug": {...}                # path taken, pipeline steps, errors
+        }
+    Never raises — every failure has a fallback.
+    """
+    intent_id = engine2_result.get("intent", "fallback")
+    language = _resolve_language(engine2_result.get("language", "en"))
+    script = _resolve_script(language, script)
+    needs_escalation = engine2_result.get("needs_escalation", False)
+    query = engine2_result.get("query", "")
+
+    debug = {"path": None, "kannada_pipeline": None, "error": None, "tts_error": None}
+    timings = {}   # milliseconds per step, returned in debug["timings_ms"]
+
+    # ── 1+2. Reply text (from the reply cache when possible) ─────────
+    cache_key = _reply_cache_key(engine2_result, knowledge_result, language, script, query)
+    cached = _reply_cache_get(cache_key)
+    if cached is not None:
+        generation_ok = True
+        localized = dict(cached["localized"])
+        debug["path"] = cached["path"]
+        debug["kannada_pipeline"] = cached["kannada_pipeline"]
+        debug["reply_cache"] = "hit"
+    else:
+        generation_ok, localized = await _make_reply_text(
+            engine2_result, knowledge_result, language, script, query,
+            intent_id, needs_escalation, debug, timings,
+        )
+        # Remember it only if it came out fully right (no fallback).
+        if (cache_key and generation_ok and localized["speech_language"] == language
+                and not (localized.get("kannada_pipeline") or {}).get("fallback")):
+            _reply_cache_put(cache_key, {
+                "localized": dict(localized),
+                "path": debug["path"],
+                "kannada_pipeline": debug["kannada_pipeline"],
+            })
+        debug["reply_cache"] = "miss" if cache_key else "not_cacheable"
+
+    # ── 3. Voice ─────────────────────────────────────────────────────
+    audio_base64, audio_format, tts_success = None, None, False
+    if include_audio:
+        started = time.perf_counter()
+        tts = await asyncio.to_thread(
+            synthesize_speech, localized["speech_text"], localized["speech_language"]
+        )
+        timings["tts"] = _ms(started)
+        if tts["success"]:
+            audio_base64 = tts["audio_base64"]
+            audio_format = tts["audio_format"]
+            tts_success = True
+        else:
+            debug["tts_error"] = tts.get("error")
+
+    debug["timings_ms"] = timings
+
+    return {
+        "success": generation_ok,
+        "response_text": localized["display_text"],
+        "response_text_native": localized["speech_text"],
+        "speech_language": localized["speech_language"],   # language of the spoken text
+        "language": language,
+        "script": script,
+        "audio_base64": audio_base64,
+        "audio_format": audio_format,
+        "tts_success": tts_success,
+        "debug": debug,
+    }

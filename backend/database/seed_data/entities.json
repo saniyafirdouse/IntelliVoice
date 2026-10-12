@@ -1,15 +1,15 @@
 {
   "branch": {
-    "CSE": ["cse", "cs", "computer science", "computer science and engineering", "computer branch", "cs branch", "computer"],
-    "CSE-DS": ["data science", "cse ds", "cse data science", "ds", "computer science data science"],
-    "CSE-AIML": ["aiml", "ai ml", "artificial intelligence", "machine learning", "cse aiml", "cse ai", "ai branch"],
-    "ISE": ["ise", "information science", "information science engineering", "ise branch"],
-    "ECE": ["ece", "electronics", "electronics and communication", "ec", "electronics branch"],
-    "Civil": ["civil", "civil engineering", "ce", "civil branch"],
-    "Mechanical": ["mechanical", "mech", "mechanical engineering", "me", "mechanical branch"],
-    "MBA": ["mba", "business administration", "master of business administration"],
-    "CSE-CyberSecurity": ["cyber security", "cybersecurity", "cyber", "cse cyber security"],
-    "CS-BusinessSystems": ["business systems", "business application", "cs business", "cs bs"]
+    "CSE": ["cse", "cs", "computer science", "computer science and engineering", "computer branch", "cs branch", "computer", "ಕಂಪ್ಯೂಟರ್ ಸೈನ್ಸ್", "ಕಂಪ್ಯೂಟರ್ ಸೈನ್ಸ್ ಎಂಜಿನಿಯರಿಂಗ್", "ಸಿಎಸ್ಇ", "ಸಿ ಎಸ್ ಇ", "ಕಂಪ್ಯೂಟರ್"],
+    "CSE-DS": ["data science", "cse ds", "cse data science", "ds", "computer science data science", "ಡೇಟಾ ಸೈನ್ಸ್", "ಡಾಟಾ ಸೈನ್ಸ್"],
+    "CSE-AIML": ["aiml", "ai ml", "artificial intelligence", "machine learning", "cse aiml", "cse ai", "ai branch", "ಎಐಎಂಎಲ್", "ಎಐ ಎಂಎಲ್", "ಆರ್ಟಿಫಿಶಿಯಲ್ ಇಂಟೆಲಿಜೆನ್ಸ್", "ಮಷೀನ್ ಲರ್ನಿಂಗ್"],
+    "ISE": ["ise", "information science", "information science engineering", "ise branch", "ಇನ್ಫರ್ಮೇಷನ್ ಸೈನ್ಸ್", "ಐಎಸ್ಇ"],
+    "ECE": ["ece", "electronics", "electronics and communication", "ec", "electronics branch", "ಎಲೆಕ್ಟ್ರಾನಿಕ್ಸ್", "ಇಸಿಇ"],
+    "Civil": ["civil", "civil engineering", "ce", "civil branch", "ಸಿವಿಲ್"],
+    "Mechanical": ["mechanical", "mech", "mechanical engineering", "me", "mechanical branch", "ಮೆಕ್ಯಾನಿಕಲ್", "ಮೆಕಾನಿಕಲ್"],
+    "MBA": ["mba", "business administration", "master of business administration", "ಎಂಬಿಎ"],
+    "CSE-CyberSecurity": ["cyber security", "cybersecurity", "cyber", "cse cyber security", "ಸೈಬರ್ ಸೆಕ್ಯುರಿಟಿ", "ಸೈಬರ್"],
+    "CS-BusinessSystems": ["business systems", "business application", "cs business", "cs bs", "ಬಿಸಿನೆಸ್ ಸಿಸ್ಟಮ್ಸ್", "ಬಿಸಿನೆಸ್ ಸಿಸ್ಟಮ್"]
   },
 
   "category": {
@@ -20,14 +20,14 @@
   },
 
   "exam": {
-    "KCET": ["kcet", "karnataka cet"],
-    "COMEDK": ["comedk"]
+    "KCET": ["kcet", "karnataka cet", "ಕೆಸಿಇಟಿ", "ಕೆ ಸಿ ಇ ಟಿ", "ಸಿಇಟಿ"],
+    "COMEDK": ["comedk", "ಕಾಮೆಡ್ಕೆ", "ಕಾಮೆಡ್ ಕೆ", "ಕೊಮೆಡ್ಕೆ"]
   },
 
   "quota": {
-    "Government": ["government quota", "government seat"],
-    "Management": ["management quota", "management seat", "management"],
-    "NRI": ["nri", "nri quota"]
+    "Government": ["government quota", "government seat", "ಸರ್ಕಾರಿ ಕೋಟಾ", "ಗವರ್ನಮೆಂಟ್ ಕೋಟಾ", "ಸರ್ಕಾರಿ ಸೀಟ್"],
+    "Management": ["management quota", "management seat", "management", "ಮ್ಯಾನೇಜ್ಮೆಂಟ್ ಕೋಟಾ", "ಮ್ಯಾನೇಜ್ಮೆಂಟ್", "ಮ್ಯಾನೇಜ್ಮೆಂಟ್ ಸೀಟ್"],
+    "NRI": ["nri", "nri quota", "ಎನ್ಆರ್ಐ"]
   },
 
   "course": {
@@ -55,13 +55,13 @@
   },
 
   "campus_facility": {
-    "hostel": ["hostel", "accommodation", "boarding"],
-    "library": ["library", "reading room"],
+    "hostel": ["hostel", "accommodation", "boarding", "ಹಾಸ್ಟೆಲ್"],
+    "library": ["library", "reading room", "ಲೈಬ್ರರಿ", "ಗ್ರಂಥಾಲಯ"],
     "laboratories": ["lab", "labs", "laboratory"],
-    "transport": ["bus", "transport", "college bus"],
+    "transport": ["bus", "transport", "college bus", "ಕಾಲೇಜ್ ಬಸ್", "ಬಸ್"],
     "wifi": ["wifi", "wi-fi", "internet"],
     "parking": ["parking"],
-    "cafeteria": ["cafeteria", "canteen", "mess"]
+    "cafeteria": ["cafeteria", "canteen", "mess", "ಕ್ಯಾಂಟೀನ್"]
   },
 
 "company": {
