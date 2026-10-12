@@ -6,8 +6,8 @@ import { ApiError } from "../../lib/api";
 import type { Role } from "../../lib/types";
 import { AuthCard, EMAIL_RE, FormMessage, PasswordField, fieldInput, fieldWrap, labelClass, submitStyle } from "./AuthCard";
 
-/** Where an admin lands after signing in. Change this once the admin dashboard exists. */
-const ADMIN_HOME = "/";
+/** Where an admin lands after signing in. */
+const ADMIN_HOME = "/admin";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -29,7 +29,10 @@ export default function LoginPage() {
     try {
       const user = await login(email.trim(), password, role);
       setMessage({ text: "Signed in. Redirecting…", ok: true });
-      window.setTimeout(() => navigate(user.role === "admin" ? ADMIN_HOME : "/chat"), 500);
+      // admins go back to the admin page they were trying to open (if any), otherwise the dashboard
+      const next = params.get("next");
+      const adminTarget = next && next.startsWith("/admin") ? next : ADMIN_HOME;
+      window.setTimeout(() => navigate(user.role === "admin" ? adminTarget : "/chat"), 500);
     } catch (err) {
       setMessage({ text: err instanceof ApiError ? err.message : "Something went wrong. Please try again.", ok: false });
       setBusy(false);

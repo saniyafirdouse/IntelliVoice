@@ -153,7 +153,7 @@ export default function ChatPage() {
     >
       <main className="w-full pt-20 bg-background min-h-screen relative">
         <div className="flex flex-col w-full relative -mt-20">
-          <div className="fixed inset-0 z-0 pointer-events-none bg-cover bg-center" style={{ backgroundImage: 'url("/assets/campus-corridor.jpg")' }} aria-hidden="true">
+          <div className="fixed inset-0 z-0 pointer-events-none bg-cover bg-center" style={{ backgroundImage: 'url("/assets/campus-sunset.jpg")' }} aria-hidden="true">
             <div className="absolute inset-0 bg-black/15 pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
           </div>

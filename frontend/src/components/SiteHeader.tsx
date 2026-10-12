@@ -14,6 +14,9 @@ const NAV = [
   { to: "/help", label: "Help & FAQ" },
 ];
 
+/** Extra link shown in the header only to signed-in admins. */
+const ADMIN_NAV = { to: "/admin", label: "Admin Panel", end: false };
+
 const LANGS: { code: LangCode; label: string }[] = [
   { code: "en", label: "ENG" },
   { code: "kn", label: "KN" },
@@ -92,7 +95,8 @@ function AuthMenu() {
   const first = (user.name || "Account").split(" ")[0];
   return (
     <>
-      <span className={pill} style={{ background: "rgba(88, 92, 176, 0.55)" }} title={user.email}>
+      {/* name pill is hidden on phones so the menu button still fits */}
+      <span className={`${pill} hidden sm:inline-flex`} style={{ background: "rgba(88, 92, 176, 0.55)" }} title={user.email}>
         <Icon name="account_circle" className="text-[16px]" />
         <span className="hidden sm:inline">{first}{user.role === "admin" ? " · Admin" : ""}</span>
       </span>
@@ -109,6 +113,8 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
   const { quickLanguage: language, setQuickLanguage: setLanguage } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
+  const nav = user?.role === "admin" ? [...NAV, ADMIN_NAV] : NAV;
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
@@ -118,7 +124,7 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
         <div className={look.barFill.className} style={look.barFill.style} />
       </div>
       <div className="h-20 w-full px-margin-mobile lg:px-margin flex items-center justify-between gap-space-md">
-        <Link to="/" className="flex items-center gap-space-md flex-shrink-0 min-w-0">
+        <Link to="/" className="flex items-center gap-space-md min-w-0">
           <div className={look.logoWrap}>
             <img src="/assets/svit-logo.png" alt="SVIT Logo" className="w-full h-full object-contain rounded-full" />
           </div>
@@ -132,7 +138,7 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
         </Link>
 
         <nav className={look.nav.className} style={look.nav.style} aria-label="Main">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -189,7 +195,7 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
           className="xl:hidden mx-margin-mobile mb-3 p-2 rounded-2xl flex flex-col gap-1 border border-white/20"
           style={{ background: "rgba(14, 16, 26, 0.92)", backdropFilter: "blur(20px)" }}
         >
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
