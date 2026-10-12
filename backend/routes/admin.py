@@ -34,6 +34,7 @@ from pydantic import BaseModel
 
 from database.connection import get_database
 from engines import analytics_engine
+from engines.knowledge_engine import invalidate_cache   # 2026-10-12: uploads show up instantly
 from utils import data_import as di
 from utils.auth import require_admin
 from utils.datasets import DATASETS, get_dataset
@@ -126,7 +127,9 @@ async def upload_detail(upload_id: str):
 @router.post("/uploads/{upload_id}/confirm")
 async def upload_confirm(upload_id: str, admin: dict = Depends(require_admin)):
     try:
-        return await di.confirm_batch(_db(), upload_id, admin["sub"])
+        result = await di.confirm_batch(_db(), upload_id, admin["sub"])
+        invalidate_cache()   # the assistant answers from the new data straight away
+        return result
     except di.BatchError as e:
         return _batch_error(e)
 
@@ -142,7 +145,9 @@ async def upload_cancel(upload_id: str):
 @router.post("/uploads/{upload_id}/undo")
 async def upload_undo(upload_id: str, admin: dict = Depends(require_admin)):
     try:
-        return await di.undo_batch(_db(), upload_id, admin["sub"])
+        result = await di.undo_batch(_db(), upload_id, admin["sub"])
+        invalidate_cache()   # back to the old data straight away
+        return result
     except di.BatchError as e:
         return _batch_error(e)
 

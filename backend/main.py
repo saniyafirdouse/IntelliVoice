@@ -6,6 +6,7 @@ from routes.health import router as health_router
 from routes.voice import router as voice_router
 from routes.admin import router as admin_router
 from routes.auth import router as auth_router
+from routes.api import router as api_router   # frontend's POST /api/query (2026-10-12)
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -35,6 +36,7 @@ app.include_router(health_router, prefix="/health", tags=["Health"])
 app.include_router(voice_router, prefix="/voice", tags=["Voice"])
 app.include_router(admin_router, prefix="/api/admin", tags=["Admin"])
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+app.include_router(api_router, prefix="/api", tags=["Frontend API"])
 
 @app.get("/")
 async def root():

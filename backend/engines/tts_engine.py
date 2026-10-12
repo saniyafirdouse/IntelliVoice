@@ -249,6 +249,10 @@ def apply_spoken_forms(text: str, language: str) -> str:
 NUMBER_UNITS = {
     "en": ("crore", "lakh", "thousand"),
     "kn": ("ಕೋಟಿ", "ಲಕ್ಷ", "ಸಾವಿರ"),
+    # 2026-10-12: Hindi had "1 lakh 20 thousand" (English word inside a
+    # Hindi reply) or bare digits. Now Hindi words in both scripts.
+    "hi": ("करोड़", "लाख", "हज़ार"),            # Devanagari reply
+    "hi-Latn": ("crore", "lakh", "hazaar"),    # Hindi in English letters
 }
 
 
@@ -305,9 +309,15 @@ def speak_numbers(text: str, language: str) -> str:
     rupee_word = RUPEE_WORDS[language] if (has_native_script and language in RUPEE_WORDS) else "rupees"
 
     kannada_script = language == "kn" and has_native_script
+    hindi = language == "hi"
+    hindi_units = "hi" if has_native_script else "hi-Latn"
+    if hindi:
+        rupee_word = "रुपये" if has_native_script else "rupaye"
 
     def amount_to_speech(digits: str) -> str:
         value = int(digits.replace(",", ""))
+        if hindi:
+            return f"{_indian_number_words(value, hindi_units)} {rupee_word}"
         if language == "en" or not has_native_script:
             return f"{_indian_number_words(value)} {rupee_word}"
         if kannada_script:
@@ -322,6 +332,11 @@ def speak_numbers(text: str, language: str) -> str:
         # Remaining long numbers without a ₹ sign ("fee 325000 ರೂಪಾಯಿ",
         # "325000.") are spoken in words too.
         text = _LARGE_NUMBER.sub(lambda m: _indian_number_words(int(m.group(0)), "kn"), text)
+    elif hindi:
+        # Same for Hindi ("1 lakh 20000" -> "1 lakh 20 hazaar").
+        text = _LARGE_NUMBER.sub(lambda m: _indian_number_words(int(m.group(0)), hindi_units), text)
+    # "₹120,000 ರೂಪಾಯಿ" became "... ರೂಪಾಯಿ ರೂಪಾಯಿ" — say the word once.
+    text = re.sub(r"(ರೂಪಾಯಿ|रुपये|rupaye|rupees)(?:\s+\1)+", r"\1", text)
     return text
 
 

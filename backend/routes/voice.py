@@ -1,32 +1,25 @@
 """
 Voice routes — full IntelliVoice pipeline.
 
-    Engine 1 (Language)  ->  Engine 2 (Intelligence)  ->  Engine 3 (Knowledge)
-                         ->  Engine 5 (Response + voice)
-
-Memory (Engine 4) is not connected yet — Engine 5 already accepts
-conversation_context, so adding it later needs no redesign here.
+    Engine 1 (Language)  ->  Engine 2 (Intelligence)  ->  Engine 4 (Memory)
+      ->  Engine 3 (Knowledge)  ->  Engine 5 (Response + voice)
+      ->  Engine 4 saves the turn, Engine 6 (Analytics) logs it
 
 2026-10-04: integrated Engines 3 and 5 (previously stopped after Engine 2).
-2026-10-07: /voice/query accepts an optional `language` (en/hi/kn) so
-Whisper can transcribe in the user's chosen language (fast + reliable).
-2026-10-09 (speed; previous version in voice_backup_2026-10-09-speed.py):
-  - Voice questions: while the transcript corrector runs (~1 s), Engines
-    2+3 already start on Whisper's own text. If the corrector changes
-    nothing, that work is used as-is (saves ~1 s). If it does fix
-    something, the early work is thrown away and Engines 2+3 run again on
-    the corrected text — answers are always based on the corrected text.
-  - Every reply includes "speech_chunks" (the reply split into
-    sentences) and "speech_language". POST /voice/speak turns one chunk
-    into audio. The app can call /voice/query with include_audio=false,
-    show the text at once, request all chunks in parallel and start
-    playing chunk 1 as soon as it arrives — instead of waiting for the
-    whole reply's audio.
-  - timings_ms["total"] is now the real elapsed time (steps can overlap).
-  - (c) When the corrector did change words, the intent found for
-    Whisper's text is passed to Engine 2 as a hint: if Sentence
-    Transformers agrees on the corrected text, the second Groq intent
-    call (~1 s) is skipped. Previous version: voice_backup_2026-10-09c.py
+2026-10-07: /voice/query accepts an optional `language` (en/hi/kn).
+2026-10-09 (speed): Engines 2+3 start on Whisper's text while the
+  corrector runs; "speech_chunks" + POST /voice/speak for play-as-you-go;
+  the corrected-text re-run reuses the first run's intent as a hint.
+2026-10-12 (integration; previous version in voice_backup_2026-10-12.py):
+  - Memory Engine (Bhuvana) connected: before Engine 3, this turn's
+    entities are merged with what the parent said earlier in the same
+    session ("CSE fee?" ... "and for ISE?" keeps the quota/exam). A short
+    follow-up Engine 2 can't place continues the previous topic. Each
+    finished turn is saved with memory_engine.add_turn().
+  - Analytics (Bhuvana) connected: every question is logged in the
+    background (never slows or breaks a reply) for the admin dashboard.
+  - answer(): one shared entry point used by /voice/query, /voice/text
+    and the frontend's POST /api/query (routes/api.py).
 """
 
 import asyncio
@@ -37,7 +30,9 @@ from typing import Optional
 from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 
-from engines.intelligence_engine import classify_intent
+from database.connection import get_database
+from engines.analytics_engine import log_query
+from engines.intelligence_engine import _build_output, classify_intent
 from engines.knowledge_engine import fetch_knowledge
 from engines.language_engine import (
     build_language_result,
@@ -47,6 +42,7 @@ from engines.language_engine import (
     set_correction_info,
     speech_to_text,
 )
+from engines.memory_engine import memory_engine
 from engines.response_engine import generate_response
 from engines.tts_engine import speech_chunks, synthesize_speech
 
@@ -54,6 +50,17 @@ router = APIRouter()
 
 VALID_SCRIPTS = {"native", "romanized"}
 VALID_SPEECH_LANGUAGES = {"en", "hi", "kn"}
+NO_TOPIC_INTENTS = {"greet", "fallback"}
+
+_background_tasks = set()   # keeps analytics tasks alive until they finish
+
+
+class PipelineError(Exception):
+    """A problem to report to the caller (status code + message for the user)."""
+    def __init__(self, status: int, message: str):
+        super().__init__(message)
+        self.status = status
+        self.message = message
 
 
 def _ms(start: float) -> int:
@@ -70,16 +77,98 @@ def _knowledge_summary(knowledge_result: dict) -> dict:
             summary["broadened_search"] = True
     else:
         summary["reason"] = knowledge_result.get("reason")
-        # Engine 3 catches database exceptions and stores the message —
-        # pass it through so the real cause (e.g. "Authentication failed")
-        # is visible in test output and API responses.
         if knowledge_result.get("error"):
             summary["error"] = knowledge_result["error"]
     return summary
 
 
-async def _understand(language_result: dict, confirmed_intent: Optional[str] = None) -> dict:
-    """Engines 2 and 3: what is being asked, and the verified facts for it."""
+# ── Engine 4: Memory ────────────────────────────────────────────────────
+
+def _apply_memory(session_id: Optional[str], ir: dict, extra_entities: Optional[dict] = None):
+    """
+    Merges this turn's entities with the session's earlier ones (Bhuvana's
+    memory_engine.resolve_entities) and rebuilds Engine 2's output with
+    them, so Engine 3's database filter and the reply agree.
+    Returns (intelligence_result, memory_info). Never raises.
+    """
+    if not session_id:
+        return ir, None
+    try:
+        original = {k: v for k, v in (ir.get("entities") or {}).items() if k != "topic"}
+        current = dict(original)
+        for key, value in (extra_entities or {}).items():   # "Your Query Context" box
+            current.setdefault(key, value)
+
+        context = memory_engine.get_context(session_id)
+        last_intent = context.get("last_intent")
+        intent, zone = ir["intent"], ir["confidence_zone"]
+
+        follow_up = bool(context.get("turn_count")) and (
+            bool(ir.get("needs_memory")) or (last_intent is not None and last_intent == intent)
+        )
+        # "And for ECE?" — Engine 2 can't place it alone: continue the previous topic.
+        if (follow_up and ir.get("needs_memory") and intent == "fallback"
+                and last_intent and last_intent not in NO_TOPIC_INTENTS):
+            intent, zone = last_intent, "uncertain"
+
+        resolved = memory_engine.resolve_entities(session_id, current, needs_memory=follow_up)
+        resolved.pop("topic", None)
+
+        if intent != ir["intent"] or resolved != original:
+            new_ir = _build_output(
+                query=ir["query"], normalized_query=ir.get("normalized_query", ""),
+                language=ir["language"], intent_id=intent, confidence=ir["confidence"],
+                confidence_zone=zone, emotion=ir["emotion"], entities=resolved,
+            )
+            new_ir["needs_memory"] = ir.get("needs_memory", False)
+        else:
+            new_ir = ir
+
+        memory_info = {
+            "topic": new_ir.get("category") if new_ir["intent"] not in NO_TOPIC_INTENTS else None,
+            "context_used": [str(v) for k, v in resolved.items() if k not in current],
+            "follow_up": follow_up,
+            "continued_previous_topic": intent != ir["intent"],
+        }
+        return new_ir, memory_info
+    except Exception as e:
+        print(f"⚠️  Memory step skipped: {type(e).__name__}: {e}")
+        return ir, None
+
+
+def _remember_turn(session_id: Optional[str], language_result: dict, ir: dict,
+                   response_result: dict) -> None:
+    if not session_id or not response_result.get("success"):
+        return
+    try:
+        memory_engine.add_turn(
+            session_id,
+            user_text=language_result["raw_text"],
+            intent=ir["intent"],
+            entities=ir.get("entities"),
+            response_text=response_result["response_text"],
+            language=response_result.get("language"),
+        )
+    except Exception as e:
+        print(f"⚠️  Memory save skipped: {type(e).__name__}: {e}")
+
+
+def _log_in_background(**kwargs) -> None:
+    """Engine 6: saves the question for the admin dashboard. Never blocks the reply."""
+    try:
+        task = asyncio.create_task(log_query(get_database(), **kwargs))
+        _background_tasks.add(task)
+        task.add_done_callback(_background_tasks.discard)
+    except Exception as e:
+        print(f"⚠️  Analytics log skipped: {e}")
+
+
+# ── Engines 2+3 and 5 ───────────────────────────────────────────────────
+
+async def _understand(language_result: dict, session_id: Optional[str] = None,
+                      confirmed_intent: Optional[str] = None,
+                      extra_entities: Optional[dict] = None) -> dict:
+    """Engines 2, 4 (memory) and 3: what is being asked, and the verified facts for it."""
     timings = {}
 
     start = time.perf_counter()
@@ -91,33 +180,49 @@ async def _understand(language_result: dict, confirmed_intent: Optional[str] = N
     )
     timings["intelligence"] = _ms(start)
 
+    intelligence_result, memory_info = _apply_memory(session_id, intelligence_result, extra_entities)
+
     # Intents with no knowledge_collection (greet, fallback) return
     # immediately without touching the database.
     start = time.perf_counter()
     knowledge_result = await fetch_knowledge(intelligence_result)
     timings["knowledge"] = _ms(start)
 
-    return {"intelligence": intelligence_result, "knowledge": knowledge_result, "timings": timings}
+    return {"intelligence": intelligence_result, "knowledge": knowledge_result,
+            "memory": memory_info, "timings": timings}
 
 
 async def _respond(language_result: dict, understanding: dict, session_id: str,
                    input_type: str, script: Optional[str], include_audio: bool,
-                   timings: dict, started: float, debug_extra: Optional[dict] = None) -> dict:
-    """Engine 5 (reply text + voice) and the API response."""
+                   timings: dict, started: float, debug_extra: Optional[dict] = None,
+                   reply_language: Optional[str] = None) -> dict:
+    """Engine 5 (reply text + voice), memory save, analytics, and the API response."""
     intelligence_result = understanding["intelligence"]
     knowledge_result = understanding["knowledge"]
     timings.update(understanding["timings"])
 
+    engine5_input = intelligence_result
+    if reply_language in VALID_SPEECH_LANGUAGES:      # user chose the reply language
+        engine5_input = {**intelligence_result, "language": reply_language}
+
     start = time.perf_counter()
     response_result = await generate_response(
-        intelligence_result,
+        engine5_input,
         knowledge_result,
-        conversation_context=None,  # Memory Engine not connected yet
+        conversation_context=memory_engine.get_context(session_id) if session_id else None,
         script=script,
         include_audio=include_audio,
     )
     timings["response"] = _ms(start)
     timings["total"] = _ms(started)
+
+    _remember_turn(session_id, language_result, intelligence_result, response_result)
+    _log_in_background(
+        session_id=session_id, text=language_result["raw_text"],
+        language=language_result["language"], intelligence_result=intelligence_result,
+        knowledge_result=knowledge_result, input_type=input_type,
+        response_time_ms=timings["total"],
+    )
 
     debug = dict(response_result["debug"])
     if debug_extra:
@@ -132,6 +237,7 @@ async def _respond(language_result: dict, understanding: dict, session_id: str,
         # What the frontend shows and plays
         "response_text": response_result["response_text"],
         "response_text_native": response_result["response_text_native"],
+        "response_language": response_result["language"],
         "script": response_result["script"],
         "audio_base64": response_result["audio_base64"],
         "audio_format": response_result["audio_format"],
@@ -141,6 +247,8 @@ async def _respond(language_result: dict, understanding: dict, session_id: str,
         # this language, play the returned audio in order.
         "speech_chunks": speech_chunks(response_result["response_text_native"]),
         "speech_language": response_result.get("speech_language", response_result["language"]),
+
+        "memory": understanding.get("memory"),
 
         # How the system understood the query (useful for demo/debug)
         "analysis": {
@@ -168,17 +276,112 @@ async def run_pipeline(
     script: Optional[str] = None,
     include_audio: bool = True,
     language_ms: int = 0,
+    reply_language: Optional[str] = None,
+    extra_entities: Optional[dict] = None,
 ) -> dict:
-    """
-    Engines 2 -> 3 -> 5 in order on Engine 1's output (typed questions,
-    and tests/test_pipeline.py). Voice questions use the faster
-    overlapping path in voice_query().
-    """
+    """Engines 2 -> 4 -> 3 -> 5 in order (typed questions, tests/test_pipeline.py)."""
     started = time.perf_counter() - language_ms / 1000
-    understanding = await _understand(language_result)
+    understanding = await _understand(language_result, session_id, extra_entities=extra_entities)
     return await _respond(language_result, understanding, session_id, input_type,
-                          script, include_audio, {"language": language_ms}, started)
+                          script, include_audio, {"language": language_ms}, started,
+                          reply_language=reply_language)
 
+
+def _ignore_result(task: asyncio.Task) -> None:
+    """Marks a discarded task's outcome as seen (avoids 'exception never retrieved' noise)."""
+    if not task.cancelled():
+        task.exception()
+
+
+async def _voice_understanding(audio_bytes: bytes, filename: str, language: Optional[str],
+                               started: float, session_id: Optional[str] = None,
+                               extra_entities: Optional[dict] = None):
+    """
+    Whisper, then the corrector and Engines 2+3 AT THE SAME TIME.
+    Returns (language_result, understanding, timings, debug_extra).
+    Raises PipelineError.
+    """
+    timings = {}
+    try:
+        stt = await speech_to_text(audio_bytes, filename, language)
+    except Exception as e:
+        raise PipelineError(500, f"Speech recognition failed: {e}")
+    timings["stt"] = stt["stt_ms"]
+    raw_text = stt["raw_text"].strip()
+    if not raw_text:
+        raise PipelineError(400, "I couldn't hear anything in that recording. Please try again.")
+
+    correction_task = asyncio.create_task(correct_transcript(raw_text, stt["speech_language"]))
+
+    # Start understanding Whisper's own text while the corrector works.
+    start = time.perf_counter()
+    early_language = await build_language_result(stt, no_correction(raw_text))
+    timings["language_detect"] = _ms(start)
+    early_task = asyncio.create_task(_understand(early_language, session_id,
+                                                 extra_entities=extra_entities))
+
+    correction = await correction_task
+    timings["correction"] = correction["correction_ms"]
+
+    hint = None
+    if correction["corrected"]:
+        # The corrector fixed something: answer from the corrected text.
+        # The early run's intent (if ready) is used only as a hint.
+        try:
+            early = await asyncio.wait_for(asyncio.shield(early_task), timeout=0.4)
+            hint = early["intelligence"]["intent"]
+        except Exception:
+            early_task.cancel()
+            early_task.add_done_callback(_ignore_result)
+        language_result = await build_language_result(stt, correction)
+        understanding = await _understand(language_result, session_id, confirmed_intent=hint,
+                                          extra_entities=extra_entities)
+        early_start_used = False
+    else:
+        set_correction_info(early_language["language"], correction)
+        language_result = early_language
+        understanding = await early_task
+        early_start_used = True
+
+    timings["understood_at"] = _ms(started)
+    return language_result, understanding, timings, {
+        "early_start_used": early_start_used,
+        "intent_hint_used": hint is not None,
+    }
+
+
+async def answer(*, session_id: str, audio_bytes: Optional[bytes] = None,
+                 filename: Optional[str] = None, text: Optional[str] = None,
+                 language: Optional[str] = None, script: Optional[str] = None,
+                 include_audio: bool = True, reply_language: Optional[str] = None,
+                 extra_entities: Optional[dict] = None) -> dict:
+    """
+    The whole pipeline for one question (voice or typed).
+    Used by /voice/query, /voice/text and POST /api/query.
+    Raises PipelineError with a message meant for the user.
+    """
+    started = time.perf_counter()
+    if audio_bytes:
+        language_result, understanding, timings, debug_extra = await _voice_understanding(
+            audio_bytes, filename or "audio.wav", language, started, session_id, extra_entities)
+        return await _respond(language_result, understanding, session_id, "audio",
+                              script, include_audio, timings, started, debug_extra,
+                              reply_language=reply_language)
+
+    if not (text and text.strip()):
+        raise PipelineError(422, "Please ask a question by voice or by typing.")
+    start = time.perf_counter()
+    language_result = await process_text_input(text)
+    language_ms = _ms(start)
+    if not language_result["success"]:
+        raise PipelineError(400, language_result.get("error", "Empty question"))
+    return await run_pipeline(language_result, session_id=session_id, input_type="text",
+                              script=script, include_audio=include_audio,
+                              language_ms=language_ms, reply_language=reply_language,
+                              extra_entities=extra_entities)
+
+
+# ── Routes ──────────────────────────────────────────────────────────────
 
 def _bad_request(message: str) -> JSONResponse:
     return JSONResponse(status_code=400, content={"error": message})
@@ -191,68 +394,6 @@ def _validate_script(script: Optional[str]) -> Optional[str]:
     return script.strip().lower()
 
 
-def _ignore_result(task: asyncio.Task) -> None:
-    """Marks a discarded task's outcome as seen (avoids 'exception never retrieved' noise)."""
-    if not task.cancelled():
-        task.exception()
-
-
-async def _voice_understanding(audio_bytes: bytes, filename: str, language: Optional[str],
-                               started: float):
-    """
-    Whisper, then the corrector and Engines 2+3 AT THE SAME TIME.
-    Returns (language_result, understanding, timings, debug_extra),
-    or a JSONResponse on error.
-    """
-    timings = {}
-    try:
-        stt = await speech_to_text(audio_bytes, filename, language)
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": f"Speech recognition failed: {e}"})
-    timings["stt"] = stt["stt_ms"]
-    raw_text = stt["raw_text"].strip()
-    if not raw_text:
-        return _bad_request("Could not hear any speech in the audio")
-
-    correction_task = asyncio.create_task(correct_transcript(raw_text, stt["speech_language"]))
-
-    # Start understanding Whisper's own text while the corrector works.
-    start = time.perf_counter()
-    early_language = await build_language_result(stt, no_correction(raw_text))
-    timings["language_detect"] = _ms(start)
-    early_task = asyncio.create_task(_understand(early_language))
-
-    correction = await correction_task
-    timings["correction"] = correction["correction_ms"]
-
-    hint = None
-    if correction["corrected"]:
-        # The corrector fixed something: answer from the corrected text.
-        # The early run is usually finishing at about the same moment —
-        # wait briefly for its intent, to use as a hint (skips a Groq call
-        # when the corrected text agrees). Its facts are NOT reused.
-        try:
-            early = await asyncio.wait_for(asyncio.shield(early_task), timeout=0.4)
-            hint = early["intelligence"]["intent"]
-        except Exception:
-            early_task.cancel()
-            early_task.add_done_callback(_ignore_result)
-        language_result = await build_language_result(stt, correction)
-        understanding = await _understand(language_result, confirmed_intent=hint)
-        early_start_used = False
-    else:
-        set_correction_info(early_language["language"], correction)
-        language_result = early_language
-        understanding = await early_task
-        early_start_used = True
-
-    timings["understood_at"] = _ms(started)   # elapsed time when the question was fully understood (Engines 1-3)
-    return language_result, understanding, timings, {
-        "early_start_used": early_start_used,
-        "intent_hint_used": hint is not None,
-    }
-
-
 @router.post("/query")
 async def voice_query(
     audio: Optional[UploadFile] = File(None),
@@ -262,7 +403,6 @@ async def voice_query(
     include_audio: bool = Form(True),          # false = text-only reply (faster); use /voice/speak for audio
     language: Optional[str] = Form(None),      # "en" | "hi" | "kn" chosen by the user; used for audio
 ):
-    started = time.perf_counter()
     if not audio and not (text and text.strip()):
         return _bad_request("Provide either audio file or text input")
 
@@ -274,30 +414,15 @@ async def voice_query(
     if language is not None and language not in VALID_SPEECH_LANGUAGES:
         return _bad_request("language must be 'en', 'hi' or 'kn' (or left empty)")
 
-    session_id = session_id or str(uuid.uuid4())
-
-    if audio:
-        audio_bytes = await audio.read()
-        result = await _voice_understanding(audio_bytes, audio.filename, language, started)
-        if isinstance(result, JSONResponse):
-            return result
-        language_result, understanding, timings, debug_extra = result
-        return await _respond(language_result, understanding, session_id, "audio",
-                              script, include_audio, timings, started, debug_extra)
-
-    # Typed text — no corrector, so the plain in-order pipeline.
-    start = time.perf_counter()
-    language_result = await process_text_input(text)
-    language_ms = _ms(start)
-    if not language_result["success"]:
-        return JSONResponse(
-            status_code=500,
-            content={"error": language_result.get("error", "Language processing failed")},
+    try:
+        return await answer(
+            session_id=session_id or str(uuid.uuid4()),
+            audio_bytes=await audio.read() if audio else None,
+            filename=audio.filename if audio else None,
+            text=text, language=language, script=script, include_audio=include_audio,
         )
-    return await run_pipeline(
-        language_result, session_id=session_id, input_type="text",
-        script=script, include_audio=include_audio, language_ms=language_ms,
-    )
+    except PipelineError as e:
+        return JSONResponse(status_code=e.status, content={"error": e.message})
 
 
 @router.post("/text")
@@ -310,24 +435,11 @@ async def text_query(
     script = _validate_script(script)
     if script is not None and script not in VALID_SCRIPTS:
         return _bad_request("script must be 'native' or 'romanized' (or left empty)")
-
-    session_id = session_id or str(uuid.uuid4())
-
-    start = time.perf_counter()
-    language_result = await process_text_input(text)
-    language_ms = _ms(start)
-
-    if not language_result["success"]:
-        return _bad_request(language_result.get("error", "Empty text"))
-
-    return await run_pipeline(
-        language_result,
-        session_id=session_id,
-        input_type="text",
-        script=script,
-        include_audio=include_audio,
-        language_ms=language_ms,
-    )
+    try:
+        return await answer(session_id=session_id or str(uuid.uuid4()), text=text,
+                            script=script, include_audio=include_audio)
+    except PipelineError as e:
+        return JSONResponse(status_code=e.status, content={"error": e.message})
 
 
 @router.post("/speak")

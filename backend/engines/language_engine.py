@@ -1,10 +1,12 @@
 import asyncio
+import io
 import json
 import os
 import re
 import tempfile
 import threading
 import time
+import wave
 
 import numpy as np
 import py3langid as langid
@@ -541,9 +543,100 @@ def _transcribe_local(audio_bytes: bytes, filename: str, language: str | None) -
     }
 
 
+# ── Kannada speech recognition: Sarvam (added 2026-10-12) ─────────────────
+# Live tests from the browser showed Whisper mishearing mixed Kannada-English
+# badly ("e college alli CSE ge fees eshtu" -> "college CSE KCET STO").
+# English and Hindi were fine. For questions where the user chose KANNADA,
+# Sarvam's Indian-language speech model is used first; Whisper (Groq, then
+# local) stays the automatic backup, and is still used for English, Hindi
+# and "auto-detect".
+#   saaras:v4, mode "translit" = Kannada speech written in English letters
+#   ("CSE fee eshtu"), the same style Engine 2 and the corrector expect.
+#   keyterms = college names it should listen for (saaras:v4 only).
+# Set KANNADA_STT = "whisper" to go back to Whisper only.
+# Docs: docs.sarvam.ai -> Speech-to-Text (REST API, output modes).
+# Previous version of this file: language_engine_backup_2026-10-12.py
+KANNADA_STT = "sarvam"                      # "sarvam" | "whisper"
+SARVAM_STT_MODELS = ("saaras:v4", "saaras:v3")
+SARVAM_STT_MODE = "translit"
+SARVAM_MAX_SECONDS = 30                     # Sarvam's limit per request
+_EXTRA_KEYTERMS = ["SVIT", "KCET", "COMEDK", "CSE", "ISE", "ECE", "AIML", "fee", "fees",
+                   "hostel", "cutoff", "placement", "scholarship", "admission",
+                   "eshtu", "alli", "beku", "ide"]
+
+
+def _sarvam_keyterms() -> list:
+    terms = [t.strip() for t in KNOWN_TERMS.split(",")] + _EXTRA_KEYTERMS
+    unique = []
+    for t in terms:
+        if t and len(t) <= 64 and t.lower() not in {u.lower() for u in unique}:
+            unique.append(t)
+    return unique[:50]
+
+
+def _to_wav_16k(audio_bytes: bytes, filename: str) -> bytes:
+    """Any recording (webm from the browser, m4a/mp4 from a phone) -> 16 kHz mono WAV."""
+    suffix = os.path.splitext(filename or "")[1] or ".webm"
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+        tmp.write(audio_bytes)
+        tmp_path = tmp.name
+    try:
+        audio = whisper.load_audio(tmp_path)        # ffmpeg -> float32, 16 kHz mono
+    finally:
+        os.unlink(tmp_path)
+    audio = audio[: 16000 * SARVAM_MAX_SECONDS]
+    pcm = (np.clip(audio, -1.0, 1.0) * 32767).astype(np.int16).tobytes()
+    out = io.BytesIO()
+    with wave.open(out, "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(16000)
+        w.writeframes(pcm)
+    return out.getvalue()
+
+
+def _transcribe_sarvam(audio_bytes: bytes, filename: str, language: str | None) -> dict:
+    """Sarvam speech-to-text for Kannada. Raises on any failure (caller falls back)."""
+    from engines.tts_engine import _get_client      # same Sarvam client/key as the voice
+    client = _get_client()
+    wav = _to_wav_16k(audio_bytes, filename)
+    last_error = None
+    for model in SARVAM_STT_MODELS:
+        attempts = [{"model": model, "language_code": "kn-IN", "mode": SARVAM_STT_MODE}]
+        if model == "saaras:v4":
+            attempts.insert(0, {**attempts[0], "keyterms": _sarvam_keyterms()})
+        for kwargs in attempts:
+            try:
+                response = client.speech_to_text.transcribe(file=("audio.wav", wav, "audio/wav"), **kwargs)
+            except TypeError as e:           # older sarvamai without this parameter
+                last_error = e
+                continue
+            except Exception as e:           # e.g. model not available: try the next model
+                last_error = e
+                break
+            text = (getattr(response, "transcript", "") or "").strip()
+            if not text:
+                raise RuntimeError("Sarvam returned an empty transcript")
+            return {
+                "raw_text": text,
+                "speech_language": "kn",
+                "speech_language_source": "user_selected",
+                "speech_language_confidence": None,
+                "stt_engine": f"sarvam:{model}:{SARVAM_STT_MODE}" + (" +keyterms" if "keyterms" in kwargs else ""),
+            }
+    raise RuntimeError(f"Sarvam speech-to-text failed: {type(last_error).__name__}: {last_error}")
+
+
 def _transcribe_sync(audio_bytes: bytes, filename: str, language: str | None) -> dict:
-    """Groq first; on any problem, fall back to the local model."""
+    """Kannada: Sarvam first. Then Groq Whisper; on any problem, the local model."""
     started = time.perf_counter()
+    if language == "kn" and KANNADA_STT == "sarvam":
+        try:
+            stt = _transcribe_sarvam(audio_bytes, filename, language)
+            stt["stt_ms"] = int((time.perf_counter() - started) * 1000)
+            return stt
+        except Exception as e:
+            print(f"⚠️  Sarvam speech-to-text failed ({type(e).__name__}: {e}) — using Whisper")
     if USE_GROQ_WHISPER and groq_client is not None:
         try:
             stt = _transcribe_groq(audio_bytes, filename, language)
