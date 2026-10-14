@@ -291,6 +291,26 @@ _COMMA_NUMBER = re.compile(r"\b\d{1,3}(?:,\d{2,3})+\b")
 _LARGE_NUMBER = re.compile(r"(?<![\d.])\d{5,}(?!\d)(?!\.\d)")
 
 
+# Phone numbers ("080-2846-8191", "+91 91085 75191", "9108575191") must be
+# read digit by digit — otherwise the amount rules below would read them
+# as crores/lakhs. (2026-10-13: the admission office number is now answered.)
+_PHONE_NUMBER = re.compile(
+    r"(?<![\d₹])(?:\+91[\s-]?)?(?:0\d{2}[\s-]?\d{4}[\s-]?\d{4}|[6-9]\d{4}[\s-]?\d{5})(?!\d)"
+)
+
+
+def _spell_phone(match) -> str:
+    raw = match.group(0)
+    prefix = "plus 9 1, " if raw.startswith("+91") else ""
+    body = raw[3:] if raw.startswith("+91") else raw
+    groups = [g for g in re.split(r"[\s-]+", body.strip()) if g]
+    if len(groups) == 1 and len(groups[0]) == 10:          # 9108575191 -> 91085 75191
+        groups = [groups[0][:5], groups[0][5:]]
+    elif len(groups) == 1 and len(groups[0]) == 11:        # 08028468191 -> 080 2846 8191
+        groups = [groups[0][:3], groups[0][3:7], groups[0][7:]]
+    return prefix + ", ".join(" ".join(g) for g in groups)
+
+
 def speak_numbers(text: str, language: str) -> str:
     """
     Rewrites money amounts so the voice reads them naturally:
@@ -324,6 +344,7 @@ def speak_numbers(text: str, language: str) -> str:
             return f"{_indian_number_words(value, 'kn')} {rupee_word}"
         return f"{value} {rupee_word}"
 
+    text = _PHONE_NUMBER.sub(_spell_phone, text)
     text = _RUPEE_AMOUNT.sub(lambda m: amount_to_speech(m.group(1)), text)
     if language == "en" or not has_native_script:
         text = _AMOUNT_THEN_RUPEES.sub(lambda m: amount_to_speech(m.group(1)), text)

@@ -48,6 +48,11 @@ interface LanguageValue {
   /** The quick ENG / KN / HI switch: sets both to the same language. */
   quickLanguage: LangCode | null;
   setQuickLanguage: (l: LangCode) => void;
+  /** Kannada / Hindi replies written in English letters (romanized). */
+  romanized: boolean;
+  setRomanized: (on: boolean) => void;
+  /** Back to "detect my language, reply in the same" (also handles mixed speech). */
+  clearQuickLanguage: () => void;
 }
 
 const LanguageContext = createContext<LanguageValue | null>(null);
@@ -55,15 +60,26 @@ const LanguageContext = createContext<LanguageValue | null>(null);
 const isSpeech = (v: string | null): v is SpeechLanguage => SPEECH_OPTIONS.some((o) => o.value === v);
 const isResponse = (v: string | null): v is ResponseLanguage => RESPONSE_OPTIONS.some((o) => o.value === v);
 
+// The language menu offers: Auto, English, Kannada, Kannada in English letters, Hindi,
+// Hindi in English letters. Older versions (separate "speak in" / "reply in" boxes)
+// could save other mixes, e.g. "speak English, reply Hindi" — that forced Whisper to
+// English while the parent spoke Hindi, and the menu couldn't show it. Such leftovers
+// are reset to Auto-detect (2026-10-14).
+const isMenuChoice = (s: SpeechLanguage, r: ResponseLanguage) =>
+  (s === "auto" && r === "same") || (s !== "auto" && (r === s || r === `${s}-Latn`));
+
+function loadSaved(): { speech: SpeechLanguage; response: ResponseLanguage } {
+  const s = storage.get(SPEECH_KEY);
+  const r = storage.get(RESPONSE_KEY);
+  const speech: SpeechLanguage = isSpeech(s) ? s : "auto";
+  const response: ResponseLanguage = isResponse(r) ? r : "same";
+  return isMenuChoice(speech, response) ? { speech, response } : { speech: "auto", response: "same" };
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [speechLanguage, setSpeech] = useState<SpeechLanguage>(() => {
-    const v = storage.get(SPEECH_KEY);
-    return isSpeech(v) ? v : "auto";
-  });
-  const [responseLanguage, setResponse] = useState<ResponseLanguage>(() => {
-    const v = storage.get(RESPONSE_KEY);
-    return isResponse(v) ? v : "same";
-  });
+  const [saved] = useState(loadSaved);
+  const [speechLanguage, setSpeech] = useState<SpeechLanguage>(saved.speech);
+  const [responseLanguage, setResponse] = useState<ResponseLanguage>(saved.response);
 
   const value = useMemo<LanguageValue>(() => {
     const setSpeechLanguage = (l: SpeechLanguage) => { setSpeech(l); storage.set(SPEECH_KEY, l); };
@@ -78,7 +94,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       setSpeechLanguage,
       setResponseLanguage,
       quickLanguage,
-      setQuickLanguage: (l: LangCode) => { setSpeechLanguage(l); setResponseLanguage(l); },
+      // keeps the "English letters" choice when switching between Kannada and Hindi
+      setQuickLanguage: (l: LangCode) => {
+        setSpeechLanguage(l);
+        setResponseLanguage(l !== "en" && responseLanguage.endsWith("-Latn") ? (`${l}-Latn` as ResponseLanguage) : l);
+      },
+      romanized: responseLanguage.endsWith("-Latn"),
+      setRomanized: (on: boolean) => {
+        const base = (responseLanguage.replace("-Latn", "") as ResponseLanguage);
+        if (base === "kn" || base === "hi") setResponseLanguage(on ? (`${base}-Latn` as ResponseLanguage) : base);
+      },
+      clearQuickLanguage: () => { setSpeechLanguage("auto"); setResponseLanguage("same"); },
     };
   }, [speechLanguage, responseLanguage]);
 

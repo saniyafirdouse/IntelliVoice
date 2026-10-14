@@ -134,6 +134,7 @@ from collections import OrderedDict
 from dotenv import load_dotenv
 from groq import Groq
 
+from engines.college_profile import IDENTITY_LINE
 from engines.kannada_translator import translate_to_kannada
 from engines.transliterator import romanize
 from engines.tts_engine import synthesize_speech
@@ -199,8 +200,9 @@ LANGUAGE_INSTRUCTIONS = {
 SYSTEM_PROMPT_BASE = """You are IntelliVoice, SVIT college's admissions assistant — replacing a human staff member on a phone call, not acting like a typical chatbot.
 
 ABSOLUTE RULES:
-1. Use ONLY the facts given to you in "Retrieved Data" below. Never invent a number, fee, cutoff, or any fact not explicitly provided.
+1. Use ONLY the facts given to you in "Retrieved Data" below. Never invent a number, fee, cutoff, place, name, or any fact not explicitly provided. Never use your own general knowledge about SVIT or any other college.
 2. If Retrieved Data says NOT FOUND, say plainly you don't have that information right now and suggest they contact the SVIT admission office directly — never guess. You CANNOT connect, transfer or call anyone: never say "I will connect you", "I will transfer you" or "someone will call you".
+2b. If Retrieved Data answers only part of the question, answer that part and say plainly you don't have information on the rest.
 3. If multiple options are given, present ALL of them honestly — never pick one and pretend it's the only answer.
 4. Never say anything negative about another college.
 5. When comparing or recommending branches, never favor one — present facts, let the person decide.
@@ -211,6 +213,12 @@ ABSOLUTE RULES:
 9. {language_instruction}
 10. This answer will be SPOKEN on a phone call, so keep it SHORT: usually 2-4 short sentences. Answer only what was asked, and mention only the details that answer the question. For example, for a fee question give the annual fee for each option — do not read out semester fees, early-bird fees, installments, or payment mode unless the user asked about them. Do not repeat the question back, and do not add long closing lines.
 """
+
+# Tell the model exactly which college SVIT is (it once guessed a different
+# "SVIT" in Pune). The line comes from engines/college_profile.py.
+SYSTEM_PROMPT_BASE = SYSTEM_PROMPT_BASE.replace(
+    "\n\nABSOLUTE RULES:", f"\n{IDENTITY_LINE}\n\nABSOLUTE RULES:", 1
+)
 
 RESPONSE_MODE_INSTRUCTIONS = {
     "informational": (
@@ -287,6 +295,46 @@ FALLBACK_INSTRUCTION = (
     "conversation back to admissions topics. Never attempt to "
     "actually answer the unrelated question."
 )
+
+# Fix A (2026-10-13): when Engine 3 finds NO data, the reply is this fixed
+# message — the model is not asked at all, so it cannot make anything up.
+# (Worried / escalation replies still go to the model: they comfort the
+# parent without needing facts.)
+# NOTE: Hindi/Kannada versions pending native-speaker check by the team.
+NOT_FOUND_MESSAGES = {
+    ("en", "native"): "I'm sorry, I don't have that information yet. For the correct details, please contact the SVIT admission office directly.",
+    ("en", "romanized"): "I'm sorry, I don't have that information yet. For the correct details, please contact the SVIT admission office directly.",
+    ("hi", "native"): "माफ़ कीजिए, यह जानकारी अभी मेरे पास नहीं है। सही जानकारी के लिए कृपया SVIT admission office से सीधे संपर्क कीजिए।",
+    ("hi", "romanized"): "Maaf kijiye, yeh jaankari abhi mere paas nahi hai. Sahi jaankari ke liye kripya SVIT admission office se seedha sampark kijiye.",
+    ("kn", "native"): "ಕ್ಷಮಿಸಿ, ಈ ಮಾಹಿತಿ ಸದ್ಯಕ್ಕೆ ನನ್ನ ಹತ್ತಿರ ಇಲ್ಲ. ಸರಿಯಾದ ಮಾಹಿತಿಗಾಗಿ ದಯವಿಟ್ಟು SVIT admission office ಅನ್ನು ನೇರವಾಗಿ ಸಂಪರ್ಕಿಸಿ.",
+    ("kn", "romanized"): "Kshamisi, ee maahiti sadyakke nanna hattira illa. Sariyaada maahitigaagi dayavittu SVIT admission office annu neravaagi samparkisi.",
+}
+# Response modes that only state facts — with no facts they get NOT_FOUND_MESSAGES.
+FACT_ONLY_MODES = {"informational", "comparison", "recommendation"}
+
+
+def _fixed_reply(messages: dict, language: str, script: str) -> dict:
+    """A ready-made reply in the user's language (no model call)."""
+    message = messages[(language, script)]
+    native_message = messages[(language, "native")]
+    return {
+        "display_text": message,
+        "speech_text": native_message if language == "kn" else message,
+        "speech_language": language,
+    }
+
+
+# 2026-10-13: contact answers list 3 phone numbers and 2 emails — fine to READ
+# on screen, tiring to HEAR. For these the voice says one short sentence and
+# the full details stay in the on-screen text.
+# NOTE: Hindi/Kannada versions pending native-speaker check by the team.
+CONTACT_SPEECH_INTENTS = {"ask_contact_admission_office"}
+CONTACT_SPEECH = {
+    "en": "You can call the SVIT admission office on the phone numbers shown on your screen, or email them at the addresses shown there.",
+    "hi": "आप स्क्रीन पर दिखाए गए फ़ोन नंबरों पर SVIT admission office को call कर सकते हैं, या वहाँ दिए गए email पर mail कर सकते हैं।",
+    "kn": "ಸ್ಕ್ರೀನ್ ಮೇಲೆ ತೋರಿಸಿರುವ ಫೋನ್ ನಂಬರ್‌ಗಳಿಗೆ SVIT admission office ಗೆ call ಮಾಡಬಹುದು, ಅಥವಾ ಅಲ್ಲಿ ಕೊಟ್ಟಿರುವ email ಗೆ mail ಮಾಡಬಹುದು.",
+}
+
 
 # Shown (and spoken) only if Groq fails completely.
 # NOTE: Hindi/Kannada versions pending native-speaker check by the team.
@@ -408,8 +456,14 @@ def _reply_cache_key(engine2_result: dict, knowledge_result: dict,
             or engine2_result.get("emotion", "neutral") != "neutral"
             or engine2_result.get("response_mode", "informational") != "informational"):
         return None
+    if not (knowledge_result or {}).get("found"):
+        return None   # "not found" replies are fixed text — nothing to cache
     facts = format_retrieved_data(knowledge_result, query)
-    raw = json.dumps([intent_id, language, script, engine2_result.get("entities") or {}, facts],
+    # The question's own words are part of the key (2026-10-13): two
+    # differently-worded questions no longer share one cached answer.
+    question = re.sub(r"[^\w\s]", " ", (query or "").lower())
+    question = " ".join(question.split())
+    raw = json.dumps([intent_id, language, script, engine2_result.get("entities") or {}, facts, question],
                      sort_keys=True, ensure_ascii=False, default=str)
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()
 
@@ -509,7 +563,8 @@ def format_retrieved_data(knowledge_result: dict, query: str = "") -> str:
 
     def clean(doc):
         if isinstance(doc, dict):
-            doc = {k: v for k, v in doc.items() if k != "_id"}
+            # "_id" and bookkeeping like "_meta" (seed tag, sources) are not facts for the reply.
+            doc = {k: v for k, v in doc.items() if not k.startswith("_")}
             return _drop_unasked_details(doc, query)
         return doc
 
@@ -572,6 +627,7 @@ async def _generate_simple(instruction: str, language: str, script: str, query: 
     """Greet/fallback path — no retrieved data involved."""
     system_prompt = (
         "You are IntelliVoice, SVIT college's admissions assistant.\n"
+        f"{IDENTITY_LINE}\n"
         f"{instruction}\n"
         f"{_language_instruction(language, script)}\n"
         "Keep it brief — 1-2 sentences. Plain spoken sentences, no markdown."
@@ -715,7 +771,8 @@ async def _make_reply_text(engine2_result, knowledge_result, language, script, q
             debug["path"] = "greet"
             base_text = await _generate_simple(GREET_INSTRUCTION, language, script, query)
         elif (intent_id in BRANCH_SPECIFIC_INTENTS and not needs_escalation
-              and not (engine2_result.get("entities") or {}).get("branch")):
+              and not (engine2_result.get("entities") or {}).get("branch")
+              and not (engine2_result.get("entities") or {}).get("rank")):   # rank -> predictor answers
             # (A very worried parent still gets the warm grounded reply.)
             debug["path"] = "ask_branch"
             base_text = await _generate_simple(ASK_BRANCH_INSTRUCTION, language, script, query)
@@ -724,6 +781,12 @@ async def _make_reply_text(engine2_result, knowledge_result, language, script, q
             # gets escalation (grounded path below), not a polite redirect.
             debug["path"] = "fallback"
             base_text = await _generate_simple(FALLBACK_INSTRUCTION, language, script, query)
+        elif (not (knowledge_result or {}).get("found") and not needs_escalation
+              and engine2_result.get("response_mode", "informational") in FACT_ONLY_MODES):
+            # Fix A: no data -> fixed message, the model is never asked.
+            debug["path"] = "not_found"
+            timings["generate"] = _ms(started)
+            return True, {**_fixed_reply(NOT_FOUND_MESSAGES, language, script), "kannada_pipeline": None}
         else:
             debug["path"] = "grounded"
             base_text = await _generate_grounded(engine2_result, knowledge_result, language, script)
@@ -816,6 +879,12 @@ async def generate_response(
                 "kannada_pipeline": debug["kannada_pipeline"],
             })
         debug["reply_cache"] = "miss" if cache_key else "not_cacheable"
+
+    # Contact details: show everything, but speak one short sentence.
+    if (intent_id in CONTACT_SPEECH_INTENTS and generation_ok
+            and localized.get("speech_language") in CONTACT_SPEECH):
+        localized = {**localized, "speech_text": CONTACT_SPEECH[localized["speech_language"]]}
+        debug["short_speech"] = True
 
     # ── 3. Voice ─────────────────────────────────────────────────────
     audio_base64, audio_format, tts_success = None, None, False

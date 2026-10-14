@@ -154,9 +154,10 @@ export function useChat({ getContext, token, speechLanguage, responseLanguage }:
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.busy]);
 
-  const ask = useCallback(async (question: Question) => {
-    if (busyRef.current) return;
-    if (!question.audio && !question.text?.trim()) return;
+  // Resolves with the reply (or null on error) — the hands-free conversation uses it.
+  const ask = useCallback(async (question: Question): Promise<QueryResponse | null> => {
+    if (busyRef.current) return null;
+    if (!question.audio && !question.text?.trim()) return null;
     busyRef.current = true;
     const userId = uid();
     const voice = !!question.audio;
@@ -172,9 +173,11 @@ export function useChat({ getContext, token, speechLanguage, responseLanguage }:
         token,
       });
       dispatch({ type: "answer", userId, res, voice });
+      return res;
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Something went wrong. Please try again.";
       dispatch({ type: "fail", userId, question, message });
+      return null;
     }
   }, [state.sessionId, getContext, speechLanguage, responseLanguage, token]);
 

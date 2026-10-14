@@ -488,6 +488,21 @@ def _pick_speech_language(audio, language: str | None) -> tuple[str | None, str,
         return None, "whisper_default", None
 
 
+# 2026-10-14: Whisper sometimes hears Hindi / Hinglish as "Urdu" and writes the
+# question in Urdu (Arabic) script ("ہائیر سٹڈیز کے لیے...") — spoken Hindi and
+# Urdu sound almost the same. IntelliVoice only supports en / hi / kn, so any
+# Urdu-script transcript is transcribed again as Hindi (Devanagari script).
+_URDU_SCRIPT = re.compile(r"[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]")
+
+
+def _is_urdu_script(text: str) -> bool:
+    """True when most letters are Arabic/Urdu script."""
+    letters = [ch for ch in text if ch.isalpha()]
+    if not letters:
+        return False
+    return sum(1 for ch in letters if _URDU_SCRIPT.match(ch)) / len(letters) > 0.3
+
+
 def _transcribe_groq(audio_bytes: bytes, filename: str, language: str | None) -> dict:
     """Primary path: Whisper large-v3-turbo on Groq. Raises on any failure."""
     kwargs = {
@@ -499,8 +514,22 @@ def _transcribe_groq(audio_bytes: bytes, filename: str, language: str | None) ->
     if language in SPEECH_LANGUAGES:
         kwargs["language"] = language
     result = groq_client.audio.transcriptions.create(**kwargs)
+    text = (result.text or "").strip()
+    if _is_urdu_script(text):
+        # Heard as Urdu: transcribe again as Hindi so the question is in Devanagari.
+        print("ℹ️  Whisper wrote Urdu script — transcribing again as Hindi")
+        retry = groq_client.audio.transcriptions.create(**{**kwargs, "language": "hi"})
+        retry_text = (retry.text or "").strip()
+        if retry_text and not _is_urdu_script(retry_text):
+            return {
+                "raw_text": retry_text,
+                "speech_language": "hi",
+                "speech_language_source": "auto_detected",
+                "speech_language_confidence": None,
+                "stt_engine": f"groq:{GROQ_WHISPER_MODEL}",
+            }
     return {
-        "raw_text": (result.text or "").strip(),
+        "raw_text": text,
         "speech_language": language if language in SPEECH_LANGUAGES else None,
         "speech_language_source": "user_selected" if language in SPEECH_LANGUAGES else "auto_detected",
         "speech_language_confidence": None,

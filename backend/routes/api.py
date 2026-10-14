@@ -12,19 +12,37 @@ Login is optional: the Authorization header is accepted but not required.
 Added 2026-10-12 (integration).
 """
 
+import asyncio
 import json
 from typing import Optional
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, Header, HTTPException, UploadFile
 
 from engines.intelligence_engine import extract_entities
+from engines import user_history
+from engines.college_profile import CONTACT
 from engines.tts_engine import SPEAKERS
+from routes.student import optional_user_email
 from routes.voice import PipelineError, answer
 
 router = APIRouter()
 
 MAX_TEXT_CHARS = 500
 SOURCE_NAME = "SVIT Admissions Database"
+
+# 2026-10-13: the chat's "Need help from the admissions office?" card.
+# Shown when IntelliVoice has no data, the parent needs escalation, or the
+# user asks for the office. callback_available tells the page it can offer
+# "Request a callback" (POST /api/callback).
+HELP_CARD_INTENTS = {"ask_contact_admission_office"}
+# Replies after which the page can offer "Download my document checklist" (POST /api/checklist).
+CHECKLIST_INTENTS = {"ask_required_documents", "ask_admission_process", "ask_lateral_pg_admission"}
+HELP_CONTACT = {"phone": CONTACT["mobile"][0], "email": CONTACT["email"][0]}
+HELP_MESSAGES = {
+    "not_found": "I don't have this information yet. The admission office can help — call or email them, or ask for a callback.",
+    "escalation": "The SVIT admission office can help you personally — call or email them, or ask for a callback.",
+    "contact": "You can call or email the admission office, or leave your number and they will call you back.",
+}
 
 # "Reply to me in" choice -> (reply language, script)
 RESPONSE_LANGUAGES = {
@@ -53,11 +71,16 @@ def _context_entities(context: Optional[str]) -> dict:
         return {}
     if not isinstance(data, dict):
         return {}
+    result = {}
+    # 2026-10-13: the rank box is used too (rank predictor). "25,000" -> 25000.
+    rank_digits = "".join(ch for ch in str(data.get("rank") or "") if ch.isdigit())
+    if rank_digits and 1 <= int(rank_digits) <= 500000:
+        result["rank"] = int(rank_digits)
     typed = " ".join(str(data.get(k) or "") for k in ("branch", "category")).strip()
-    if not typed:
-        return {}
-    found = extract_entities(typed)
-    return {k: v for k, v in found.items() if k in ("branch", "category")}
+    if typed:
+        found = extract_entities(typed)
+        result.update({k: v for k, v in found.items() if k in ("branch", "category")})
+    return result
 
 
 def _reply_language_label(result: dict) -> str:
@@ -77,6 +100,10 @@ def _to_contract(result: dict) -> dict:
     memory = result.get("memory") or {}
     entities = {k: v for k, v in (analysis.get("entities") or {}).items() if k != "topic"}
     needs_escalation = bool(analysis.get("needs_escalation")) or analysis.get("response_mode") == "escalation"
+    not_found = (result.get("debug") or {}).get("path") == "not_found"
+    asked_for_office = analysis.get("intent") in HELP_CARD_INTENTS
+    help_reason = ("escalation" if needs_escalation else "not_found" if not_found
+                   else "contact" if asked_for_office else None)
 
     audio = None
     if result.get("tts_success") and result.get("audio_base64"):
@@ -111,8 +138,15 @@ def _to_contract(result: dict) -> dict:
         },
         "data": None,
         "audio": audio,
-        "escalation": {"needed": needs_escalation, "message": None, "contact": None},
+        "escalation": {
+            "needed": help_reason is not None,
+            "reason": help_reason,
+            "message": HELP_MESSAGES.get(help_reason),
+            "contact": HELP_CONTACT if help_reason else None,
+            "callback_available": help_reason is not None,
+        },
         "source": SOURCE_NAME if (result.get("knowledge") or {}).get("found") else None,
+        "checklist_available": analysis.get("intent") in CHECKLIST_INTENTS,
         # extra (ignored by the page, useful when testing)
         "timings_ms": result.get("timings_ms"),
     }
@@ -126,6 +160,7 @@ async def api_query(
     context: Optional[str] = Form(None),
     speech_language: str = Form("auto"),
     response_language: str = Form("same"),
+    authorization: Optional[str] = Header(None),
 ):
     if not audio and not (text and text.strip()):
         raise HTTPException(422, detail="Please ask a question by voice or by typing.")
@@ -154,4 +189,12 @@ async def api_query(
         )
     except PipelineError as e:
         raise HTTPException(e.status, detail=e.message)
+
+    # Memory across visits: remember this question for a logged-in student (background, never blocks).
+    email = optional_user_email(authorization)
+    if email:
+        analysis = result.get("analysis") or {}
+        asyncio.create_task(user_history.record_turn(
+            email, result.get("transcribed_text") or text or "", analysis.get("intent"),
+            analysis.get("entities"), (result.get("language") or {}).get("primary")))
     return _to_contract(result)

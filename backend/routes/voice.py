@@ -52,6 +52,14 @@ VALID_SCRIPTS = {"native", "romanized"}
 VALID_SPEECH_LANGUAGES = {"en", "hi", "kn"}
 NO_TOPIC_INTENTS = {"greet", "fallback"}
 
+# 2026-10-13: when IntelliVoice has just asked "Which branch?", the next short
+# message that names a branch ("ISE", "CSE ka", "ISE aur CSE ko kitna") is the
+# ANSWER to that question — keep the original topic (e.g. fees) instead of
+# treating it as a brand-new question (it was being read as a cutoff question).
+_awaiting_branch = {}            # session_id -> (intent we asked about, time asked)
+AWAIT_BRANCH_SECONDS = 600
+ANSWER_MAX_WORDS = 10
+
 _background_tasks = set()   # keeps analytics tasks alive until they finish
 
 
@@ -103,6 +111,14 @@ def _apply_memory(session_id: Optional[str], ir: dict, extra_entities: Optional[
         last_intent = context.get("last_intent")
         intent, zone = ir["intent"], ir["confidence_zone"]
 
+        # Answer to our own "Which branch?" question -> continue that topic.
+        asked = _awaiting_branch.pop(session_id, None)
+        answered_branch = False
+        if (asked and time.time() - asked[1] < AWAIT_BRANCH_SECONDS and current.get("branch")
+                and not current.get("rank") and len((ir.get("query") or "").split()) <= ANSWER_MAX_WORDS):
+            answered_branch = intent != asked[0]
+            intent = asked[0]
+
         follow_up = bool(context.get("turn_count")) and (
             bool(ir.get("needs_memory")) or (last_intent is not None and last_intent == intent)
         )
@@ -125,6 +141,7 @@ def _apply_memory(session_id: Optional[str], ir: dict, extra_entities: Optional[
             new_ir = ir
 
         memory_info = {
+            "answered_branch_question": answered_branch,
             "topic": new_ir.get("category") if new_ir["intent"] not in NO_TOPIC_INTENTS else None,
             "context_used": [str(v) for k, v in resolved.items() if k not in current],
             "follow_up": follow_up,
@@ -140,6 +157,11 @@ def _remember_turn(session_id: Optional[str], language_result: dict, ir: dict,
                    response_result: dict) -> None:
     if not session_id or not response_result.get("success"):
         return
+    # Did we just ask "Which branch?" — then the next message is probably the answer.
+    if (response_result.get("debug") or {}).get("path") == "ask_branch":
+        _awaiting_branch[session_id] = (ir["intent"], time.time())
+    else:
+        _awaiting_branch.pop(session_id, None)
     try:
         memory_engine.add_turn(
             session_id,

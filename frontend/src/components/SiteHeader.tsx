@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -17,11 +17,89 @@ const NAV = [
 /** Extra link shown in the header only to signed-in admins. */
 const ADMIN_NAV = { to: "/admin", label: "Admin Panel", end: false };
 
-const LANGS: { code: LangCode; label: string }[] = [
-  { code: "en", label: "ENG" },
-  { code: "kn", label: "KN" },
-  { code: "hi", label: "HI" },
+// Language menu (2026-10-14): what you speak + how IntelliVoice replies.
+// "in English letters" = romanized Kannada / Hindi, e.g. "CSE fees eshtu?"
+type LangChoice = { id: string; short: string; label: string; hint?: string; code: LangCode | null; roman: boolean };
+const LANG_CHOICES: LangChoice[] = [
+  { id: "auto", short: "AUTO", label: "Auto-detect", hint: "Mixed languages, reply in the same", code: null, roman: false },
+  { id: "en", short: "ENG", label: "English", code: "en", roman: false },
+  { id: "kn", short: "ಕನ್ನಡ", label: "ಕನ್ನಡ · Kannada", code: "kn", roman: false },
+  { id: "kn-Latn", short: "KN·ENG", label: "Kannada in English letters", hint: "e.g. \"CSE fees eshtu?\"", code: "kn", roman: true },
+  { id: "hi", short: "हिंदी", label: "हिंदी · Hindi", code: "hi", roman: false },
+  { id: "hi-Latn", short: "HI·ENG", label: "Hindi in English letters", hint: "e.g. \"CSE ki fees kitni hai?\"", code: "hi", roman: true },
 ];
+
+function useLanguageChoice() {
+  const { quickLanguage, romanized, setSpeechLanguage, setResponseLanguage, clearQuickLanguage } = useLanguage();
+  const current =
+    LANG_CHOICES.find((c) => c.code !== null && c.code === quickLanguage && (c.code === "en" || c.roman === romanized)) ?? LANG_CHOICES[0];
+  const choose = (c: LangChoice) => {
+    if (c.code === null) { clearQuickLanguage(); return; }
+    setSpeechLanguage(c.code);
+    setResponseLanguage(c.roman ? (`${c.code}-Latn` as "kn-Latn" | "hi-Latn") : c.code);
+  };
+  return { current, choose };
+}
+
+/** "ENG ▾" pill that opens the list of language choices (also used in the chat's question bar). */
+export function LanguageMenu({ up = false, className = "hidden sm:block" }: { up?: boolean; className?: string }) {
+  const { current, choose } = useLanguageChoice();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
+  }, [open]);
+  return (
+    <div ref={ref} className={`relative ${className}`}>
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        title="Language you speak and the reply language"
+        onClick={() => setOpen((o) => !o)}
+        className="h-[38px] pl-4 pr-3 rounded-full flex items-center gap-1.5 text-[14px] font-semibold text-white transition-colors hover:bg-white/10"
+        style={{ background: "rgba(22, 26, 30, 0.75)", border: "1px solid rgba(255, 255, 255, 0.22)" }}
+      >
+        {current.short}
+        <Icon name="expand_more" className={`text-[18px] transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <ul
+          role="listbox"
+          aria-label="Language"
+          className={`absolute right-0 ${up ? "bottom-full mb-2" : "mt-2"} w-[250px] p-1.5 rounded-2xl z-50`}
+          style={{ background: "rgba(22, 22, 26, 0.96)", border: "1px solid rgba(255, 255, 255, 0.14)", boxShadow: "0 18px 40px rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}
+        >
+          {LANG_CHOICES.map((c) => {
+            const active = c.id === current.id;
+            return (
+              <li key={c.id}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  onClick={() => { choose(c); setOpen(false); }}
+                  className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between gap-2 transition-colors ${active ? "bg-white/12" : "hover:bg-white/8"}`}
+                >
+                  <span className="flex flex-col">
+                    <span className="text-[14px] text-white font-medium">{c.label}</span>
+                    {c.hint && <span className="text-[11.5px] text-white/55">{c.hint}</span>}
+                  </span>
+                  {active && <Icon name="check" className="text-[18px] text-[#b9cf94]" />}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 // Two looks exported from Stitch: "marketing" (Home, About) and "app" (Chat, FAQ, Sign in).
 const LOOK: Record<HeaderVariant, {
@@ -57,36 +135,37 @@ const LOOK: Record<HeaderVariant, {
     liveText: "",
   },
   app: {
+    // 2026-10-14: matches the Voice Chat reference — dark warm-to-cool bar, plain links, outlined pills
     header: {
-      className: "fixed top-0 left-0 w-full z-50 bg-primary-container/45 backdrop-blur-xl shadow-[0_4px_30px_rgba(10,3,7,0.45)]",
-      style: { background: "rgba(255, 255, 255, 0.06)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255, 255, 255, 0.18)" },
+      className: "fixed top-0 left-0 w-full z-50",
+      style: { background: "linear-gradient(90deg, rgba(25, 19, 13, 0.94) 0%, rgba(30, 32, 36, 0.92) 55%, rgba(20, 20, 24, 0.94) 100%)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderBottom: "1px solid rgba(255, 255, 255, 0.07)" },
     },
-    bar: "w-full h-[3px] bg-secondary/30",
-    barFill: { className: "h-full bg-secondary w-1/3 transition-all duration-300", style: { background: "linear-gradient(90deg, rgb(114, 47, 55), rgb(155, 61, 86))" } },
-    logoWrap: "w-10 h-10 rounded-full bg-secondary-container/40 flex items-center justify-center text-secondary shadow-[0_0_16px_rgba(191,194,255,0.2)]",
-    title: "font-title-lg text-title-lg tracking-tight text-on-surface flex items-center gap-space-xs",
-    badge: "font-label-sm text-label-sm text-secondary bg-secondary-container/60 px-space-xs py-0.5 rounded-full uppercase",
-    subtitle: "font-label-sm text-label-sm text-on-surface-variant",
-    nav: { className: "hidden xl:flex items-center gap-space-xs bg-surface-container-lowest/40 backdrop-blur-md p-1.5 rounded-full" },
-    link: "px-space-md py-space-xs rounded-full font-body-md text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all",
-    linkActive: { className: "px-space-md py-space-xs rounded-full transition-all bg-secondary-container text-on-secondary-container font-title-md", style: { backgroundColor: "rgb(126, 130, 194)", color: "rgb(255, 255, 255)", border: "1px solid rgba(255, 255, 255, 0.25)" } },
-    langWrap: { className: "hidden sm:flex items-center gap-1 bg-surface-container-lowest/50 p-1 rounded-full" },
-    lang: "px-2.5 py-1 rounded-full font-label-sm text-label-sm text-on-surface-variant hover:text-white hover:bg-white/10 transition-colors",
-    langActive: { className: "px-2.5 py-1 rounded-full font-label-sm text-label-sm text-white font-medium shadow-sm transition-all", style: { backgroundColor: "rgb(126, 130, 194)", color: "rgb(255, 255, 255)", border: "1px solid rgba(255, 255, 255, 0.25)" } },
-    divider: "h-6 w-px bg-outline-variant/40 hidden sm:block",
-    live: "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high/60 backdrop-blur-md",
-    liveDot: "w-2 h-2 rounded-full bg-secondary animate-pulse",
-    liveText: "font-label-sm text-label-sm text-secondary",
+    bar: "hidden",
+    barFill: { className: "hidden" },
+    logoWrap: "w-11 h-11 rounded-full flex items-center justify-center",
+    title: "text-[17px] font-semibold tracking-tight text-white flex items-center gap-1.5",
+    badge: "text-[17px] font-semibold text-[#b9cf94]",
+    subtitle: "text-[12px] text-white/75",
+    nav: { className: "hidden xl:flex items-center gap-1" },
+    link: "relative px-4 py-2 rounded-full text-[14px] font-medium text-white/85 hover:text-white hover:bg-white/5 transition-colors",
+    linkActive: { className: "relative px-4 py-2 rounded-full text-[14px] font-semibold text-white after:content-[''] after:absolute after:left-4 after:right-4 after:-bottom-0.5 after:h-[2px] after:rounded-full after:bg-white/70", style: { background: "rgba(255, 255, 255, 0.05)" } },
+    langWrap: { className: "hidden" },
+    lang: "",
+    langActive: { className: "", style: {} },
+    divider: "hidden",
+    live: "hidden",
+    liveDot: "",
+    liveText: "",
   },
 };
 
-const pill = "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-white border border-white/35 no-underline";
+const pill = "inline-flex items-center gap-1.5 h-[38px] px-4 rounded-full text-[14px] font-semibold text-white no-underline transition-colors";
 
 function AuthMenu() {
   const { user, logout } = useAuth();
   if (!user) {
     return (
-      <Link to="/login" aria-label="Sign In" className={pill} style={{ background: "rgb(88, 92, 176)" }}>
+      <Link to="/login" aria-label="Sign In" className={pill} style={{ background: "#363967", border: "1px solid rgba(255, 255, 255, 0.14)" }}>
         <Icon name="login" className="text-[16px]" />
         <span className="hidden sm:inline">Sign In</span>
       </Link>
@@ -96,11 +175,11 @@ function AuthMenu() {
   return (
     <>
       {/* name pill is hidden on phones so the menu button still fits */}
-      <span className={`${pill} hidden sm:inline-flex`} style={{ background: "rgba(88, 92, 176, 0.55)" }} title={user.email}>
+      <span className={`${pill} hidden sm:inline-flex`} style={{ background: "#363967", border: "1px solid rgba(255, 255, 255, 0.14)" }} title={user.email}>
         <Icon name="account_circle" className="text-[16px]" />
         <span className="hidden sm:inline">{first}{user.role === "admin" ? " · Admin" : ""}</span>
       </span>
-      <button type="button" onClick={logout} className={`${pill} cursor-pointer`} style={{ background: "rgba(0, 0, 0, 0.35)" }}>
+      <button type="button" onClick={logout} className={`${pill} cursor-pointer hover:bg-white/10`} style={{ background: "rgba(22, 26, 30, 0.75)", border: "1px solid rgba(255, 255, 255, 0.22)" }}>
         <Icon name="logout" className="text-[16px]" />
         <span className="hidden sm:inline">Sign Out</span>
       </button>
@@ -110,7 +189,7 @@ function AuthMenu() {
 
 export function SiteHeader({ variant }: { variant: HeaderVariant }) {
   const look = LOOK[variant];
-  const { quickLanguage: language, setQuickLanguage: setLanguage } = useLanguage();
+  const { current: langNow, choose: chooseLang } = useLanguageChoice();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
@@ -152,29 +231,8 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
         </nav>
 
         <div className="flex items-center gap-space-sm">
-          <div className={look.langWrap.className} style={look.langWrap.style} role="group" aria-label="Quick language: speak and reply in">
-            {LANGS.map((l) => {
-              const active = l.code === language;
-              return (
-                <button
-                  key={l.code}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setLanguage(l.code)}
-                  className={active ? look.langActive.className : look.lang}
-                  style={active ? look.langActive.style : undefined}
-                >
-                  {l.label}
-                </button>
-              );
-            })}
-          </div>
-          <div className={look.divider} />
+          <LanguageMenu />
           <div className="flex items-center gap-space-xs">
-            <div className={look.live}>
-              <span className={look.liveDot} />
-              <span className={look.liveText}>Live</span>
-            </div>
             <AuthMenu />
             <button
               type="button"
@@ -206,16 +264,17 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
               {item.label}
             </NavLink>
           ))}
-          <div className="sm:hidden flex items-center gap-1 px-2 pt-2" role="group" aria-label="Quick language: speak and reply in">
-            {LANGS.map((l) => (
+          <div className="sm:hidden flex flex-wrap items-center gap-1.5 px-2 pt-2" role="group" aria-label="Language: speak and reply in">
+            {LANG_CHOICES.map((c) => (
               <button
-                key={l.code}
+                key={c.id}
                 type="button"
-                aria-pressed={l.code === language}
-                onClick={() => setLanguage(l.code)}
-                className={`px-3 py-1 rounded-full text-xs font-bold text-white border border-white/25 ${l.code === language ? "bg-[#7E82C2]" : "bg-white/5"}`}
+                aria-pressed={c.id === langNow.id}
+                title={c.label}
+                onClick={() => chooseLang(c)}
+                className={`px-3 py-1 rounded-full text-xs font-bold text-white border border-white/25 ${c.id === langNow.id ? "bg-white/25" : "bg-white/5"}`}
               >
-                {l.label}
+                {c.short}
               </button>
             ))}
           </div>

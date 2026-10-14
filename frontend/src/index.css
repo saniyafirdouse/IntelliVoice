@@ -46,3 +46,21 @@
   outline: 2px solid #bfc2ff;
   outline-offset: 2px;
 }
+
+/* ---------- site typography (2026-10-14, from the Voice Chat reference) ----------
+   Big page headings: Cormorant Garamond (elegant serif). All other text: Inter. */
+h1, h1[class], h2, h2[class], .font-display, .font-headline-lg, .font-headline-lg-mobile {
+  font-family: "Cormorant Garamond", "Noto Sans Kannada", "Noto Sans Devanagari", Georgia, serif !important;
+  letter-spacing: 0 !important;
+  font-variant-numeric: lining-nums;   /* "01", "2024" at full height, not old-style digits */
+}
+h1, h1[class] { font-weight: 500 !important; }
+h2, h2[class], .font-display, .font-headline-lg, .font-headline-lg-mobile { font-weight: 600 !important; }
+.font-mk-display, .font-mk-headline-lg, .font-headline-md, .font-headline-sm, .font-title-lg, h3, h4 {
+  font-family: Inter, "Noto Sans Kannada", "Noto Sans Devanagari", sans-serif !important;
+}
+/* About page headings are small (16px) labels — the serif only suits large headings, so they stay Inter. */
+.pg-about h1, .pg-about h1[class], .pg-about h2, .pg-about h2[class] {
+  font-family: Inter, "Noto Sans Kannada", "Noto Sans Devanagari", sans-serif !important;
+  font-weight: 700 !important;
+}

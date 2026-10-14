@@ -145,7 +145,9 @@ def extract_entities(text: str) -> dict:
 
     # Rank — regex only, distinguished from percentage by "rank" keyword
     # or a larger number range typical of KCET/COMEDK ranks
-    rank_match = re.search(r"\b(\d{4,6})\s*(?:rank)?\b.*\brank\b|\brank\b.*?(\d{4,6})", text_lower)
+    # 2026-10-13: "25,000" -> "25000" so ranks written with commas are found too.
+    rank_text = re.sub(r"(?<=\d),(?=\d)", "", text_lower)
+    rank_match = re.search(r"\b(\d{4,6})\s*(?:rank)?\b.*\brank\b|\brank\b.*?(\d{4,6})", rank_text)
     if rank_match:
         rank_value = rank_match.group(1) or rank_match.group(2)
         if rank_value:

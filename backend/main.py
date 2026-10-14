@@ -7,6 +7,8 @@ from routes.voice import router as voice_router
 from routes.admin import router as admin_router
 from routes.auth import router as auth_router
 from routes.api import router as api_router   # frontend's POST /api/query (2026-10-12)
+from routes.callbacks import public_router as callback_router, admin_router as callback_admin_router  # 2026-10-13
+from routes.student import router as student_router   # checklist PDF + memory across visits (2026-10-13)
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -37,6 +39,9 @@ app.include_router(voice_router, prefix="/voice", tags=["Voice"])
 app.include_router(admin_router, prefix="/api/admin", tags=["Admin"])
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(api_router, prefix="/api", tags=["Frontend API"])
+app.include_router(callback_router, prefix="/api", tags=["Callback requests"])
+app.include_router(callback_admin_router, prefix="/api/admin/callbacks", tags=["Admin"])
+app.include_router(student_router, prefix="/api", tags=["Student"])
 
 @app.get("/")
 async def root():

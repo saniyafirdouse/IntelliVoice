@@ -30,6 +30,8 @@ import asyncio
 import time
 
 from database.connection import get_database
+from engines.college_profile import profile_knowledge
+from engines import rank_predictor
 
 USE_CACHE = True
 CACHE_TTL_SECONDS = 60
@@ -111,6 +113,23 @@ async def _find(db, collection_name: str, query: dict, limit: int = 10) -> list:
     return documents
 
 
+async def _drop_unknown_fields(db, collection_name: str, query: dict) -> dict:
+    """
+    2026-10-13: ignore filters on fields that NO record in this collection has.
+    E.g. "hostel for first-year students" sends {"year": "1st Year", ...} to
+    the hostel collection, which has no "year" field at all — such a filter
+    can never match, so it used to turn a good question into "not found".
+    Filters on fields the collection does have still apply as before.
+    """
+    if not query or not USE_CACHE or not _cacheable(query):
+        return query
+    docs = await _cached_docs(db, collection_name)
+    if not docs:
+        return query
+    known = set().union(*(d.keys() for d in docs))
+    return {k: v for k, v in query.items() if k in known}
+
+
 async def retrieve_knowledge(collection_name: str, filters: dict) -> dict:
     if not collection_name:
         return {"found": False, "reason": "no_knowledge_needed", "data": None}
@@ -122,6 +141,7 @@ async def retrieve_knowledge(collection_name: str, filters: dict) -> dict:
     query = {k: v for k, v in (filters or {}).items() if v is not None}
 
     try:
+        query = await _drop_unknown_fields(db, collection_name, query)
         documents = await _find(db, collection_name, query)
 
         if len(documents) == 1:
@@ -152,8 +172,52 @@ async def retrieve_knowledge(collection_name: str, filters: dict) -> dict:
         return {"found": False, "reason": "database_error", "error": str(e), "query_used": query}
 
 
+# Questions that get the rank predictor when the user gave a rank.
+RANK_INTENTS = {"ask_rank_prediction", "ask_cutoff", "ask_seat_availability", "ask_branch_recommendation"}
+# Questions about ISE that get the "merged into CSE" answer.
+ISE_MERGED_INTENTS = {"ask_fees_branch", "ask_cutoff", "ask_seat_availability"}
+
+
 async def fetch_knowledge(intelligence_result: dict) -> dict:
     knowledge_request = intelligence_result.get("knowledge_request", {})
     collection = knowledge_request.get("collection")
     filters = knowledge_request.get("filters", {})
-    return await retrieve_knowledge(collection, filters)
+
+    # 2026-10-13: a rank was given ("my KCET rank is 25000, which branch?")
+    # -> compare it with the cutoffs in code (engines/rank_predictor.py).
+    entities = intelligence_result.get("entities") or {}
+    if intelligence_result.get("intent") in RANK_INTENTS and isinstance(entities.get("rank"), int):
+        db = get_database()
+        try:
+            docs = await _find(db, "cutoffs", {}, limit=500) if db is not None else []
+        except Exception as e:
+            print(f"⚠️  Could not read cutoffs for rank prediction: {e}")
+            docs = []
+        return rank_predictor.predict(entities["rank"], docs, exam=rank_predictor.wanted_exam(entities),
+                                      branch=entities.get("branch"), category=entities.get("category"))
+
+    # 2026-10-13: ISE is closed for new admissions (merged into CSE from 2026-27).
+    # A fee / cutoff / seat question about ISE gets that explanation + the CSE figures,
+    # instead of "I don't have that information".
+    if entities.get("branch") == "ISE" and intelligence_result.get("intent") in ISE_MERGED_INTENTS:
+        cse = await retrieve_knowledge(collection, {**filters, "branch": "CSE"})
+        return {
+            "found": True, "match_type": "single", "note": "ise_merged",
+            "query_used": {**filters, "branch": "CSE"},
+            "data": {
+                "ise_status": ("ISE is closed for new admissions from 2026-27. ISE and CSE are very similar, "
+                               "so ISE has been merged into CSE. Current ISE students continue in ISE."),
+                "cse_details_instead": cse.get("data") if cse.get("found") else "not available",
+            },
+        }
+
+    result = await retrieve_knowledge(collection, filters)
+
+    # No MongoDB record yet? Use the verified college facts if this topic
+    # has some (about the college, affiliation, timings, admission contact).
+    # A record the admin uploads always wins over these.
+    if not result.get("found"):
+        profile = profile_knowledge(intelligence_result.get("intent"))
+        if profile:
+            return profile
+    return result

@@ -12,10 +12,12 @@ interface Props {
   status: { text: string; icon: string };
   onMic: () => void;
   onSend: (text: string) => void;
+  /** Starts the hands-free voice conversation. */
+  onConversation?: () => void;
 }
 
 /** Status strip + big mic button + text input at the bottom of the chat card. */
-export function MicDock({ languageSummary, recording, levels, busy, status, onMic, onSend }: Props) {
+export function MicDock({ languageSummary, recording, levels, busy, status, onMic, onSend, onConversation }: Props) {
   const [text, setText] = useState("");
 
   const submit = (e: FormEvent) => {
@@ -38,12 +40,6 @@ export function MicDock({ languageSummary, recording, levels, busy, status, onMi
             <span className="font-label-sm text-label-sm text-secondary uppercase font-bold tracking-wider">Status:</span>
             <span className="font-body-md text-body-md text-white font-medium italic truncate">{status.text}</span>
           </div>
-        </div>
-        <div className="flex items-center gap-space-sm min-w-0">
-          <span className="px-2.5 py-0.5 rounded-2xl text-white font-label-sm text-label-sm font-bold flex items-center gap-1 shadow-sm" style={{ backgroundColor: "rgb(88, 92, 176)", border: "1px solid rgba(255, 255, 255, 0.3)" }}>
-            <Icon name="graphic_eq" className="text-[14px] font-bold" />
-            Sarvam AI Bulbul: Ritu (English) · Simran (Hindi) · Rupa (Kannada)
-          </span>
         </div>
       </div>
 
@@ -86,20 +82,25 @@ export function MicDock({ languageSummary, recording, levels, busy, status, onMi
             <span className="font-label-sm text-label-sm text-white/90 font-medium hidden sm:flex items-center gap-1">
               or hold <kbd className="px-1.5 py-0.5 rounded bg-black/60 font-mono text-[10px] text-secondary border border-white/20 font-bold">SPACEBAR</kbd> to stream Kannada, Hindi or English
             </span>
-            <button
-              type="button"
-              title="Change language"
-              onClick={() => {
-                const el = document.getElementById("speech-lang");
-                el?.scrollIntoView({ behavior: "smooth", block: "center" });
-                el?.focus({ preventScroll: true });
-              }}
-              className="mt-1 px-2.5 py-0.5 rounded-full font-label-sm text-label-sm text-secondary font-semibold flex items-center gap-1 hover:bg-white/10 underline-offset-2 hover:underline"
+            <span
+              title="Change it with ENG / KN / HI at the top of the page"
+              className="mt-1 px-2.5 py-0.5 rounded-full font-label-sm text-label-sm text-secondary font-semibold flex items-center gap-1"
             >
               <Icon name="translate" className="text-[14px]" />
               {languageSummary}
-              <Icon name="edit" className="text-[13px]" />
-            </button>
+            </span>
+            {onConversation && (
+              <button
+                type="button"
+                onClick={onConversation}
+                disabled={busy || recording}
+                className="mt-2 px-4 py-1.5 rounded-full text-white font-label-md text-label-md font-semibold flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all disabled:opacity-60"
+                style={{ background: "rgba(88, 92, 176, 0.45)", border: "1px solid rgba(191, 194, 255, 0.55)", boxShadow: "rgba(124, 58, 237, 0.35) 0 0 16px" }}
+              >
+                <Icon name="record_voice_over" className="text-[18px]" />
+                Talk hands-free
+              </button>
+            )}
           </div>
         </div>
 
