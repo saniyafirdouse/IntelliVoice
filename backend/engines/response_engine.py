@@ -134,6 +134,8 @@ from collections import OrderedDict
 from dotenv import load_dotenv
 from groq import Groq
 
+from engines import fact_guard
+from engines import admission_guide
 from engines.college_profile import IDENTITY_LINE
 from engines.kannada_translator import translate_to_kannada
 from engines.transliterator import romanize
@@ -205,13 +207,15 @@ ABSOLUTE RULES:
 2b. If Retrieved Data answers only part of the question, answer that part and say plainly you don't have information on the rest.
 3. If multiple options are given, present ALL of them honestly — never pick one and pretend it's the only answer.
 4. Never say anything negative about another college.
-5. When comparing or recommending branches, never favor one — present facts, let the person decide.
+5. When comparing or recommending branches, never favor one — present facts, let the person decide. Never call one branch "best", "better" or "a good choice", and never describe only one branch when the user asked which branch to choose.
 6a. Never promise outcomes about a student (admission, results, placement, success). Say what is possible ("can", "may"), never what "will" happen.
 6. If the user asks about a multi-year or total cost and you only have a per-year figure: state the current per-year figure as an exact fact, THEN clearly mention that fees can change year to year (institutional decisions, renovations, policy changes — real and common). If a rough multi-year estimate is genuinely useful, phrase it as an approximation only — using words like "roughly," "approximately," "as of now this could be around" — never state a calculated multi-year total as if it were a confirmed, precise fact.
 7. Pay attention to the SPECIFIC words the user used in their own question (e.g., if they said "yearly," say "yearly" back; if they used a Hindi/Kannada word like "varshik," use that same word back). Mirror their own vocabulary and register as closely as natural, rather than substituting your own formal or casual synonym.
 8. NEVER use markdown formatting — no asterisks for bold, no bullet points/dashes, no headers, no literal "\\n" newline characters. Write ONLY as plain, natural spoken sentences and paragraphs, exactly the way a person would actually talk on a phone call. If comparing multiple things, weave them into flowing sentences (e.g. "CSE focuses on... while AIML focuses on...") instead of a list structure.
 9. {language_instruction}
 10. This answer will be SPOKEN on a phone call, so keep it SHORT: usually 2-4 short sentences. Answer only what was asked, and mention only the details that answer the question. For example, for a fee question give the annual fee for each option — do not read out semester fees, early-bird fees, installments, or payment mode unless the user asked about them. Do not repeat the question back, and do not add long closing lines.
+11. ANSWER FIRST, ASK AFTER. Always answer with what Retrieved Data gives. If the answer depends on something the user did not say and Retrieved Data has different values for it (for example boys or girls hostel, KCET / COMEDK / management quota, category), give each value briefly and THEN end with ONE short question asking which one applies to them. If nothing like that is missing, do not end with a question. Never reply with only a question.
+12. If Retrieved Data contains an "answer_guide", follow it — it says exactly what this question needs.
 """
 
 # Tell the model exactly which college SVIT is (it once guessed a different
@@ -271,9 +275,67 @@ RESPONSE_MODE_INSTRUCTIONS = {
 }
 
 GREET_INSTRUCTION = (
-    "The user is greeting you. Respond with a warm, brief welcome "
-    "and invite them to ask their question. No facts needed."
+    "You are Eva, the admission assistant of SVIT. The user is greeting you. "
+    "Reply with a warm, brief welcome that introduces you by name, like "
+    "\"Hello, I'm Eva. How can I help you?\", and invite them to ask their "
+    "question. No facts needed."
 )
+
+# 2026-11-01: "Who are you?" -> Eva introduces herself (fixed text: instant, nothing made up).
+# NOTE: Hindi/Kannada wording pending a native-speaker check by the team.
+EVA_ABOUT_MESSAGES = {
+    ("en", "native"): "I'm Eva, the admission assistant of SVIT, Bengaluru. I can answer your questions about admissions, fees, cutoffs, branches, hostels, buses, scholarships and placements, in English, Kannada or Hindi, by typing or by voice. What would you like to know?",
+    ("en", "romanized"): "I'm Eva, the admission assistant of SVIT, Bengaluru. I can answer your questions about admissions, fees, cutoffs, branches, hostels, buses, scholarships and placements, in English, Kannada or Hindi, by typing or by voice. What would you like to know?",
+    ("hi", "native"): "मैं ईवा हूँ, SVIT बेंगलुरु की admission assistant। मैं admissions, fees, cutoff, branches, hostel, bus, scholarships और placements से जुड़े आपके सवालों के जवाब English, कन्नड़ या हिंदी में दे सकती हूँ, लिखकर या बोलकर। आप क्या जानना चाहेंगे?",
+    ("hi", "romanized"): "Main Eva hoon, SVIT Bengaluru ki admission assistant. Main admissions, fees, cutoff, branches, hostel, bus, scholarships aur placements se jude aapke sawaalon ke jawaab English, Kannada ya Hindi mein de sakti hoon, likhkar ya bolkar. Aap kya jaanna chahenge?",
+    ("kn", "native"): "ನಾನು ಈವಾ, SVIT ಬೆಂಗಳೂರಿನ admission assistant. Admissions, fees, cutoff, branches, hostel, bus, scholarships ಮತ್ತು placements ಬಗ್ಗೆ ನಿಮ್ಮ ಪ್ರಶ್ನೆಗಳಿಗೆ English, ಕನ್ನಡ ಅಥವಾ ಹಿಂದಿಯಲ್ಲಿ, type ಮಾಡಿ ಅಥವಾ ಮಾತಾಡಿ ಉತ್ತರ ಕೊಡ್ತೀನಿ. ನಿಮಗೆ ಏನು ತಿಳ್ಕೋಬೇಕು?",
+    ("kn", "romanized"): "Naanu Eva, SVIT Bengalurina admission assistant. Admissions, fees, cutoff, branches, hostel, bus, scholarships mattu placements bagge nimma prashnegalige English, Kannada athava Hindiyalli, type maadi athava maataadi uttara kodteeni. Nimage enu tilkobeku?",
+}
+# Ways of asking who the assistant is (English, romanized and native Hindi / Kannada).
+_ABOUT_EVA = re.compile(
+    r"\bwho\s+(are|r)\s+(you|u)\b|\bwhat(\s+i|')?s\s+your\s+name\b|\bwhat\s+is\s+your\s+name\b"
+    r"|\bintroduce\s+yourself\b|\btell\s+me\s+about\s+yourself\b|\bwho\s+is\s+eva\b|\bwho\s+am\s+i\s+(talking|speaking)\s+to\b"
+    r"|\bare\s+you\s+(a\s+|an\s+)?(bot|robot|human|ai|machine|real\s+person|person)\b"
+    r"|\b(neevu|neenu|nivu|ninu)\s+(yaaru|yaru)\b|\bnimma\s+hesaru\b|\bninna\s+hesaru\b"
+    r"|\b(aap|tum)\s+(kaun|kon)\s+(ho|hain|hai|hein)\b|\b(aapka|tumhara)\s+naam\b"
+    r"|ನೀವು\s*ಯಾರು|ನೀನು\s*ಯಾರು|ನಿಮ್ಮ\s*ಹೆಸರು|ನಿನ್ನ\s*ಹೆಸರು|आप\s*कौन|तुम\s*कौन|आपका\s*नाम|तुम्हारा\s*नाम",
+    re.IGNORECASE,
+)
+
+
+# 2026-11-01: "Which branch should my child choose?" -> no branch is pushed; the child's
+# interest decides (fixed text, so the AI can never favour one branch).
+# NOTE: Hindi/Kannada wording pending a native-speaker check by the team.
+BRANCH_CHOICE_MESSAGES = {
+    ("en", "native"): "There is no single best branch. Every branch at SVIT has good opportunities, and the right one is the branch your child is truly interested in. Tell me which subjects they enjoy, and I can share the fees, cutoff and placement details of those branches. The admission office can also guide you personally.",
+    ("en", "romanized"): "There is no single best branch. Every branch at SVIT has good opportunities, and the right one is the branch your child is truly interested in. Tell me which subjects they enjoy, and I can share the fees, cutoff and placement details of those branches. The admission office can also guide you personally.",
+    ("hi", "native"): "कोई एक branch सबसे अच्छी नहीं होती। SVIT की हर branch में अच्छे अवसर हैं, और सही branch वही है जिसमें आपके बच्चे की सच्ची रुचि हो। मुझे बताइए उन्हें कौन से विषय पसंद हैं, मैं उन branches की fees, cutoff और placement की जानकारी दे सकती हूँ। Admission office भी आपको व्यक्तिगत रूप से guide कर सकता है।",
+    ("hi", "romanized"): "Koi ek branch sabse achhi nahi hoti. SVIT ki har branch mein achhe avsar hain, aur sahi branch wahi hai jismein aapke bachche ki sachchi ruchi ho. Mujhe bataiye unhe kaun se vishay pasand hain, main un branches ki fees, cutoff aur placement ki jaankari de sakti hoon. Admission office bhi aapko vyaktigat roop se guide kar sakta hai.",
+    ("kn", "native"): "ಯಾವುದೇ ಒಂದು branch ಮಾತ್ರ best ಅಂತ ಇಲ್ಲ. SVIT ನ ಪ್ರತಿ branch ನಲ್ಲೂ ಒಳ್ಳೆಯ ಅವಕಾಶಗಳಿವೆ, ನಿಮ್ಮ ಮಗುವಿಗೆ ನಿಜವಾಗಿ ಆಸಕ್ತಿ ಇರುವ branch ಏ ಸರಿಯಾದ ಆಯ್ಕೆ. ಅವರಿಗೆ ಯಾವ ವಿಷಯಗಳು ಇಷ್ಟ ಅಂತ ಹೇಳಿ, ಆ branches ನ fees, cutoff ಮತ್ತು placement ಮಾಹಿತಿ ಕೊಡ್ತೀನಿ. Admission office ಕೂಡ ನಿಮಗೆ ಖುದ್ದಾಗಿ guide ಮಾಡುತ್ತೆ.",
+    ("kn", "romanized"): "Yaavude ondu branch maatra best anta illa. SVIT na prati branch nallu olleya avakaashagalive, nimma maguvige nijavaagi aasakti iruva branch e sariyaada aayke. Avarige yaava vishayagalu ishta anta heli, aa branches na fees, cutoff mattu placement maahiti kodteeni. Admission office kooda nimage khuddaagi guide maadutte.",
+}
+_BRANCH_WORD = r"(branch|branches|course|stream|department|ब्रांच|ब्रान्च|शाखा|ಬ್ರಾಂಚ್|ಬ್ರ್ಯಾಂಚ್|ಕೋರ್ಸ್)"
+_BRANCH_CHOICE = re.compile(
+    r"\b(which|what)\s+" + _BRANCH_WORD + r"\b.{0,40}\b(should|shall|to|can|must|would)\b.{0,25}\b(choose|chose|select|take|pick|join|opt|go\s+for|prefer)\b"
+    r"|\b(which|what)\s+" + _BRANCH_WORD + r"\b.{0,30}\b(best|better|good|suitable|right|recommend\w*|suggest\w*)\b"
+    r"|\b(best|right|suitable|good)\s+" + _BRANCH_WORD + r"\s+(for|to)\b"
+    r"|\b(suggest|recommend)\w*\s+(me\s+|us\s+)?(a|an|the|which|some)?\s*" + _BRANCH_WORD + r"\b"
+    r"|\b(kaun|kon|konsa|konsi|kaunsa|kaunsi|kaun\s*s[aie])\s*(s[aie]\s+)?" + _BRANCH_WORD + r".{0,40}\b(choose|chuse|chus|select|lena|lein|le|karna|karein|chahiye|achha|acchi|accha|best|sahi)\b"
+    r"|\b(yaava|yava|yavdu|yaavdu)\s+" + _BRANCH_WORD + r".{0,40}\b(choose|select|tagobeku|tagoli|tegedukolli|tegedukobeku|olledu|best|sari|beku)\b"
+    r"|(कौन\s*सी|कौन\s*सा|कौन\s*से|कौनसी|कौनसा)\s*" + _BRANCH_WORD + r".{0,40}(चुन|choose|चूज़|चूज|लें|लेना|करना|चाहिए|अच्छ|बेहतर|सही|best)"
+    r"|ಯಾವ\s*" + _BRANCH_WORD + r".{0,40}(ಆಯ್ಕೆ|ತಗೋ|ತಗೊ|ತೆಗೆದುಕೊ|choose|select|ಒಳ್ಳೆ|best|ಸರಿ|ಬೇಕು)",
+    re.IGNORECASE,
+)
+
+
+def is_branch_choice(*texts) -> bool:
+    """2026-11-01: 'Which branch should my child choose?' — asked in any of the three languages."""
+    return any(t and _BRANCH_CHOICE.search(t) for t in texts)
+
+
+def is_about_eva(*texts) -> bool:
+    """2026-11-01: 'Who are you?' / 'What is your name?' — asked in any of the three languages."""
+    return any(t and _ABOUT_EVA.search(t) for t in texts)
 
 # Questions that can only be answered for a specific branch. If Engine 2
 # found no branch (not said, or misheard), the parent is asked which one.
@@ -288,10 +350,29 @@ ASK_BRANCH_INSTRUCTION = (
     "that is not one of these, and do not say you could not hear them."
 )
 
+# 2026-10-29 (San): no branch named -> do not just ask "Which branch?". Put the
+# brochure (every branch's fees, cutoffs, placements) on screen, say so, and
+# invite a specific question. Fixed text: fast, and nothing can be made up.
+# The next short message naming a branch still continues the topic (voice.py).
+# NOTE: Hindi/Kannada versions pending native-speaker check by the team.
+BROCHURE_DOCUMENT = {"title": "SVIT brochure (PDF)", "url": "/api/brochure", "download": True}
+BRANCH_MISSING_MESSAGES = {
+    ("en", "native"): "Since you didn't mention a branch, I've put our brochure on your screen. It has the fees, cutoffs and placement details for every branch, so you can go through it. If you want help with a specific branch or question, just ask me.",
+    ("en", "romanized"): "Since you didn't mention a branch, I've put our brochure on your screen. It has the fees, cutoffs and placement details for every branch, so you can go through it. If you want help with a specific branch or question, just ask me.",
+    ("hi", "native"): "आपने branch नहीं बताई, इसलिए मैंने आपकी स्क्रीन पर हमारा brochure दिया है। इसमें हर branch की fees, cutoff और placement की जानकारी है, आप इसे देख सकते हैं। किसी खास branch या सवाल के बारे में मदद चाहिए तो मुझसे पूछिए।",
+    ("hi", "romanized"): "Aapne branch nahi batayi, isliye maine aapki screen par hamara brochure diya hai. Ismein har branch ki fees, cutoff aur placement ki jaankari hai, aap ise dekh sakte hain. Kisi khaas branch ya sawaal ke baare mein madad chahiye to mujhse poochiye.",
+    ("kn", "native"): "ನೀವು branch ಹೇಳಲಿಲ್ಲ, ಅದಕ್ಕೆ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಮೇಲೆ ನಮ್ಮ brochure ಕೊಟ್ಟಿದ್ದೀನಿ. ಇದರಲ್ಲಿ ಎಲ್ಲಾ branch ಗಳ fees, cutoff ಮತ್ತು placement ಮಾಹಿತಿ ಇದೆ, ಒಮ್ಮೆ ನೋಡಿ. ಯಾವುದಾದರೂ ಒಂದು branch ಅಥವಾ ಪ್ರಶ್ನೆ ಬಗ್ಗೆ ಸಹಾಯ ಬೇಕಿದ್ದರೆ ನನ್ನನ್ನು ಕೇಳಿ.",
+    ("kn", "romanized"): "Neevu branch helalilla, adakke nimma screen mele namma brochure kottiddeeni. Idaralli ella branch gala fees, cutoff mattu placement maahiti ide, omme nodi. Yaavudaadaroo ondu branch athava prashne bagge sahaaya bekiddare nannannu keli.",
+}
+
 FALLBACK_INSTRUCTION = (
-    "The user's question is unrelated to SVIT admissions (e.g. "
-    "weather, sports, general knowledge). Politely acknowledge "
-    "it's outside what you can help with, and gently steer the "
+    "The user's question could not be matched to an SVIT topic. "
+    "If it is too vague to know what they want (e.g. 'tell me about it', "
+    "'what about that', 'I have a doubt'), ask them in ONE short sentence "
+    "what they would like to know, with a few examples: fees, cutoffs, "
+    "placements, hostel, transport. If it is clearly unrelated to SVIT "
+    "admissions (e.g. weather, sports, general knowledge), politely "
+    "acknowledge it's outside what you can help with, and gently steer the "
     "conversation back to admissions topics. Never attempt to "
     "actually answer the unrelated question."
 )
@@ -333,6 +414,36 @@ CONTACT_SPEECH = {
     "en": "You can call the SVIT admission office on the phone numbers shown on your screen, or email them at the addresses shown there.",
     "hi": "आप स्क्रीन पर दिखाए गए फ़ोन नंबरों पर SVIT admission office को call कर सकते हैं, या वहाँ दिए गए email पर mail कर सकते हैं।",
     "kn": "ಸ್ಕ್ರೀನ್ ಮೇಲೆ ತೋರಿಸಿರುವ ಫೋನ್ ನಂಬರ್‌ಗಳಿಗೆ SVIT admission office ಗೆ call ಮಾಡಬಹುದು, ಅಥವಾ ಅಲ್ಲಿ ಕೊಟ್ಟಿರುವ email ಗೆ mail ಮಾಡಬಹುದು.",
+}
+
+
+# 2026-10-15: "tell me everything" -> the College-at-a-glance card shows all the
+# facts on screen (branches, fees, cutoffs, placements, hostel...). Reading all of
+# that aloud would take minutes, so the voice says one fixed sentence instead
+# (no model call, nothing can be made up).
+# NOTE: Hindi/Kannada versions pending native-speaker check by the team.
+OVERVIEW_INTENT = "ask_college_overview"
+OVERVIEW_MESSAGES = {
+    ("en", "native"): "Here is SVIT at a glance: branches and seats, fees, cutoffs, placements, internships, scholarships, hostel, transport and contacts are all on your screen. You can also download the full brochure as a PDF. Ask me about any one of them for more detail.",
+    ("en", "romanized"): "Here is SVIT at a glance: branches and seats, fees, cutoffs, placements, internships, scholarships, hostel, transport and contacts are all on your screen. You can also download the full brochure as a PDF. Ask me about any one of them for more detail.",
+    ("hi", "native"): "यह रहा SVIT एक नज़र में: branches और seats, fees, cutoff, placements, internships, scholarships, hostel, transport और contact की जानकारी आपकी स्क्रीन पर है। आप पूरा brochure PDF में download भी कर सकते हैं। किसी भी विषय पर और जानकारी के लिए मुझसे पूछिए।",
+    ("hi", "romanized"): "Yeh raha SVIT ek nazar mein: branches aur seats, fees, cutoff, placements, internships, scholarships, hostel, transport aur contact ki jaankari aapki screen par hai. Aap poora brochure PDF mein download bhi kar sakte hain. Kisi bhi vishay par aur jaankari ke liye mujhse poochiye.",
+    ("kn", "native"): "ಇಲ್ಲಿದೆ SVIT ಒಂದು ನೋಟದಲ್ಲಿ: branches ಮತ್ತು seats, fees, cutoff, placements, internships, scholarships, hostel, transport ಮತ್ತು contact ಮಾಹಿತಿ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಮೇಲಿದೆ. ಪೂರ್ತಿ brochure ಅನ್ನು PDF ಆಗಿ download ಕೂಡ ಮಾಡಬಹುದು. ಯಾವುದೇ ವಿಷಯದ ಬಗ್ಗೆ ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ನನ್ನನ್ನು ಕೇಳಿ.",
+    ("kn", "romanized"): "Illide SVIT ondu notadalli: branches mattu seats, fees, cutoff, placements, internships, scholarships, hostel, transport mattu contact maahiti nimma screen meloide. Poorti brochure annu PDF aagi download kooda maadabahudu. Yaavude vishayada bagge innashtu tiliyalu nannannu keli.",
+}
+
+
+# 2026-10-28: a SPOKEN question that wasn't heard clearly (Whisper unsure of the
+# words) or that matches no admission topic gets this instead of a guess.
+# Typed questions keep the normal polite redirect (FALLBACK_INSTRUCTION).
+# NOTE: Hindi/Kannada versions pending native-speaker check by the team.
+UNCLEAR_MESSAGES = {
+    ("en", "native"): "Sorry, I couldn't catch that clearly. Could you please say it again, a little closer to the mic?",
+    ("en", "romanized"): "Sorry, I couldn't catch that clearly. Could you please say it again, a little closer to the mic?",
+    ("hi", "native"): "माफ़ कीजिए, मैं ठीक से सुन नहीं पाई। क्या आप mic के थोड़ा पास आकर फिर से बोल सकते हैं?",
+    ("hi", "romanized"): "Maaf kijiye, main theek se sun nahi paayi. Kya aap mic ke thoda paas aakar phir se bol sakte hain?",
+    ("kn", "native"): "ಕ್ಷಮಿಸಿ, ನನಗೆ ಸರಿಯಾಗಿ ಕೇಳಿಸಲಿಲ್ಲ. ದಯವಿಟ್ಟು mic ಹತ್ತಿರ ಬಂದು ಇನ್ನೊಮ್ಮೆ ಹೇಳ್ತೀರಾ?",
+    ("kn", "romanized"): "Kshamisi, nanage sariyaagi kelisalilla. Dayavittu mic hattira bandu innomme heltira?",
 }
 
 
@@ -450,7 +561,9 @@ def _reply_cache_key(engine2_result: dict, knowledge_result: dict,
     if not REPLY_CACHE_ENABLED:
         return None
     intent_id = engine2_result.get("intent")
-    if intent_id in (None, "greet", "fallback"):
+    if intent_id in (None, "greet", "fallback", OVERVIEW_INTENT):
+        return None
+    if engine2_result.get("unclear_audio") or (engine2_result.get("guide") or {}).get("reply"):
         return None
     if (engine2_result.get("needs_escalation")
             or engine2_result.get("emotion", "neutral") != "neutral"
@@ -645,23 +758,43 @@ async def _generate_simple(instruction: str, language: str, script: str, query: 
 
 # ── Kannada pipeline ────────────────────────────────────────────────────
 
-async def _polish_kannada(formal_kannada: str, user_query: str = "") -> tuple[str, bool]:
+# 2026-10-29: extra rule when the facts are locked as tags (see fact_guard.py).
+TAG_RULES = """
+
+TAGS — STRICT:
+The response contains tags like [1], [2], [3]. Each tag stands for a fact (a number, amount, name, branch, exam, quota, phone, email or date) that will be put back later.
+Copy EVERY tag exactly as it is — same number, same square brackets — once each, next to the words it belongs to. Never translate, remove, add, merge or renumber a tag, and never write the fact instead of the tag. A Kannada ending may follow a tag directly (e.g. [3]ಗೆ, [5]ಅಲ್ಲಿ)."""
+
+
+async def _polish_kannada(formal_kannada: str, user_query: str = "",
+                          tags: bool = False) -> tuple[str, bool]:
     """
     Takes Sarvam's translated Kannada (code-mixed mode) and asks Groq to
     rebalance it toward Kannada-dominant, simple spoken language — a
     constrained edit, not free composition. Returns (text, polished_ok);
     on any failure the unpolished Sarvam translation is used.
+    tags=True: the facts are locked as [n] tags, which must be copied unchanged.
     """
-    messages = [{"role": "user", "content": KANNADA_POLISH_PROMPT.format(
+    prompt = KANNADA_POLISH_PROMPT + (TAG_RULES if tags else "")
+    messages = [{"role": "user", "content": prompt.format(
         formal_kannada=formal_kannada,
         user_query=user_query or "(not available)",
     )}]
-    for model in (KANNADA_POLISH_MODEL, MODEL):
+    # 2026-10-29: an EMPTY answer means the model spent its tokens thinking.
+    # Trying the small model after that also came back empty and cost ~15 s,
+    # so an empty answer gets one quick retry with low reasoning instead.
+    attempts = [(KANNADA_POLISH_MODEL, None)]
+    while attempts:
+        model, effort = attempts.pop(0)
         try:
-            text = await _groq_chat(messages, temperature=0.3, max_tokens=2000, model=model)
+            text = await _groq_chat(messages, temperature=0.3, max_tokens=2000, model=model,
+                                    reasoning_effort=effort)
             return text, True
         except Exception as e:
             print(f"⚠️  Kannada polish failed with {model}: {e}")
+            if effort is None and model == KANNADA_POLISH_MODEL:
+                attempts.append((KANNADA_POLISH_MODEL, FAST_REASONING) if "empty response" in str(e)
+                                else (MODEL, None))
     print("⚠️  Using raw Sarvam translation for this reply")
     return formal_kannada, False
 
@@ -704,26 +837,21 @@ async def _localize(text: str, language: str, script: str, user_query: str = "",
     timings = {}
     mode = pipeline_mode or KANNADA_PIPELINE
 
-    kannada = None
-    if mode == "direct":
-        started = time.perf_counter()
-        kannada = await _direct_kannada(text, user_query)
-        timings["direct"] = _ms(started)
-        pipeline["direct"] = kannada is not None
-
+    kannada = await _checked_kannada(text, user_query, mode, pipeline, timings)
     if kannada is None:
-        kannada = await _translate_and_polish(text, user_query, pipeline, timings)
-        if kannada is None:
-            # Never silently answer a Kannada speaker in English — log it loudly.
-            print("⚠️  Sarvam translation failed — replying in English for this Kannada query")
-            pipeline["fallback"] = "english"
-            return {
-                "display_text": text,
-                "speech_text": text,
-                "speech_language": "en",
-                "kannada_pipeline": pipeline,
-                "timings": timings,
-            }
+        # Never silently answer a Kannada speaker in English — log it loudly.
+        # (2026-10-29: also used when no Kannada version kept the facts exact —
+        #  the correct English answer is better than a wrong Kannada one.)
+        print(f"⚠️  No Kannada version passed the fact check ({pipeline.get('fact_check')}) "
+              "— replying in English for this Kannada query")
+        pipeline["fallback"] = "english"
+        return {
+            "display_text": text,
+            "speech_text": text,
+            "speech_language": "en",
+            "kannada_pipeline": pipeline,
+            "timings": timings,
+        }
 
     display_text = kannada
     if script == "romanized":
@@ -745,6 +873,117 @@ async def _localize(text: str, language: str, script: str, user_query: str = "",
     }
 
 
+# ── Kannada with exact facts (2026-10-29) ─────────────────────────────────
+# Every Kannada reply is checked against the English answer it came from
+# (fact_guard.verify: values present, none invented, labels still next to the
+# right values). The first version that passes is used:
+#   1. facts locked as tags -> translate -> polish -> facts put back
+#   2. the earlier way (translate -> polish), checked
+#   3. the plain translation, checked
+#   4. the 120B writing Kannada in one step, checked
+#   none -> the English answer (correct) instead of a wrong Kannada one.
+# If the translator keeps losing the tags, step 1 is skipped automatically
+# so replies don't get slower.
+FACT_LOCK = True                 # False = start at step 2 (the check still runs)
+FACT_LOCK_MAX_TAG_FAILURES = 3   # tags lost this many times in a row -> skip step 1
+_fact_lock_tag_failures = 0
+
+
+async def _translate_then_polish(text: str, user_query: str, timings: dict, label: str,
+                                 tags: bool = False):
+    """(translation, polished, polished_ok); translation is None if Sarvam failed."""
+    started = time.perf_counter()
+    translated = await asyncio.to_thread(translate_to_kannada, text)
+    timings[f"translate{label}"] = _ms(started)
+    if not translated:
+        return None, None, False
+    started = time.perf_counter()
+    polished, polished_ok = await _polish_kannada(translated, user_query, tags=tags)
+    timings[f"polish{label}"] = _ms(started)
+    return translated, polished, polished_ok
+
+
+async def _checked_kannada(english: str, user_query: str, mode: str,
+                           pipeline: dict, timings: dict):
+    """The first Kannada version whose facts match the English answer, or None."""
+    global _fact_lock_tag_failures
+    problems = []
+
+    def accept(candidate, how):
+        if not candidate:
+            return False
+        try:
+            ok, why = fact_guard.verify(english, candidate, user_query)
+        except Exception as e:                       # a checker bug must never block the reply
+            print(f"⚠️  Fact check error ({type(e).__name__}: {e}) — accepting {how}")
+            ok, why = True, "check skipped (error)"
+        if ok:
+            pipeline["fact_check"] = f"passed: {how}"
+            if problems:
+                pipeline["fact_check_rejected"] = problems
+            return True
+        problems.append(f"{how}: {why}")
+        print(f"⚠️  Kannada fact check failed ({how}): {why}")
+        return False
+
+    if mode == "direct":
+        started = time.perf_counter()
+        direct = await _direct_kannada(english, user_query)
+        timings["direct"] = _ms(started)
+        pipeline["direct"] = direct is not None
+        if accept(direct, "direct"):
+            return direct
+
+    # 1. facts locked as tags
+    try:
+        tagged, table = fact_guard.protect(english)
+    except Exception as e:
+        print(f"⚠️  Fact lock error ({type(e).__name__}: {e}) — skipping it")
+        tagged, table = english, {}
+    if FACT_LOCK and table and _fact_lock_tag_failures < FACT_LOCK_MAX_TAG_FAILURES:
+        translated, polished, polished_ok = await _translate_then_polish(
+            tagged, user_query, timings, "", tags=True)
+        if translated is not None:
+            pipeline["translated"] = True
+            restored_polish = fact_guard.restore(polished, table) if polished_ok else None
+            restored_plain = fact_guard.restore(translated, table)
+            if restored_polish is None and restored_plain is None:
+                _fact_lock_tag_failures += 1
+                problems.append("locked: tags lost in translation")
+            else:
+                _fact_lock_tag_failures = 0
+            if accept(restored_polish, "locked + polished"):
+                pipeline["polished"] = True
+                return restored_polish
+            if restored_polish is None and polished_ok:
+                problems.append("locked + polished: tags lost in polish")
+            if accept(restored_plain, "locked, translation only"):
+                return restored_plain
+
+    # 2 + 3. the earlier way, checked
+    translated, polished, polished_ok = await _translate_then_polish(
+        english, user_query, timings, "_2" if "translate" in timings else "")
+    if translated is not None:
+        pipeline["translated"] = True
+        if polished_ok and accept(polished, "polished"):
+            pipeline["polished"] = True
+            return polished
+        if accept(translated, "translation only"):
+            return translated
+
+    # 4. one-step Kannada from the 120B
+    if mode != "direct":
+        started = time.perf_counter()
+        direct = await _direct_kannada(english, user_query)
+        timings["direct"] = _ms(started)
+        if accept(direct, "direct"):
+            pipeline["direct"] = True
+            return direct
+
+    pipeline["fact_check"] = "failed: " + " | ".join(problems[-3:])
+    return None
+
+
 async def _translate_and_polish(text: str, user_query: str, pipeline: dict, timings: dict):
     """Sarvam translation, then the 120B polish. None if translation fails."""
     started = time.perf_counter()
@@ -760,6 +999,12 @@ async def _translate_and_polish(text: str, user_query: str, pipeline: dict, timi
     return kannada
 
 
+def _has_college_wide(knowledge_result) -> bool:
+    """2026-10-29: placements asked without a branch, and the whole-college figures exist."""
+    data = (knowledge_result or {}).get("data")
+    return isinstance(data, dict) and str(data.get("scope", "")).lower() == "whole college"
+
+
 async def _make_reply_text(engine2_result, knowledge_result, language, script, query,
                            intent_id, needs_escalation, debug, timings):
     """Steps 1 (English/Hindi text) and 2 (Kannada pipeline / script)."""
@@ -767,15 +1012,48 @@ async def _make_reply_text(engine2_result, knowledge_result, language, script, q
     generation_ok = True
     started = time.perf_counter()
     try:
+        guide_reply = (engine2_result.get("guide") or {}).get("reply")
+        if guide_reply:
+            # 2026-10-29: "yes" / "no" inside the admission guide -> its fixed next question
+            debug["path"] = "guide"
+            timings["generate"] = _ms(started)
+            text = admission_guide.message(guide_reply, language, script)
+            native = admission_guide.message(guide_reply, language, "native")
+            return True, {"display_text": text, "speech_text": native if language == "kn" else text,
+                          "speech_language": language, "kannada_pipeline": None}
+        if is_about_eva(query, engine2_result.get("normalized_query", "")):
+            # 2026-11-01: "Who are you?" -> Eva introduces herself
+            debug["path"] = "about_eva"
+            timings["generate"] = _ms(started)
+            return True, {**_fixed_reply(EVA_ABOUT_MESSAGES, language, script), "kannada_pipeline": None}
+        if is_branch_choice(query, engine2_result.get("normalized_query", "")):
+            # 2026-11-01: never push one branch — the child's interest decides
+            debug["path"] = "branch_choice"
+            timings["generate"] = _ms(started)
+            return True, {**_fixed_reply(BRANCH_CHOICE_MESSAGES, language, script), "kannada_pipeline": None}
+        if engine2_result.get("unclear_audio") or (
+                intent_id == "fallback" and not needs_escalation
+                and engine2_result.get("input_type") == "audio"):
+            # 2026-10-28: spoken question not caught -> ask to repeat, never guess
+            debug["path"] = "unclear"
+            timings["generate"] = _ms(started)
+            return True, {**_fixed_reply(UNCLEAR_MESSAGES, language, script), "kannada_pipeline": None}
+        if intent_id == OVERVIEW_INTENT and (knowledge_result or {}).get("match_type") == "overview":
+            # 2026-10-15: the card carries the facts; one fixed spoken sentence
+            debug["path"] = "overview"
+            timings["generate"] = _ms(started)
+            return True, {**_fixed_reply(OVERVIEW_MESSAGES, language, script), "kannada_pipeline": None}
         if intent_id == "greet":
             debug["path"] = "greet"
             base_text = await _generate_simple(GREET_INSTRUCTION, language, script, query)
         elif (intent_id in BRANCH_SPECIFIC_INTENTS and not needs_escalation
+              and not _has_college_wide(knowledge_result)
               and not (engine2_result.get("entities") or {}).get("branch")
               and not (engine2_result.get("entities") or {}).get("rank")):   # rank -> predictor answers
             # (A very worried parent still gets the warm grounded reply.)
-            debug["path"] = "ask_branch"
-            base_text = await _generate_simple(ASK_BRANCH_INSTRUCTION, language, script, query)
+            debug["path"] = "ask_branch"     # name kept: voice.py waits for the branch after it
+            timings["generate"] = _ms(started)
+            return True, {**_fixed_reply(BRANCH_MISSING_MESSAGES, language, script), "kannada_pipeline": None}
         elif intent_id == "fallback" and not needs_escalation:
             # A worried/frustrated user with an out-of-scope question
             # gets escalation (grounded path below), not a polite redirect.
@@ -798,7 +1076,11 @@ async def _make_reply_text(engine2_result, knowledge_result, language, script, q
 
     # ── 2. Localize (Kannada pipeline / script) ──────────────────────
     if generation_ok:
+        base_text = fact_guard.plain_text(base_text)   # 2026-10-29: "2026‑27" -> "2026-27"
         localized = await _localize(base_text, language, script, query)
+        for key in ("display_text", "speech_text"):
+            if isinstance(localized.get(key), str):
+                localized[key] = fact_guard.plain_text(localized[key])
         debug["kannada_pipeline"] = localized["kannada_pipeline"]
         timings.update(localized.get("timings", {}))
     else:
@@ -811,6 +1093,26 @@ async def _make_reply_text(engine2_result, knowledge_result, language, script, q
         }
 
     return generation_ok, localized
+
+
+# 2026-10-30 (San): phone numbers are never READ aloud — "080 2846 8191" spoken
+# digit by digit sounds odd. The screen keeps the full number; the voice says
+# "the number shown on your screen" (several numbers in a row become one phrase).
+_PHONE_SPOKEN = {
+    "en": "the number shown on your screen",
+    "hi": "स्क्रीन पर दिखाया गया नंबर",
+    "kn": "ಸ್ಕ್ರೀನ್ ಮೇಲೆ ತೋರಿಸಿರುವ ನಂಬರ್",
+}
+_PHONE_IN_SPEECH = re.compile(r"(?:\+?91[\s-]?)?(?:\d[\s-]?){8,11}\d")
+_PHONE_RUN = re.compile(r"(§PHONE§)(?:(?:\s*(?:,|/|\bor\b|\band\b|ಅಥವಾ|ಮತ್ತು|या|और)\s*)+§PHONE§)+")
+
+
+def _numbers_not_read(speech: str, language: str) -> str:
+    if not speech or not _PHONE_IN_SPEECH.search(speech):
+        return speech
+    marked = _PHONE_IN_SPEECH.sub("§PHONE§", speech)
+    marked = _PHONE_RUN.sub(r"\1", marked)
+    return marked.replace("§PHONE§", _PHONE_SPOKEN.get(language, _PHONE_SPOKEN["en"]))
 
 
 # ── Main entry point ────────────────────────────────────────────────────
@@ -886,12 +1188,38 @@ async def generate_response(
         localized = {**localized, "speech_text": CONTACT_SPEECH[localized["speech_language"]]}
         debug["short_speech"] = True
 
+    # 2026-10-29: admission guide — the follow-up question comes AFTER the answer
+    # 2026-10-30: the same for every topic's next-step offer — but never when the
+    # answer already ends with its own question ("Is this for a boy or a girl?")
+    guide = engine2_result.get("guide") or {}
+    followup = guide.get("followup")
+    guide_appended = False
+    if (followup and guide.get("kind") == "topic"
+            and localized.get("display_text", "").rstrip().endswith(("?", "？"))):
+        followup = None
+    if followup and generation_ok and debug.get("path") in ("grounded", "ask_branch"):
+        lang = localized.get("speech_language") or language
+        shown_script = script if lang == language else "native"
+        text = admission_guide.message(followup, lang, shown_script, guide.get("fmt"))
+        native = admission_guide.message(followup, lang, "native", guide.get("fmt"))
+        localized = {**localized,
+                     "display_text": f"{localized['display_text'].rstrip()} {text}",
+                     "speech_text": f"{localized['speech_text'].rstrip()} {native if lang == 'kn' else text}"}
+        guide_appended = True
+
+    if generation_ok and localized.get("speech_text"):
+        localized = {**localized, "speech_text": _numbers_not_read(
+            localized["speech_text"], localized.get("speech_language") or language)}
+
     # ── 3. Voice ─────────────────────────────────────────────────────
     audio_base64, audio_format, tts_success = None, None, False
     if include_audio:
         started = time.perf_counter()
+        # 2026-11-01: a slower, warmer voice when the reply comforts a worried parent
+        tone = ("reassuring" if engine2_result.get("response_mode") == "reassurance"
+                or engine2_result.get("emotion") in ("worried", "frustrated", "sad", "anxious", "stressed") else "normal")
         tts = await asyncio.to_thread(
-            synthesize_speech, localized["speech_text"], localized["speech_language"]
+            synthesize_speech, localized["speech_text"], localized["speech_language"], tone
         )
         timings["tts"] = _ms(started)
         if tts["success"]:
@@ -903,8 +1231,15 @@ async def generate_response(
 
     debug["timings_ms"] = timings
 
+    # 2026-10-29: buttons under the reply (the brochure here; the bus-route PDF comes from Engine 3)
+    documents = list((knowledge_result or {}).get("documents") or [])
+    if debug.get("path") == "ask_branch":
+        documents = [BROCHURE_DOCUMENT]
+
     return {
         "success": generation_ok,
+        "documents": documents,
+        "guide_appended": guide_appended,
         "response_text": localized["display_text"],
         "response_text_native": localized["speech_text"],
         "speech_language": localized["speech_language"],   # language of the spoken text

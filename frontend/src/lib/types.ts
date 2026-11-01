@@ -41,6 +41,37 @@ export interface TableData {
   rows: (string | number)[][];
 }
 
+/** "College at a glance" card — sent only for "tell me everything" questions (2026-10-15). */
+export interface OverviewItem {
+  label: string;
+  value: string;
+}
+
+export interface OverviewSection {
+  id: string;
+  title: string;
+  /** Material Symbols icon name */
+  icon: string;
+  items: OverviewItem[];
+  note?: string;
+}
+
+export interface CollegeOverview {
+  title: string;
+  sections: OverviewSection[];
+  /** GET this to download the full brochure PDF */
+  brochure_url?: string;
+  generated_at?: string;
+}
+
+/** 2026-10-29: a PDF button under a reply (bus routes from the college website, brochure) */
+export interface DocumentLink {
+  title: string;
+  url: string;
+  /** true: download (our own brochure); otherwise open in a new tab */
+  download?: boolean;
+}
+
 export interface AudioInfo {
   format?: "wav" | "mp3" | "ogg" | "webm" | string;
   base64?: string;
@@ -55,6 +86,9 @@ export interface Escalation {
 }
 
 export interface QueryResponse {
+  /** "no_speech" (2026-10-28): the recording had no speech — nothing to show or play */
+  status?: string;
+  message?: string;
   session_id?: string;
   transcript?: string;
   language?: LanguageInfo;
@@ -70,8 +104,23 @@ export interface QueryResponse {
   audio?: AudioInfo | null;
   escalation?: Escalation | null;
   source?: string;
+  /** College-at-a-glance card data (only for "tell me everything" questions) */
+  overview?: CollegeOverview | null;
+  /** PDF buttons under the reply */
+  documents?: DocumentLink[];
+  /** 2026-10-31: offer "Get my document checklist" under this reply */
+  checklist_available?: boolean;
   /** set by the Express demo mode */
   demo?: boolean;
+}
+
+/** 2026-10-31: POST /api/transcribe — the words heard, shown before sending */
+export interface TranscribeResponse {
+  status: "ok" | "no_speech";
+  text?: string;
+  language?: string;
+  unclear?: boolean;
+  message?: string;
 }
 
 export type Role = "student" | "admin";

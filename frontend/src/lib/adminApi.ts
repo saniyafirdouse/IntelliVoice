@@ -79,10 +79,41 @@ export interface Unanswered {
 }
 
 /** Thrown when the backend refuses because of a conflict; lists the affected records. */
+/** One line of the admin activity log (2026-10-15). */
+export interface ActivityItem {
+  id: string;
+  admin: string;
+  action: string;
+  label: string;
+  details: string;
+  at: string | null;
+}
+
 export class AdminConflictError extends ApiError {
   constructor(message: string, status: number, public records: string[]) {
     super(message, status);
   }
+}
+
+/** 2026-10-30: copying the college website (pages + PDFs) into IntelliVoice */
+export interface WebsiteFetchSummary {
+  pages?: number;
+  pdfs?: number;
+  pdfs_for_parents?: number;
+  new_pages?: number;
+  changed_pages?: number;
+  removed_pages?: number;
+  new_pdfs?: number;
+  removed_pdfs?: number;
+  new_pdf_titles?: string[];
+  errors?: string[];
+  seconds?: number;
+  finished_at?: string;
+  error?: string;
+}
+export interface WebsiteStatus {
+  status: { running: boolean; started_at: string | null; finished_at: string | null; pages_done: number; message: string; summary: WebsiteFetchSummary | null };
+  last_fetch: WebsiteFetchSummary | null;
 }
 
 // ── request helper ─────────────────────────────────────────────────────────
@@ -171,6 +202,14 @@ export const adminApi = {
   unanswered: (token: string, days: number, includeResolved = false) =>
     json<Unanswered>(`/unanswered?days=${days}&include_resolved=${includeResolved}`, token),
   resolve: (token: string, logIds: string[]) => post<{ resolved: number }>("/unanswered/resolve", token, { log_ids: logIds }),
+
+  /** Starts reading saividya.ac.in again (runs in the background). */
+  websiteRefresh: (token: string) => post<{ started: boolean; status: WebsiteStatus["status"] }>("/website/refresh", token),
+  websiteStatus: (token: string) => json<WebsiteStatus>("/website/status", token),
+
+  /** Who did what in the admin panel, newest first. */
+  activity: (token: string, limit = 200) =>
+    json<{ items: ActivityItem[]; actions: Record<string, string> }>(`/activity?limit=${limit}`, token),
 };
 
 // ── small display helpers shared by the admin pages ────────────────────────

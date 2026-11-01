@@ -6,15 +6,19 @@ export const CAMPUS_LAYERS = [
   { id: "bg-section-courtyard", label: "Campus Courtyard", anchor: "#section-cta", image: "/assets/campus-lawn.jpg" },
 ] as const;
 
-/** Fixed full-screen campus photos that cross-fade (see useSectionBackground). */
-export function CampusBackdrop({ active, overlay }: { active: string; overlay: ReactNode }) {
+/**
+ * Fixed full-screen campus photos that cross-fade (see useSectionBackground).
+ * `images` (optional, 2026-10-17) swaps the photo of a layer for one page only,
+ * e.g. the Home page uses the SVIT front entrance for its first screen.
+ */
+export function CampusBackdrop({ active, overlay, images }: { active: string; overlay: ReactNode; images?: Partial<Record<string, string>> }) {
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {CAMPUS_LAYERS.map((layer) => (
         <div
           key={layer.id}
           className={`bg-layer${layer.id === active ? " active" : ""}`}
-          style={{ backgroundImage: `url("${layer.image}")` }}
+          style={{ backgroundImage: `url("${images?.[layer.id] ?? layer.image}")` }}
         />
       ))}
       {overlay}

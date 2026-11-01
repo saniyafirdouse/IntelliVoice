@@ -6,6 +6,9 @@ Document checklist (no login needed):
          admission_type: KCET | COMEDK | Management | Lateral | MBA
          category:       General | SC | ST | OBC
 
+College brochure (no login needed, 2026-10-15):
+  GET    /api/brochure         full "College at a glance" brochure -> PDF download
+
 Memory across visits (needs the student's login token):
   GET    /api/me/history       "Welcome back! Last time you asked about CSE fees..."
   DELETE /api/me/history       forget everything IntelliVoice remembered about me
@@ -17,6 +20,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 
 from engines import user_history
+from engines.college_overview import brochure_pdf, build_overview
 from engines.doc_checklist import ADMISSION_TYPES, CATEGORIES, checklist_pdf
 from utils.auth import decode_token
 
@@ -60,6 +64,14 @@ async def document_checklist(body: ChecklistRequest):
     filename = f"SVIT_document_checklist_{body.admission_type}_{body.category}.pdf"
     return Response(pdf, media_type="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
+@router.get("/brochure")
+async def college_brochure():
+    """Built fresh from the database each time, so admin uploads show up straight away."""
+    pdf = brochure_pdf(await build_overview(trim=False))
+    return Response(pdf, media_type="application/pdf",
+                    headers={"Content-Disposition": 'attachment; filename="SVIT_brochure_2026-27.pdf"'})
 
 
 @router.get("/me/history")

@@ -2,6 +2,8 @@
 routes/api.py — the endpoint the React frontend (Pooja) calls.
 
     POST /api/query     (multipart/form-data)   -> see frontend/API_CONTRACT.md §1
+    POST /api/transcribe (multipart/form-data)  -> speech to text only (2026-10-31: the
+                         mic shows what it heard so the user can fix it before sending)
 
 Runs exactly the same pipeline as /voice/query (routes/voice.py answer():
 Whisper + corrector, Engines 2-6, reply cache, voice) and returns the
@@ -23,7 +25,7 @@ from engines import user_history
 from engines.college_profile import CONTACT
 from engines.tts_engine import SPEAKERS
 from routes.student import optional_user_email
-from routes.voice import PipelineError, answer
+from routes.voice import NoSpeechError, PipelineError, answer
 
 router = APIRouter()
 
@@ -101,7 +103,8 @@ def _to_contract(result: dict) -> dict:
     entities = {k: v for k, v in (analysis.get("entities") or {}).items() if k != "topic"}
     needs_escalation = bool(analysis.get("needs_escalation")) or analysis.get("response_mode") == "escalation"
     not_found = (result.get("debug") or {}).get("path") == "not_found"
-    asked_for_office = analysis.get("intent") in HELP_CARD_INTENTS
+    # 2026-10-30: personal cases ("can my son get this concession?") -> the office decides: show its contact card
+    asked_for_office = analysis.get("intent") in HELP_CARD_INTENTS or bool(analysis.get("personal_case"))
     help_reason = ("escalation" if needs_escalation else "not_found" if not_found
                    else "contact" if asked_for_office else None)
 
@@ -147,6 +150,10 @@ def _to_contract(result: dict) -> dict:
         },
         "source": SOURCE_NAME if (result.get("knowledge") or {}).get("found") else None,
         "checklist_available": analysis.get("intent") in CHECKLIST_INTENTS,
+        # 2026-10-15: College-at-a-glance card (only for "tell me everything" questions)
+        "overview": result.get("overview"),
+        # 2026-10-29: PDF buttons under the reply (bus routes, brochure)
+        "documents": result.get("documents") or [],
         # extra (ignored by the page, useful when testing)
         "timings_ms": result.get("timings_ms"),
     }
@@ -187,6 +194,10 @@ async def api_query(
             reply_language=reply_language,
             extra_entities=_context_entities(context),
         )
+    except NoSpeechError:
+        # 2026-10-28: silence / noise only — the app shows a small hint, no reply
+        return {"status": "no_speech", "session_id": session_id,
+                "message": "I didn't hear anything. Tap the mic and try again."}
     except PipelineError as e:
         raise HTTPException(e.status, detail=e.message)
 
@@ -198,3 +209,34 @@ async def api_query(
             email, result.get("transcribed_text") or text or "", analysis.get("intent"),
             analysis.get("entities"), (result.get("language") or {}).get("primary")))
     return _to_contract(result)
+
+
+# ── Speech to text only (2026-10-31) ─────────────────────────────────────
+# The mic button now shows the words it heard in the question box first; the
+# user can correct them and then press Send (sent as a normal question). Uses
+# the same speech recognition + college-word fixes as a spoken question.
+@router.post("/transcribe")
+async def api_transcribe(
+    audio: UploadFile = File(...),
+    speech_language: str = Form("auto"),
+):
+    from engines.language_engine import correct_transcript, speech_to_text
+    audio_bytes = await audio.read()
+    if not audio_bytes:
+        return {"status": "no_speech", "message": "I didn't hear anything. Tap the mic and try again."}
+    speech = (speech_language or "").strip().lower()
+    speech = speech if speech in SPEECH_LANGUAGES else None
+    try:
+        stt = await speech_to_text(audio_bytes, audio.filename or "audio.webm", speech)
+    except Exception as e:
+        raise HTTPException(500, detail=f"Speech recognition failed. Please try again or type your question. ({type(e).__name__})")
+    raw = (stt.get("raw_text") or "").strip()
+    if not raw or stt.get("clarity") == "silent":
+        return {"status": "no_speech", "message": "I didn't hear anything. Tap the mic and try again."}
+    fixed = await correct_transcript(raw, stt.get("speech_language"))
+    return {
+        "status": "ok",
+        "text": fixed.get("text") or raw,
+        "language": stt.get("speech_language"),
+        "unclear": stt.get("clarity") == "unclear",
+    }

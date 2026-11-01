@@ -44,10 +44,47 @@ WHISPER_CPU_THREADS = 4             # 4 measured faster than 6 on the project la
 # Vocabulary hint: biases Whisper toward the college terms parents use,
 # and toward writing Kannada/Hindi in Roman letters, which it does far
 # more accurately than native script (and Engines 1–2 handle well).
+# 2026-10-30: a fuller hint — Whisper writes these words correctly much more
+# often when it sees them here (ECE, NCC, Civil... were often misheard).
 WHISPER_VOCAB_HINT = (
-    "SVIT, CSE, ISE, AIML, KCET, COMEDK, fee, admission, hostel, "
-    "scholarship, placement, branch, college"
+    "SVIT, Eva, CSE, ISE, ECE, AIML, CSE Data Science, Cyber Security, Business Systems, "
+    "Civil, Mechanical, MBA, KCET, COMEDK, DCET, PGCET, NCC, NSS, NAAC, NBA, VTU, HOD, "
+    "fee, fees, cutoff, rank, seats, admission, hostel, scholarship, placement, bus, "
+    "Yelahanka, Rajanukunte, branch, college"
 )
+
+# 2026-10-30: mishearings seen in tests, fixed directly (no AI call needed).
+# The AI corrector (below) never changes single letters, so "What is P for CSC?"
+# (= "What is fee for CSE?") stayed wrong and the whole answer went wrong.
+_MISHEARD = [
+    (r"\b(what\s+is|what's|whats|wat\s+is|tell\s+me)\s+(the\s+)?p\s+(for|of|in)\b", r"\1 \2fee \3"),
+    (r"\bp\s+(structure|details|amount)\b", r"fee \1"),
+    (r"\bc\.?\s?s\.?\s?c\b", "CSE"),
+    (r"\bc\s+s\s+e\b|\bsee\s+as\s+(?:e|ee|he)\b|\bc\.s\.e\.?(?!\w)", "CSE"),
+    (r"\be\s+c\s+e\b|\be\.c\.e\.?(?!\w)|\bee\s?ce\b|\bec\s+e\b", "ECE"),
+    (r"\bi\s+s\s+e\b|\bi\.s\.e\.?(?!\w)|\bi\s?sc\b", "ISE"),
+    (r"\ba\s+i\s+m\s+l\b|\bai\s+ml\b|\bai\s+and\s+ml\b|\bai\s*&\s*ml\b|\bacml\b|\baimal\b", "AIML"),
+    (r"\bkay\s?cet\b|\bk\s+c\s+e\s+t\b|\bk\s+cet\b|\bkcat\b", "KCET"),
+    (r"\bcomed\s+k\b|\bcommit\s?k\b|\bcomet\s?k\b|\bcomedy\s?k\b|\bcom\s+e\s+d\s+k\b", "COMEDK"),
+    (r"\bp\s?g\s+cet\b|\bp\s+g\s+c\s+e\s+t\b", "PGCET"),
+    (r"\bd\s+cet\b|\bdee\s?cet\b|\bd\s+c\s+e\s+t\b", "DCET"),
+    (r"\bn\s+c\s+c\b|\bn\.c\.c\.?(?!\w)", "NCC"),
+    (r"\bn\s+s\s+s\b|\bn\.s\.s\.?(?!\w)", "NSS"),
+    (r"\bm\s+b\s+a\b|\bm\.b\.a\.?(?!\w)", "MBA"),
+    (r"\bh\s+o\s+d\b|\bh\.o\.d\.?(?!\w)", "HOD"),
+    (r"\bn\s+a\s+a\s+c\b|\bnack\b", "NAAC"),
+    (r"\bv\s+t\s+u\b", "VTU"),
+    (r"\bs\s+v\s+i\s+t\b|\bs\.v\.i\.t\.?(?!\w)", "SVIT"),
+]
+_MISHEARD = [(re.compile(p, re.IGNORECASE), r) for p, r in _MISHEARD]
+
+
+def fix_common_mishearings(text: str) -> str:
+    """Known speech-recognition slips for college words -> the right word."""
+    fixed = text or ""
+    for pattern, replacement in _MISHEARD:
+        fixed = pattern.sub(replacement, fixed)
+    return re.sub(r"\s{2,}", " ", fixed).strip()
 SPEECH_LANGUAGES = ("en", "hi", "kn")
 
 # ── Primary speech recognition: Whisper large-v3-turbo on Groq ───────────
@@ -161,6 +198,41 @@ def detect_language_py3langid(text: str) -> dict:
 # 95% vs py3langid's 80% on held-out test data (see database/seed_data/
 # muril_training/ evaluation results). Falls back to py3langid only if
 # MuRIL fails to load or errors at runtime.
+# 2026-10-31: hybrid language check. MuRIL was fine-tuned mostly on code-mixed
+# text written in English letters ("CSE ge fees eshtu?"), so for a plain English
+# sentence it was right but only ~58% sure. Two quick text checks now run with it:
+#   - Kannada letters -> Kannada; Devanagari letters -> Hindi   (script check)
+#   - English letters only and no Kannada/Hindi word -> English (word check)
+# When a check agrees with MuRIL, the shown confidence is the combined certainty;
+# when it disagrees, MuRIL decides exactly as before. MuRIL's own value is kept in
+# "muril_confidence". Plain string checks: well under a millisecond.
+_ROMAN_MARKERS = {
+    # Kannada in English letters
+    "eshtu", "ide", "idya", "idiya", "illa", "beku", "beda", "yenu", "enu", "hege", "yaavaga", "yavaga", "sigutta",
+    "sigutte", "heli", "helu", "maadi", "madi", "nimma", "nanna", "nange", "nanage", "yaaru", "yaru", "elli", "ellide",
+    "alli", "agutte", "aagutte", "kodi", "kodbeku", "banni", "howdu", "houdu", "maga", "magalu", "duddu", "irutte",
+    "yaavudu", "gottilla", "swalpa", "tumba", "chennagi", "ivattu", "naale",
+    # Hindi in English letters
+    "hai", "hain", "kya", "kaise", "kitna", "kitni", "kitne", "nahi", "nahin", "mujhe", "chahiye", "kaun", "kahan",
+    "milega", "milegi", "batao", "bataiye", "aap", "hoga", "hogi", "raha", "rahi", "mein", "kaunsa", "kab", "kyun",
+    "accha", "theek", "beta", "beti", "padhai", "wala", "wali",
+}
+_SCRIPT_SURE, _WORDS_SURE = 0.99, 0.97
+
+
+def _language_check(text: str, has_kannada: bool, has_devanagari: bool, has_latin: bool):
+    """('kn' | 'hi' | 'en', certainty) from the letters and words alone, or (None, None)."""
+    if has_kannada and not has_devanagari:
+        return "kn", _SCRIPT_SURE
+    if has_devanagari and not has_kannada:
+        return "hi", _SCRIPT_SURE
+    if has_latin and not has_kannada and not has_devanagari:
+        words = set(re.findall(r"[a-z]+", text.lower()))
+        if words and not (words & _ROMAN_MARKERS):
+            return "en", _WORDS_SURE
+    return None, None
+
+
 async def detect_language(text: str) -> dict:
     if not text or not text.strip():
         return {
@@ -185,6 +257,12 @@ async def detect_language(text: str) -> dict:
 
     is_code_switched = (primary in {"hi", "kn"}) and has_latin
 
+    # 2026-10-31: hybrid check (see _language_check) — agreement raises the shown confidence
+    checked, certainty = _language_check(text, has_kannada, has_devanagari, has_latin)
+    combined = confidence
+    if checked and checked == primary and certainty:
+        combined = round(max(confidence or 0.0, certainty), 3)
+
     return {
         "primary": primary,
         "primary_name": LANGUAGE_MAP.get(primary, "English"),
@@ -192,7 +270,9 @@ async def detect_language(text: str) -> dict:
         "has_kannada": has_kannada,
         "has_devanagari": has_devanagari,
         "has_latin": has_latin,
-        "confidence": confidence
+        "confidence": combined,
+        "muril_confidence": confidence,        # what the model itself said
+        "language_check": checked,             # what the letters/words say (None = can't tell)
     }
 
 
@@ -308,7 +388,7 @@ def _build_branch_phrases(entities: dict) -> dict:
             continue
         phrases[key.lower()] = key
         for alias in aliases if isinstance(aliases, list) else []:
-            if alias.isascii():
+            if alias.isascii() and alias.lower() not in ("me", "be"):   # 2026-10-30: everyday words, not branches
                 phrases[alias.lower()] = key
     return phrases
 
@@ -327,6 +407,8 @@ TRANSCRIPT_CORRECTION_PROMPT = """A parent asked SVIT college's admissions assis
 The parent spoke {language_name}, often mixed with English words.
 
 Known college terms: SVIT, {known_terms}, fee, fees, admission, cutoff, rank, seat, hostel, scholarship, placement, package, branch, college, semester, quota.
+How people say the abbreviations (so you can spot them when misheard): CSE ("see es ee", "CSC"), ECE ("ee see ee", "EC"), ISE ("I S E", "ISC"), AIML ("A I M L", "AI and ML", "ACML"), Data Science ("DS"), Cyber Security, Civil, Mechanical ("Mech"), MBA, KCET ("K CET", "Kay CET", "CET"), COMEDK ("comed K", "commit K", "comet K"), DCET, PGCET, NCC, NSS, NAAC ("nack"), NBA, HOD, VTU.
+More common spoken words: Kannada - ellide (where), yaaru (who), yaavudu (which), sigutte (will get), kodbeku (have to pay), hostel ge, bus ide, college hege ide (how is the college); Hindi - kaunsa (which), kaun (who), kahan (where), milega (will get), dena padega (have to pay).
 Common spoken words:
 Kannada - eshtu (how much), alli (in), ide (is there), illa (no), beku (want), yenu (what), hege (how), yaavaga (when), ge (to), duddu (money), maga (son), magalu (daughter), ee (this).
 Hindi - kitna, kitni, kya, hai, kaise, kab, mein, ka, ki, ke, ko, se.
@@ -360,6 +442,14 @@ Answer: {{"fixes": [{{"heard": "ACML", "fixed": "AIML"}}, {{"heard": "Esther", "
 Example:
 Text: What is the hostel fee for girls?
 Answer: {{"fixes": []}}
+
+Example:
+Text: commit K alli ISC cutoff Esther?
+Answer: {{"fixes": [{{"heard": "commit K", "fixed": "COMEDK"}}, {{"heard": "ISC", "fixed": "ISE"}}, {{"heard": "Esther", "fixed": "eshtu"}}]}}
+
+Example:
+Text: EC branch ka fees kitna hai?
+Answer: {{"fixes": [{{"heard": "EC", "fixed": "ECE"}}]}}
 
 Return ONLY JSON in exactly this form: {{"fixes": [{{"heard": "...", "fixed": "..."}}]}}
 
@@ -503,6 +593,58 @@ def _is_urdu_script(text: str) -> bool:
     return sum(1 for ch in letters if _URDU_SCRIPT.match(ch)) / len(letters) > 0.3
 
 
+# ── Was anything really said? (2026-10-28) ────────────────────────────────
+# Whisper never returns "nothing": on silence or noise it invents a short
+# phrase ("Thank you.", "Bye.") or repeats words from our vocabulary hint
+# ("SVIT, CSE, fee"). That made the app answer questions nobody asked.
+# Whisper also reports, per segment, how likely there was no speech
+# (no_speech_prob) and how sure it is of the words (avg_logprob).
+#   "silent"  -> nothing to answer: the app stays quiet
+#   "unclear" -> something was said but not caught: "Sorry, please say it again"
+#   "ok"      -> answer normally
+# Thresholds are the ones Whisper itself uses to drop silent segments.
+NO_SPEECH_PROB = 0.6          # above this (with low confidence) a segment is silence
+LOW_LOGPROB = -1.0            # average word confidence below this = not sure of the words
+REPEAT_RATIO = 2.4            # Whisper "stuck" repeating itself
+_HALLUCINATIONS = {
+    "thank you", "thank you so much", "thank you very much", "thanks", "thanks for watching",
+    "thank you for watching", "please subscribe", "subscribe", "you", "bye", "bye bye",
+    "the end", "music", "applause", "silence", "okay", "ok", "hmm", "uh", "um",
+    "धन्यवाद", "शुक्रिया", "ಧನ್ಯವಾದ", "ಧನ್ಯವಾದಗಳು", "dhanyavaad", "dhanyavadagalu",
+}
+_HINT_WORDS = {w.strip().lower() for w in WHISPER_VOCAB_HINT.split(",")}
+
+
+def judge_clarity(text: str, segments: list | None = None) -> str:
+    """'silent' | 'unclear' | 'ok' for one transcript (see the note above)."""
+    plain = re.sub(r"[\[\]().,!?।'\"-]", " ", (text or "").lower())
+    plain = " ".join(plain.split())
+    if not plain or plain in _HALLUCINATIONS:
+        return "silent"
+    words = [w for w in re.split(r"[\s,]+", plain) if w]
+    if words and all(w in _HINT_WORDS for w in words):
+        return "silent"                      # only our own hint words came back
+    if segments:
+        def val(seg, key, default):
+            v = seg.get(key) if isinstance(seg, dict) else getattr(seg, key, None)
+            return default if v is None else float(v)
+        silent = [val(s, "no_speech_prob", 0) > NO_SPEECH_PROB and val(s, "avg_logprob", 0) < LOW_LOGPROB
+                  for s in segments]
+        if all(silent):
+            return "silent"
+        avg_logprob = sum(val(s, "avg_logprob", 0) for s in segments) / len(segments)
+        max_repeat = max(val(s, "compression_ratio", 1) for s in segments)
+        if avg_logprob < LOW_LOGPROB or max_repeat > REPEAT_RATIO:
+            return "unclear"
+    return "ok"
+
+
+def _segments_of(result) -> list:
+    data = result.model_dump() if hasattr(result, "model_dump") else (result if isinstance(result, dict) else {})
+    segs = data.get("segments") or getattr(result, "segments", None) or []
+    return list(segs)
+
+
 def _transcribe_groq(audio_bytes: bytes, filename: str, language: str | None) -> dict:
     """Primary path: Whisper large-v3-turbo on Groq. Raises on any failure."""
     kwargs = {
@@ -510,6 +652,7 @@ def _transcribe_groq(audio_bytes: bytes, filename: str, language: str | None) ->
         "model": GROQ_WHISPER_MODEL,
         "prompt": WHISPER_VOCAB_HINT,
         "temperature": 0,
+        "response_format": "verbose_json",   # 2026-10-28: per-segment confidence (see judge_clarity)
     }
     if language in SPEECH_LANGUAGES:
         kwargs["language"] = language
@@ -522,6 +665,7 @@ def _transcribe_groq(audio_bytes: bytes, filename: str, language: str | None) ->
         retry_text = (retry.text or "").strip()
         if retry_text and not _is_urdu_script(retry_text):
             return {
+                "clarity": judge_clarity(retry_text, _segments_of(retry)),
                 "raw_text": retry_text,
                 "speech_language": "hi",
                 "speech_language_source": "auto_detected",
@@ -529,6 +673,7 @@ def _transcribe_groq(audio_bytes: bytes, filename: str, language: str | None) ->
                 "stt_engine": f"groq:{GROQ_WHISPER_MODEL}",
             }
     return {
+        "clarity": judge_clarity(text, _segments_of(result)),
         "raw_text": text,
         "speech_language": language if language in SPEECH_LANGUAGES else None,
         "speech_language_source": "user_selected" if language in SPEECH_LANGUAGES else "auto_detected",
@@ -562,8 +707,10 @@ def _transcribe_local(audio_bytes: bytes, filename: str, language: str | None) -
         without_timestamps=True,
         condition_on_previous_text=False,
     )
+    segments = list(segments)
     raw_text = " ".join(seg.text.strip() for seg in segments).strip()
     return {
+        "clarity": judge_clarity(raw_text, segments),
         "raw_text": raw_text,
         "speech_language": speech_language,
         "speech_language_source": source,
@@ -647,6 +794,7 @@ def _transcribe_sarvam(audio_bytes: bytes, filename: str, language: str | None) 
             if not text:
                 raise RuntimeError("Sarvam returned an empty transcript")
             return {
+                "clarity": judge_clarity(text),     # Sarvam gives no confidence scores
                 "raw_text": text,
                 "speech_language": "kn",
                 "speech_language_source": "user_selected",
@@ -657,6 +805,17 @@ def _transcribe_sarvam(audio_bytes: bytes, filename: str, language: str | None) 
 
 
 def _transcribe_sync(audio_bytes: bytes, filename: str, language: str | None) -> dict:
+    """Speech -> text, then the known college-word slips are fixed (2026-10-30)."""
+    stt = _transcribe_any(audio_bytes, filename, language)
+    heard = stt.get("raw_text") or ""
+    fixed = fix_common_mishearings(heard)
+    if fixed != heard:
+        stt["heard_text"] = heard          # exactly what the recognizer wrote
+        stt["raw_text"] = fixed
+    return stt
+
+
+def _transcribe_any(audio_bytes: bytes, filename: str, language: str | None) -> dict:
     """Kannada: Sarvam first. Then Groq Whisper; on any problem, the local model."""
     started = time.perf_counter()
     if language == "kn" and KANNADA_STT == "sarvam":

@@ -37,6 +37,7 @@ type Action =
   | { type: "fail"; userId: string; question: Question; message: string }
   | { type: "status"; text: string; icon: string }
   | { type: "drop"; ids: string[] }
+  | { type: "nospeech"; userId: string; message?: string }
   | { type: "reset"; sessionId: string };
 
 const LANG_NAMES: Record<string, string> = { en: "English", hi: "Hindi", kn: "Kannada" };
@@ -110,6 +111,15 @@ function reducer(state: State, action: Action): State {
           { id: uid(), kind: "error", text: action.message, retry: action.question },
         ],
       };
+    case "nospeech":
+      // 2026-10-28: nothing was said — remove the "Transcribing…" bubble, no reply
+      return {
+        ...state,
+        busy: false,
+        stages: idleStages(),
+        status: { text: action.message || "I didn't hear anything. Tap the mic and try again.", icon: "mic" },
+        messages: state.messages.filter((m) => m.id !== action.userId),
+      };
     case "status":
       return { ...state, status: { text: action.text, icon: action.icon } };
     case "drop":
@@ -172,6 +182,10 @@ export function useChat({ getContext, token, speechLanguage, responseLanguage }:
         responseLanguage,
         token,
       });
+      if (res.status === "no_speech") {
+        dispatch({ type: "nospeech", userId, message: res.message });
+        return res;
+      }
       dispatch({ type: "answer", userId, res, voice });
       return res;
     } catch (err) {

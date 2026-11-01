@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { Icon } from "../../components/Icon";
 import { LanguageMenu } from "../../components/SiteHeader";
+import { EvaAvatar } from "../../components/EvaAvatar";
 
 // ---- palette (sampled from the reference) ----
 const C = {
@@ -39,7 +40,7 @@ export function ChatHeading() {
         className="mt-4 text-white font-medium leading-[1.08]"
         style={{ ...serif, fontSize: "clamp(34px, 3.55vw, 54px)", letterSpacing: "0.003em", textShadow: "0 2px 18px rgba(0,0,0,0.45)" }}
       >
-        Hello! How can I help you today?
+        Hello, I'm Eva. How can I help you?
       </h1>
       <p className="mt-3 text-[15px] sm:text-[17px] text-white/92" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>
         Ask about admissions, fees, cutoffs, placements, hostels and more.
@@ -120,11 +121,20 @@ const CARD_BASE = "relative overflow-hidden rounded-[24px] transition-all durati
 const glassBlur = { backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" };
 
 // ---------------------------------------------------------------- 1. type your question
-function TypeCard({ onSend, busy }: { onSend: (q: string) => void; busy: boolean }) {
+/** 2026-10-31: words heard by the mic, put in the question box to check before sending */
+export interface Draft { text: string; id: number }
+
+function TypeCard({ onSend, busy, draft }: { onSend: (q: string) => void; busy: boolean; draft?: Draft | null }) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (open) inputRef.current?.focus(); }, [open]);
+  useEffect(() => {
+    if (!draft) return;
+    setText(draft.text);
+    setOpen(true);
+    window.setTimeout(() => inputRef.current?.focus(), 30);
+  }, [draft]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -280,10 +290,11 @@ export function ActionCards(props: {
   onHandsFree: () => void;
   onStartRecording: () => void;
   onStopRecording: () => void;
+  draft?: Draft | null;
 }) {
   return (
     <div className="w-full max-w-[1080px] mx-auto grid grid-cols-1 md:grid-cols-[1fr_1.45fr_1fr] items-center gap-5 md:gap-5">
-      <div className="order-3 md:order-none"><TypeCard onSend={props.onSend} busy={props.busy} /></div>
+      <div className="order-3 md:order-none"><TypeCard onSend={props.onSend} busy={props.busy} draft={props.draft} /></div>
       <div className="order-1 md:order-none"><HandsFreeCard onStart={props.onHandsFree} disabled={props.busy || props.recording} /></div>
       <div className="order-2 md:order-none">
         <SpeakCard recording={props.recording} levels={props.levels} busy={props.busy} onStart={props.onStartRecording} onStop={props.onStopRecording} />
@@ -329,7 +340,9 @@ export const CHAT_HOME_CSS = `
 @keyframes iv-dot-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 .iv-blob { animation: iv-blob 6s ease-in-out infinite; transform-origin: 50% 50%; }
 .iv-dot-pulse { animation: iv-dot-pulse 3s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .iv-wave-drift, .iv-hf-glow, .iv-blob, .iv-dot-pulse { animation: none; } }
+@keyframes eva-halo { 0%, 100% { opacity: .55; transform: scale(1); } 50% { opacity: .95; transform: scale(1.05); } }
+.eva-halo { background: radial-gradient(circle, rgba(232, 211, 163, 0.45) 0%, rgba(124, 91, 166, 0.35) 55%, transparent 72%); filter: blur(6px); animation: eva-halo 3.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .iv-wave-drift, .iv-hf-glow, .iv-blob, .iv-dot-pulse, .eva-halo { animation: none; } }
 `;
 
 // ================================================================ conversation mode (2026-10-14, second reference)
@@ -355,47 +368,51 @@ export function DecorLine() {
 
 /** Green blob + "Switch to hands-free voice chat" (right side while chatting). */
 export function HandsFreeSide({ onStart, disabled, compact = false }: { onStart: () => void; disabled: boolean; compact?: boolean }) {
-  return (
-    <div className="flex flex-col items-center gap-0">
-      {!compact && (
-        <button type="button" onClick={onStart} disabled={disabled} aria-label="Start hands-free voice chat" className="relative w-[260px] h-[150px] disabled:opacity-60 group">
-          <svg viewBox="0 0 260 150" className="iv-blob absolute inset-0 w-full h-full overflow-visible" aria-hidden="true">
-            <defs>
-              <radialGradient id="ivBlobFill" cx="50%" cy="40%" r="70%">
-                <stop offset="0" stopColor="#5b6238" />
-                <stop offset="0.55" stopColor="#3e4123" />
-                <stop offset="1" stopColor="#2a2f1a" />
-              </radialGradient>
-              <filter id="ivBlobGlow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9" /></filter>
-            </defs>
-            <path d="M70 30 C 84 8 120 2 146 12 C 170 20 186 8 210 22 C 238 38 250 66 240 92 C 232 116 214 132 186 138 C 156 145 132 132 104 140 C 72 149 34 140 18 116 C 2 92 14 70 32 58 C 48 48 56 44 70 30 Z" fill="rgba(157, 184, 124, 0.45)" filter="url(#ivBlobGlow)" />
-            <path d="M70 30 C 84 8 120 2 146 12 C 170 20 186 8 210 22 C 238 38 250 66 240 92 C 232 116 214 132 186 138 C 156 145 132 132 104 140 C 72 149 34 140 18 116 C 2 92 14 70 32 58 C 48 48 56 44 70 30 Z" fill="url(#ivBlobFill)" stroke="#c9b683" strokeOpacity="0.75" strokeWidth="1.3" />
-            <path d="M82 34 C 104 18 140 18 160 26 C 184 34 210 30 226 52" fill="none" stroke="rgba(255, 255, 240, 0.28)" strokeWidth="1" />
-          </svg>
-          <span className="absolute inset-0 flex items-center justify-center">
-            <Icon name="graphic_eq" className="text-[42px] text-white group-hover:scale-110 transition-transform" />
-          </span>
-        </button>
-      )}
+  // 2026-11-01: Eva's photo instead of the green blob — "Speak to Eva" opens the hands-free voice chat
+  if (compact) {
+    return (
       <button
         type="button"
         onClick={onStart}
         disabled={disabled}
-        className="-mt-2 relative h-[58px] px-7 rounded-full flex items-center gap-3 text-[15.5px] text-white whitespace-nowrap transition-all hover:brightness-125 disabled:opacity-60"
-        style={{ background: "rgba(32, 41, 23, 0.88)", border: "1px solid rgba(107, 111, 78, 0.9)", boxShadow: "0 10px 26px rgba(0,0,0,0.35)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
+        className="h-[52px] pl-1.5 pr-6 rounded-full flex items-center gap-3 text-[15px] text-white whitespace-nowrap transition-all hover:brightness-125 disabled:opacity-60"
+        style={{ background: "linear-gradient(135deg, rgba(62, 40, 92, 0.9), rgba(36, 24, 52, 0.9))", border: "1px solid rgba(232, 211, 163, 0.65)", boxShadow: "0 10px 26px rgba(0,0,0,0.35)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
       >
-        <Icon name="mic" className="text-[24px]" />
-        Switch to hands-free voice chat
+        <EvaAvatar size={40} />
+        Speak to Eva <span className="text-white/60 text-[13px]">· hands-free</span>
       </button>
-    </div>
+    );
+  }
+  return (
+    <button type="button" onClick={onStart} disabled={disabled} aria-label="Speak to Eva — start hands-free voice chat" className="group flex flex-col items-center gap-3 disabled:opacity-60">
+      <span className="relative">
+        <span className="eva-halo absolute -inset-3 rounded-full" aria-hidden="true" />
+        <EvaAvatar size={150} className="relative transition-transform duration-300 group-hover:scale-[1.04]" />
+        <span className="absolute bottom-1 right-1 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "#e8d3a3", color: "#2d1f45", boxShadow: "0 4px 12px rgba(0,0,0,0.4)" }}>
+          <Icon name="mic" className="text-[22px]" />
+        </span>
+      </span>
+      <span className="text-center" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}>
+        <span className="block text-[19px] font-semibold text-white">Speak to Eva</span>
+        <span className="block text-[13px] text-white/75">Hands-free voice chat</span>
+      </span>
+    </button>
   );
 }
 
 /** Bottom bar: press-to-speak mic, question box, language, send. */
-export function Composer({ busy, recording, onSend, onStartRecording, onStopRecording }: {
+export function Composer({ busy, recording, onSend, onStartRecording, onStopRecording, draft, transcribing = false }: {
   busy: boolean; recording: boolean; onSend: (q: string) => void; onStartRecording: () => void; onStopRecording: () => void;
+  draft?: Draft | null; transcribing?: boolean;
 }) {
   const [text, setText] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  // 2026-10-31: the words the mic heard appear here first — fix them if needed, then Send
+  useEffect(() => {
+    if (!draft) return;
+    setText(draft.text);
+    window.setTimeout(() => { const el = inputRef.current; if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 30);
+  }, [draft]);
   const pressRef = useRef<{ at: number; started: boolean }>({ at: 0, started: false });
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -441,12 +458,13 @@ export function Composer({ busy, recording, onSend, onStartRecording, onStopReco
         <Icon name={recording ? "stop" : "mic"} className="relative text-[28px]" />
       </button>
       <input
+        ref={inputRef}
         value={text}
         onChange={(e) => setText(e.target.value)}
         maxLength={500}
-        disabled={busy}
+        disabled={busy || transcribing}
         aria-label="Type your question"
-        placeholder={recording ? "Listening… release (or tap the mic) to send" : "Ask a follow-up question..."}
+        placeholder={recording ? "Listening… release (or tap the mic) when you're done" : transcribing ? "Writing down what you said…" : "Ask a follow-up question..."}
         className="flex-1 min-w-0 bg-transparent border-none outline-none text-[16px] md:text-[18px] text-white placeholder:text-white/55"
       />
       <LanguageMenu up className="hidden sm:block flex-shrink-0" />

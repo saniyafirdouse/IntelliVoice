@@ -89,6 +89,8 @@ PROFILE_FACTS = {
     },
     "ask_working_hours": {"name": COLLEGE_NAME, "college_hours": HOURS},
     "ask_contact_admission_office": {**CONTACT, "office_hours": HOURS},
+    # 2026-10-28: "Who is the principal?" — used only if the faculty record is missing
+    "ask_leadership": {"name": COLLEGE_NAME, "principal": ABOUT["principal"], "guided_by": ABOUT["guided_by"]},
 }
 
 

@@ -64,6 +64,7 @@ export default function HomePage() {
         <>
           <CampusBackdrop
             active={active}
+            images={{ "bg-section-quad": "/assets/campus-front.jpg" }}   // 2026-10-17: SVIT front entrance on the first screen
             overlay={
               <>
                 <div className="glass-veil" style={{ background: "linear-gradient(rgba(16, 12, 30, 0.25) 0%, rgba(20, 15, 38, 0.15) 50%, rgba(10, 8, 20, 0.35) 100%)", pointerEvents: "none" }} />

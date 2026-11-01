@@ -12,11 +12,13 @@ interface PageShellProps {
   /** Elements that sit behind/around the page (backgrounds, floating buttons). */
   before?: ReactNode;
   after?: ReactNode;
+  /** false hides the footer (the chat page hides it while chatting, so the chat gets the space). */
+  footer?: boolean;
   children: ReactNode;
 }
 
 /** Common page frame: header + page content + footer, with the page's scoped style class. */
-export function PageShell({ scope, variant, title, className = "", style, before, after, children }: PageShellProps) {
+export function PageShell({ scope, variant, title, className = "", style, before, after, footer = true, children }: PageShellProps) {
   useEffect(() => {
     document.title = `${title} · IntelliVoice`;
   }, [title]);
@@ -27,7 +29,7 @@ export function PageShell({ scope, variant, title, className = "", style, before
       <SiteHeader variant={variant} />
       {children}
       {after}
-      <SiteFooter variant={variant} />
+      {footer && <SiteFooter variant={variant} />}
     </div>
   );
 }

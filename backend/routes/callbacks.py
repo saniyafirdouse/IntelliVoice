@@ -25,6 +25,7 @@ from pydantic import BaseModel, Field
 
 from database.connection import get_database
 from engines.memory_engine import memory_engine
+from utils.admin_activity import log_activity
 from utils.auth import require_admin
 
 COLLECTION = "callback_requests"
@@ -163,4 +164,6 @@ async def update_callback(callback_id: str, body: CallbackUpdate, admin: dict = 
     result = await db[COLLECTION].find_one_and_update({"_id": oid}, {"$set": changes}, return_document=True)
     if not result:
         raise HTTPException(404, detail="Callback request not found.")
+    what = ", ".join(x for x in [f"status {body.status}" if body.status else "", "note" if body.note is not None else ""] if x)
+    await log_activity(db, changes["handled_by"], "callback_update", f"{result.get('name', '')} ({what or 'no change'})")
     return _public_view(result)

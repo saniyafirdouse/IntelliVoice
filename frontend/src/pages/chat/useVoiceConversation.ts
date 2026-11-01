@@ -2,6 +2,7 @@
 //
 // One tap starts it. Then, in a loop:
 //   listening -> (you stop talking for ~2 s) -> thinking -> speaking -> listening ...
+// 2026-10-31: "talking" is decided by the Silero speech detector when it is loaded.
 // The microphone stays open for the whole conversation, but nothing is recorded
 // while IntelliVoice is speaking (so it never hears itself). Tap to interrupt,
 // End to stop. Every turn goes through the normal chat, so it also appears in
@@ -9,15 +10,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { audioSource } from "../../lib/audio";
+import { openCleanMic, type CleanMic } from "../../lib/cleanMic";
+import { openSpeechDetector, type SpeechDetector } from "../../lib/speechDetector";
 import type { QueryResponse } from "../../lib/types";
 
-export type ConversationPhase = "off" | "starting" | "listening" | "thinking" | "speaking" | "error";
+export type ConversationPhase = "off" | "starting" | "listening" | "thinking" | "speaking" | "paused" | "error";
 
 const SILENCE_MS = 2000;          // pause after speech that ends your turn (2 s: room for a thinking pause)
 const MIN_SPEECH_MS = 350;        // shorter sounds (a cough, a click) are ignored
 const MAX_TURN_MS = 25_000;       // a single question can't run longer than this
 const IDLE_RESTART_MS = 15_000;   // nobody spoke: start a fresh recording (keeps files small)
-const IDLE_END_MS = 90_000;       // nobody spoke for this long: end the conversation
+const IDLE_END_MS = 90_000;       // nobody spoke for this long: pause the conversation (2026-11-01: was "end")
 const CALIBRATE_MS = 400;         // measure the room's background noise first
 const NOISE_CAP = 0.04;           // background noise can never be assumed louder than this
 // Talking over IntelliVoice ("barge-in"): while it speaks, the mic keeps listening.
@@ -27,6 +30,12 @@ const BARGE_IN_MS = 400;          // then a clearly louder voice for this long i
 const BARGE_MIN_LEVEL = 0.065;    // (higher = its own voice from the speakers can't interrupt it)
 const BARGE_GAP_MS = 150;         // short dips between syllables don't reset the interrupt timer
 const KEEP_TALKING = 0.55;        // once you're talking, softer sounds (word endings) still count as voice
+// 2026-10-31: with the Silero speech detector (lib/speechDetector.ts) a turn starts and
+// continues only on real SPEECH, so fans, clicks and chatter don't start or prolong it.
+const VAD_START = 0.6;            // speech probability needed to start a turn
+const VAD_KEEP = 0.35;            // ...and to keep it going (softer word endings)
+const VAD_FRESH_MS = 300;         // detector values older than this are ignored (loudness is used)
+const SILENCE_MS_VAD = 2200;      // pause that ends your turn when the detector is on (a little room to think)
 
 interface Options {
   /** Sends the recording through the normal chat; resolves with the reply (or null on error). */
@@ -45,6 +54,8 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
   const [error, setError] = useState<string | null>(null);
   const [lastQuestion, setLastQuestion] = useState<string>("");
   const [lastReply, setLastReply] = useState<string>("");
+  // 2026-10-31: the whole reply, so the voice screen can show the brochure / PDF buttons
+  const [lastResponse, setLastResponse] = useState<QueryResponse | null>(null);
   const [startedAt, setStartedAt] = useState<number | null>(null);
 
   // Live level 0..1 for the animation (read every frame, so kept in a ref).
@@ -53,6 +64,8 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
   const phaseRef = useRef<ConversationPhase>("off");
   const streamRef = useRef<MediaStream | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
+  const micRef = useRef<CleanMic | null>(null);   // 2026-10-28: noise-cancelled mic
+  const detRef = useRef<SpeechDetector | null>(null);   // 2026-10-31: Silero speech detector
   const micAnalyserRef = useRef<AnalyserNode | null>(null);
   const outAnalyserRef = useRef<AnalyserNode | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -103,8 +116,9 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
   }), []);
 
   const listen = useCallback(() => {
-    if (phaseRef.current === "off") return;
+    if (phaseRef.current === "off" || phaseRef.current === "paused") return;
     go("listening");
+    vad.current.lastSpeechEver = performance.now();   // 2026-11-01: the quiet time counts from here (not from before a long reply)
     startRecorder();
   }, [startRecorder]);
 
@@ -149,9 +163,15 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
     // looks like IntelliVoice is answering the last question again.
     setLastQuestion("");
     setLastReply("");
+    setLastResponse(null);
     go("thinking");
     const res = await askRef.current(blob);
     if (current() === "off") return;
+    if (res?.status === "no_speech") {
+      // 2026-10-28: only noise was heard — no reply, just keep listening
+      listen();
+      return;
+    }
     if (!res) {
       setError("Sorry, something went wrong. Please ask again.");
       window.setTimeout(() => { setError(null); listen(); }, 1500);
@@ -160,6 +180,8 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
     if (res.transcript) setLastQuestion(res.transcript);
     setTurns((n) => n + 1);
     setLastReply(res.response?.text ?? "");
+    setLastResponse(res);
+    if (current() === "paused") return;   // 2026-11-01: paused while thinking — show the answer, don't speak it
     speak(res);
   }, [listen, speak, stopRecorder]);
 
@@ -178,22 +200,27 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
       if (now >= v.calibrateUntil) {
         const threshold = Math.min(Math.max(0.02, v.noise * 3), 0.12);
         const needed = v.speaking ? Math.max(0.011, threshold * KEEP_TALKING) : threshold;
-        if (level > needed) {
+        const det = detRef.current;
+        const useDetector = !!det && now - det.at < VAD_FRESH_MS;
+        const isVoice = useDetector ? det!.prob > (v.speaking ? VAD_KEEP : VAD_START) : level > needed;
+        const silenceMs = useDetector ? SILENCE_MS_VAD : SILENCE_MS;
+        if (isVoice) {
           if (!v.speaking) { v.speaking = true; v.speechStart = now; }
           v.lastVoice = now;
           v.lastSpeechEver = now;
         }
         const spokeLongEnough = v.speaking && v.lastVoice - v.speechStart >= MIN_SPEECH_MS;
-        if (spokeLongEnough && now - v.lastVoice > SILENCE_MS) {
+        if (spokeLongEnough && now - v.lastVoice > silenceMs) {
           void finishTurn();
         } else if (v.speaking && now - v.turnStart > MAX_TURN_MS) {
           void finishTurn();
-        } else if (v.speaking && !spokeLongEnough && now - v.lastVoice > SILENCE_MS) {
+        } else if (v.speaking && !spokeLongEnough && now - v.lastVoice > silenceMs) {
           v.speaking = false;                             // just a short noise
         } else if (!v.speaking && now - v.turnStart > IDLE_RESTART_MS) {
           void stopRecorder().then(() => { if (phaseRef.current === "listening") startRecorder(); });
         }
-        if (now - v.lastSpeechEver > IDLE_END_MS) { void end(); return; }
+        // 2026-11-01: a long quiet no longer closes the voice chat — it pauses (tap ▶ to continue)
+        if (now - v.lastSpeechEver > IDLE_END_MS) { void stopRecorder(); go("paused"); }
       }
     } else if (p === "speaking") {
       levelRef.current = Math.min(1, rms(outAnalyserRef.current) * 5);
@@ -204,6 +231,9 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
       v.echo = Math.min(v.echo, ECHO_CAP);
       if (now - v.speakStart >= ECHO_LEARN_MS) {
         const threshold = Math.max(BARGE_MIN_LEVEL, v.echo * 2.5, v.noise * 4);
+        // 2026-11-01: back to the rule that worked before 31 Oct — a clearly louder voice for
+        // BARGE_IN_MS interrupts. (The extra "speech detector must agree on every frame" check
+        // kept failing while Eva's own voice was playing, so "wait, stop" didn't interrupt.)
         if (mic > threshold) {
           if (!v.bargeSince) v.bargeSince = now;
           v.bargeAbove = now;
@@ -228,21 +258,30 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
   // ---------- start / end ----------
   const begin = useCallback(async () => {
     if (phaseRef.current !== "off" && phaseRef.current !== "error") return;
-    setError(null); setLastQuestion(""); setLastReply(""); setTurns(0);
+    setError(null); setLastQuestion(""); setLastReply(""); setLastResponse(null); setTurns(0);
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
       setError("Voice conversation is not supported in this browser."); go("error"); return;
     }
     go("starting");
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-      streamRef.current = stream;
+      // 2026-10-28: each turn records the noise-cancelled voice (lib/cleanMic.ts).
+      // Turn detection and interrupting still listen to the plain mic, exactly as
+      // tuned before, so their timing doesn't change.
+      const mic = await openCleanMic(1024);
+      micRef.current = mic;
+      streamRef.current = mic.stream;
       const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      const ctx = new Ctx();
+      const ctx = mic.ctx ?? new Ctx();
       ctxRef.current = ctx;
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 1024;
-      ctx.createMediaStreamSource(stream).connect(analyser);
+      ctx.createMediaStreamSource(mic.raw).connect(analyser);
       micAnalyserRef.current = analyser;
+      // 2026-10-31: the speech detector loads in the background (loudness is used until it's ready)
+      void openSpeechDetector(mic.stream).then((d) => {
+        if (phaseRef.current === "off" || micRef.current !== mic) d?.close();
+        else detRef.current = d;
+      });
     } catch (err) {
       const name = (err as DOMException)?.name;
       setError(name === "NotAllowedError" || name === "SecurityError"
@@ -264,6 +303,10 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
     recorderRef.current = null;
     if (rec && rec.state !== "inactive") { rec.onstop = null; rec.stop(); }
     stopPlayback();
+    detRef.current?.close();
+    detRef.current = null;
+    micRef.current?.close();
+    micRef.current = null;
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     ctxRef.current?.close().catch(() => undefined);
@@ -281,14 +324,37 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
     onEndRef.current?.();
   }, [cleanup]);
 
-  /** Tap on the orb / main button: interrupt the reply, or send what you said right now. */
+  /** Tap on the ring: interrupt the reply, send what you said right now, or continue after a pause. */
   const tap = useCallback(() => {
     const p = phaseRef.current;
     if (p === "speaking") { stopPlayback(); outAnalyserRef.current = null; listen(); }
     else if (p === "listening" && vad.current.speaking) void finishTurn();
+    else if (p === "paused") resume();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finishTurn, listen, stopPlayback]);
+
+  /** 2026-11-01: pause — Eva stops talking / listening, but the voice chat stays open. */
+  const pause = useCallback(() => {
+    const p = phaseRef.current;
+    if (p !== "listening" && p !== "speaking" && p !== "thinking") return;
+    if (p === "speaking") { stopPlayback(); outAnalyserRef.current = null; }
+    if (p === "listening") {
+      const rec = recorderRef.current;
+      recorderRef.current = null;
+      if (rec && rec.state !== "inactive") { rec.onstop = null; rec.stop(); }
+    }
+    go("paused");
+  }, [stopPlayback]);
+
+  /** Continue after a pause: Eva listens again. */
+  const resume = useCallback(() => {
+    if (phaseRef.current !== "paused") return;
+    go("listening");
+    vad.current.lastSpeechEver = performance.now();
+    startRecorder();
+  }, [startRecorder]);
 
   useEffect(() => () => { phaseRef.current = "off"; cleanup(); }, [cleanup]);
 
-  return { phase, error, lastQuestion, lastReply, startedAt, turns, levelRef, begin, end, tap };
+  return { phase, error, lastQuestion, lastReply, lastResponse, startedAt, turns, levelRef, begin, end, tap, pause, resume };
 }

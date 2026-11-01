@@ -7,6 +7,8 @@ routes/auth.py — login and sign-up (matches IntelliVoice_API_Contract.md §2)
 - Sign-up only ever creates "student" accounts.
 - Admin accounts are created by the team with:  python create_admin.py
 - Users are stored in the MongoDB collection "users".
+- 2026-10-15: 3 wrong passwords lock the email for 15 minutes; passwords need
+  at least 8 characters; admin sign-ins are written to the admin activity log.
 """
 
 from typing import Literal, Optional
@@ -15,6 +17,9 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
 from database.connection import get_database
+from utils.admin_activity import (
+    LOCK_MINUTES, clear_failed_logins, locked_minutes_left, log_activity, record_failed_login,
+)
 from utils.auth import create_token, hash_password, verify_password
 
 router = APIRouter()
@@ -26,7 +31,7 @@ class SignupRequest(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     email: str = Field(min_length=3, max_length=200)
     phone: Optional[str] = Field(default=None, max_length=20)
-    password: str = Field(min_length=6, max_length=100)
+    password: str = Field(min_length=8, max_length=100)
 
 
 class LoginRequest(BaseModel):
@@ -70,13 +75,30 @@ async def signup(body: SignupRequest):
 async def login(body: LoginRequest):
     db = _db()
     email = body.email.strip().lower()
+
+    # Locked after too many wrong passwords? Don't even check the password.
+    minutes = await locked_minutes_left(db, email)
+    if minutes:
+        raise HTTPException(429, detail=f"Too many wrong attempts. Please try again in {minutes} minute{'s' if minutes != 1 else ''}.")
+
     user = await db[USERS].find_one({"email": email})
 
     # Same message for "no such user" and "wrong password" so nobody can
-    # find out which emails are registered.
+    # find out which emails are registered (unknown emails are counted too).
     if not user or not verify_password(body.password, user.get("password_hash", "")):
-        raise HTTPException(401, detail="Incorrect email or password.")
+        left = await record_failed_login(db, email)
+        is_admin = bool(user and user.get("role") == "admin")
+        if left == 0:
+            if is_admin:
+                await log_activity(db, email, "login_locked", f"locked for {LOCK_MINUTES} minutes")
+            raise HTTPException(429, detail=f"Too many wrong attempts. Please try again in {LOCK_MINUTES} minutes.")
+        if is_admin:
+            await log_activity(db, email, "login_failed", f"{left} attempt{'s' if left != 1 else ''} left")
+        raise HTTPException(401, detail=f"Incorrect email or password. {left} attempt{'s' if left != 1 else ''} left.")
     if user.get("role") != body.role:
         raise HTTPException(403, detail=f"This account is not registered as {body.role}.")
 
+    await clear_failed_logins(db, email)
+    if user["role"] == "admin":
+        await log_activity(db, email, "login", "admin panel")
     return {"token": create_token(email, user["role"], user.get("name", "")), "user": _user_out(user)}

@@ -42,7 +42,8 @@ function useLanguageChoice() {
 }
 
 /** "ENG ▾" pill that opens the list of language choices (also used in the chat's question bar). */
-export function LanguageMenu({ up = false, className = "hidden sm:block" }: { up?: boolean; className?: string }) {
+export function LanguageMenu({ up = false, className = "hidden sm:block", round = false }: { up?: boolean; className?: string; round?: boolean }) {
+  // round (2026-11-01): the voice chat's "A अ ಅ" button — same choices, opens upwards to the right
   const { current, choose } = useLanguageChoice();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -56,6 +57,20 @@ export function LanguageMenu({ up = false, className = "hidden sm:block" }: { up
   }, [open]);
   return (
     <div ref={ref} className={`relative ${className}`}>
+      {round ? (
+        <button
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          title={`Language: ${current.label}`}
+          aria-label={`Language: ${current.label}. Change language`}
+          onClick={() => setOpen((o) => !o)}
+          className="h-12 px-3 rounded-full flex flex-col items-center justify-center leading-none text-white bg-white/10 border border-white/20 hover:bg-white/20 transition-colors"
+        >
+          <span className="flex items-baseline gap-1 text-[15px] font-semibold"><span>A</span><span lang="hi">अ</span><span lang="kn">ಅ</span></span>
+          <span className="mt-0.5 text-[9.5px] tracking-wide text-white/70">{current.short}</span>
+        </button>
+      ) : (
       <button
         type="button"
         aria-haspopup="listbox"
@@ -68,11 +83,12 @@ export function LanguageMenu({ up = false, className = "hidden sm:block" }: { up
         {current.short}
         <Icon name="expand_more" className={`text-[18px] transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
+      )}
       {open && (
         <ul
           role="listbox"
           aria-label="Language"
-          className={`absolute right-0 ${up ? "bottom-full mb-2" : "mt-2"} w-[250px] p-1.5 rounded-2xl z-50`}
+          className={`absolute ${round ? "left-0" : "right-0"} ${up ? "bottom-full mb-2" : "mt-2"} w-[250px] p-1.5 rounded-2xl z-50`}
           style={{ background: "rgba(22, 22, 26, 0.96)", border: "1px solid rgba(255, 255, 255, 0.14)", boxShadow: "0 18px 40px rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}
         >
           {LANG_CHOICES.map((c) => {
@@ -193,7 +209,9 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
-  const nav = user?.role === "admin" ? [...NAV, ADMIN_NAV] : NAV;
+  // 2026-10-15: a signed-in admin sees only the admin panel (no student pages or language menu).
+  const isAdmin = user?.role === "admin";
+  const nav = isAdmin ? [ADMIN_NAV] : NAV;
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
@@ -203,7 +221,7 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
         <div className={look.barFill.className} style={look.barFill.style} />
       </div>
       <div className="h-20 w-full px-margin-mobile lg:px-margin flex items-center justify-between gap-space-md">
-        <Link to="/" className="flex items-center gap-space-md min-w-0">
+        <Link to={isAdmin ? "/admin" : "/"} className="flex items-center gap-space-md min-w-0">
           <div className={look.logoWrap}>
             <img src="/assets/svit-logo.png" alt="SVIT Logo" className="w-full h-full object-contain rounded-full" />
           </div>
@@ -231,7 +249,7 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
         </nav>
 
         <div className="flex items-center gap-space-sm">
-          <LanguageMenu />
+          {!isAdmin && <LanguageMenu />}
           <div className="flex items-center gap-space-xs">
             <AuthMenu />
             <button
@@ -264,6 +282,7 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
               {item.label}
             </NavLink>
           ))}
+          {!isAdmin && (
           <div className="sm:hidden flex flex-wrap items-center gap-1.5 px-2 pt-2" role="group" aria-label="Language: speak and reply in">
             {LANG_CHOICES.map((c) => (
               <button
@@ -278,6 +297,7 @@ export function SiteHeader({ variant }: { variant: HeaderVariant }) {
               </button>
             ))}
           </div>
+          )}
         </nav>
       )}
     </header>

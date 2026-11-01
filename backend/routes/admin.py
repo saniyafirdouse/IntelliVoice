@@ -26,6 +26,13 @@ Insights
   GET  /api/admin/dashboard?days=7                  analytics dashboard
   GET  /api/admin/unanswered?days=7                 questions we couldn't answer
   POST /api/admin/unanswered/resolve                {"log_ids": [...]} mark as handled
+
+Activity log (2026-10-15)
+  GET  /api/admin/activity?limit=100                who did what, newest first
+
+College website (2026-10-30)
+  POST /api/admin/website/refresh                   read saividya.ac.in again (pages + PDFs), in the background
+  GET  /api/admin/website/status                    is it running? what changed last time?
 """
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
@@ -36,8 +43,10 @@ from database.connection import get_database
 from engines import analytics_engine
 from engines.knowledge_engine import invalidate_cache   # 2026-10-12: uploads show up instantly
 from utils import data_import as di
+from utils.admin_activity import list_activity, log_activity
 from utils.auth import require_admin
 from utils.datasets import DATASETS, get_dataset
+from engines import website_engine                     # 2026-10-30: "Fetch updated data from website"
 
 router = APIRouter(dependencies=[Depends(require_admin)])
 
@@ -86,9 +95,10 @@ async def list_datasets():
 
 
 @router.get("/datasets/{name}/template")
-async def download_template(name: str):
+async def download_template(name: str, admin: dict = Depends(require_admin)):
     ds = _dataset_or_404(name)
     docs = await _db()[ds["collection"]].find({}).to_list(length=None)
+    await log_activity(_db(), admin["sub"], "template_download", name)
     content = di.build_template(name, ds, docs)
     filename = f"intellivoice_{name}_{di.today_ist()}.xlsx"
     return Response(
@@ -105,7 +115,9 @@ async def upload_preview(name: str, file: UploadFile = File(...), admin: dict = 
     if len(content) > MAX_UPLOAD_BYTES:
         raise HTTPException(413, detail="File is too large (max 5 MB).")
     try:
-        return await di.create_preview(_db(), name, ds, file.filename, content, admin["sub"])
+        result = await di.create_preview(_db(), name, ds, file.filename, content, admin["sub"])
+        await log_activity(_db(), admin["sub"], "upload_preview", f"{name}: {file.filename}")
+        return result
     except di.SheetError as e:
         raise HTTPException(400, detail=str(e))
 
@@ -129,15 +141,18 @@ async def upload_confirm(upload_id: str, admin: dict = Depends(require_admin)):
     try:
         result = await di.confirm_batch(_db(), upload_id, admin["sub"])
         invalidate_cache()   # the assistant answers from the new data straight away
+        await log_activity(_db(), admin["sub"], "upload_confirm", f"upload {upload_id[-6:]}")
         return result
     except di.BatchError as e:
         return _batch_error(e)
 
 
 @router.post("/uploads/{upload_id}/cancel")
-async def upload_cancel(upload_id: str):
+async def upload_cancel(upload_id: str, admin: dict = Depends(require_admin)):
     try:
-        return await di.cancel_batch(_db(), upload_id)
+        result = await di.cancel_batch(_db(), upload_id)
+        await log_activity(_db(), admin["sub"], "upload_cancel", f"upload {upload_id[-6:]}")
+        return result
     except di.BatchError as e:
         return _batch_error(e)
 
@@ -147,6 +162,7 @@ async def upload_undo(upload_id: str, admin: dict = Depends(require_admin)):
     try:
         result = await di.undo_batch(_db(), upload_id, admin["sub"])
         invalidate_cache()   # back to the old data straight away
+        await log_activity(_db(), admin["sub"], "upload_undo", f"upload {upload_id[-6:]}")
         return result
     except di.BatchError as e:
         return _batch_error(e)
@@ -168,5 +184,44 @@ class ResolveRequest(BaseModel):
 
 
 @router.post("/unanswered/resolve")
-async def resolve_unanswered(body: ResolveRequest):
-    return {"resolved": await analytics_engine.mark_resolved(_db(), body.log_ids)}
+async def resolve_unanswered(body: ResolveRequest, admin: dict = Depends(require_admin)):
+    resolved = await analytics_engine.mark_resolved(_db(), body.log_ids)
+    await log_activity(_db(), admin["sub"], "unanswered_resolve", f"{len(body.log_ids)} question(s)")
+    return {"resolved": resolved}
+
+
+# ── Activity log ───────────────────────────────────────────────────────────
+@router.get("/activity")
+async def activity(limit: int = Query(100, ge=1, le=500), admin_email: str | None = None, action: str | None = None):
+    return await list_activity(_db(), limit, admin_email, action)
+
+
+# ── College website (2026-10-30) ─────────────────────────────────────────
+_website_task = None
+
+
+@router.post("/website/refresh")
+async def website_refresh(admin: dict = Depends(require_admin)):
+    """Starts reading the college website again; poll /website/status for the result."""
+    global _website_task
+    db = _db()
+    if website_engine.status["running"]:
+        return {"started": False, "status": website_engine.status}
+
+    async def run():
+        summary = await website_engine.refresh(db)
+        if not summary.get("error"):
+            invalidate_cache()
+        details = (f"failed: {summary['error']}" if summary.get("error") else
+                   f"{summary.get('pages')} pages, {summary.get('pdfs')} PDFs, {summary.get('new_pdfs')} new PDFs, "
+                   f"{summary.get('changed_pages')} changed pages")
+        await log_activity(db, admin["sub"], "website_refresh", details)
+
+    import asyncio
+    _website_task = asyncio.create_task(run())
+    return {"started": True, "status": website_engine.status}
+
+
+@router.get("/website/status")
+async def website_status():
+    return {"status": website_engine.status, "last_fetch": await website_engine.last_fetch(_db())}

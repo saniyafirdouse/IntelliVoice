@@ -32,7 +32,7 @@ from fastapi.responses import JSONResponse
 
 from database.connection import get_database
 from engines.analytics_engine import log_query
-from engines.intelligence_engine import _build_output, classify_intent
+from engines.intelligence_engine import REFERENTIAL_MARKERS, _build_output, classify_intent
 from engines.knowledge_engine import fetch_knowledge
 from engines.language_engine import (
     build_language_result,
@@ -62,6 +62,42 @@ ANSWER_MAX_WORDS = 10
 
 _background_tasks = set()   # keeps analytics tasks alive until they finish
 
+# 2026-10-30: conversational memory for short replies. "What is the fee for CSE?"
+# then just "ECE" was answered as a new question ("ECE has 120 seats"). A short
+# message that only names a detail (a branch, exam, quota, category, boys/girls)
+# and no new topic now continues the previous topic with that detail.
+CARRY_INTENTS = {
+    "ask_fees_branch", "ask_cutoff", "ask_placement_by_branch", "ask_seat_availability",
+    "ask_required_documents", "ask_admission_process", "ask_hostel_facilities", "ask_faculty_list",
+    "ask_scholarship_available", "ask_scholarship_eligibility", "ask_application_deadline",
+}
+NO_CARRY = {"ask_leadership", "ask_person", "ask_transport_routes", "ask_college_overview", "ask_documents_pdf"}
+_DETAIL_KEYS = ("branch", "exam", "quota", "category")
+_GENDER_WORDS = ("girls", "girl", "boys", "boy", "hudugi", "hudugiyaru", "huduga", "hudugaru",
+                 "ladki", "ladkiyon", "ladka", "ladkon", "ಹುಡುಗಿ", "ಹುಡುಗ", "लड़की", "लड़का")
+_TOPIC_WORDS = (
+    "fee", "fees", "cutoff", "cut off", "rank", "seat", "seats", "hostel", "placement", "package",
+    "salary", "scholarship", "document", "documents", "bus", "transport", "library", "admission",
+    "process", "faculty", "teacher", "hod", "principal", "syllabus", "lab", "labs", "canteen",
+    "sports", "club", "deadline", "date", "shulka", "ಫೀಸ್", "ಶುಲ್ಕ", "ಕಟ್‌ಆಫ್", "ಹಾಸ್ಟೆಲ್", "फीस", "हॉस्टल",
+)
+
+
+def _only_details(query: str, entities: dict, last_intent: str) -> bool:
+    low = (query or "").lower().strip(" ?.!")
+    words = low.split()
+    if not words or len(words) > 5:
+        return False
+    if any((f" {w} " in f" {low} ") if w.isascii() else (w in low) for w in _TOPIC_WORDS):
+        return False                                   # names a topic -> a new question
+    has_detail = any(entities.get(k) for k in _DETAIL_KEYS)
+    if last_intent == "ask_hostel_facilities":
+        has_detail = has_detail or any(w in words or (not w.isascii() and w in low) for w in _GENDER_WORDS)
+    return has_detail
+
+# 2026-10-29: "I want to join" -> offer step-by-step help (engines/admission_guide.py)
+from engines import admission_guide
+
 
 class PipelineError(Exception):
     """A problem to report to the caller (status code + message for the user)."""
@@ -69,6 +105,12 @@ class PipelineError(Exception):
         super().__init__(message)
         self.status = status
         self.message = message
+
+
+class NoSpeechError(PipelineError):
+    """2026-10-28: the recording had no speech (silence / noise). The app stays quiet."""
+    def __init__(self):
+        super().__init__(200, "No speech heard.")
 
 
 def _ms(start: float) -> int:
@@ -111,6 +153,14 @@ def _apply_memory(session_id: Optional[str], ir: dict, extra_entities: Optional[
         last_intent = context.get("last_intent")
         intent, zone = ir["intent"], ir["confidence_zone"]
 
+        # 2026-10-29: inside the admission guide, "yes" / "KCET" / "CSE" answer OUR question
+        guide = admission_guide.decide(session_id, ir.get("query") or "", current)
+        if guide and guide.get("intent"):
+            intent, zone = guide["intent"], "confident"
+            current.update(guide["entities"])
+        elif guide:                                   # "yes" / "no": a fixed reply, no topic change
+            intent, zone = "ask_admission_process", "confident"
+
         # Answer to our own "Which branch?" question -> continue that topic.
         asked = _awaiting_branch.pop(session_id, None)
         answered_branch = False
@@ -119,26 +169,51 @@ def _apply_memory(session_id: Optional[str], ir: dict, extra_entities: Optional[
             answered_branch = intent != asked[0]
             intent = asked[0]
 
+        # 2026-10-30: "ECE" / "and COMEDK?" / "girls" -> same topic as the last question
+        carried = False
+        if (not guide and not answered_branch and last_intent in CARRY_INTENTS and intent != last_intent
+                and intent not in NO_CARRY and _only_details(ir.get("query") or "", current, last_intent)):
+            intent, zone, carried = last_intent, "confident", True
+
         follow_up = bool(context.get("turn_count")) and (
             bool(ir.get("needs_memory")) or (last_intent is not None and last_intent == intent)
         )
         # "And for ECE?" — Engine 2 can't place it alone: continue the previous topic.
-        if (follow_up and ir.get("needs_memory") and intent == "fallback"
+        # 2026-10-28: only when the question really points back ("and", "what about")
+        # or names something (a branch, a quota...). A new question the models
+        # couldn't place ("Who is the principal?") is no longer answered as if it
+        # were about the previous topic (that gave "I don't have that information").
+        query_lower = (ir.get("query") or "").lower()
+        points_back = bool(original) or any(m in query_lower for m in REFERENTIAL_MARKERS)
+        if (follow_up and ir.get("needs_memory") and intent == "fallback" and points_back
                 and last_intent and last_intent not in NO_TOPIC_INTENTS):
             intent, zone = last_intent, "uncertain"
 
         resolved = memory_engine.resolve_entities(session_id, current, needs_memory=follow_up)
         resolved.pop("topic", None)
 
-        if intent != ir["intent"] or resolved != original:
+        # inside the guide, "KCET" / "CSE" is answered as the full question it stands for
+        guide_question = (guide or {}).get("question")
+        if intent != ir["intent"] or resolved != original or guide_question:
             new_ir = _build_output(
-                query=ir["query"], normalized_query=ir.get("normalized_query", ""),
+                query=guide_question or ir["query"],
+                normalized_query=guide_question or ir.get("normalized_query", ""),
                 language=ir["language"], intent_id=intent, confidence=ir["confidence"],
                 confidence_zone=zone, emotion=ir["emotion"], entities=resolved,
             )
             new_ir["needs_memory"] = ir.get("needs_memory", False)
+            if ir.get("personal_case"):
+                new_ir["personal_case"] = True
         else:
             new_ir = ir
+
+        # what the guide does with this turn (used by Engine 5 and _remember_turn)
+        if guide is None:
+            guide = admission_guide.start_followup(new_ir["intent"], resolved, new_ir.get("query") or "")
+        if guide:
+            if new_ir is ir:
+                new_ir = dict(ir)
+            new_ir["guide"] = guide
 
         memory_info = {
             "answered_branch_question": answered_branch,
@@ -146,6 +221,7 @@ def _apply_memory(session_id: Optional[str], ir: dict, extra_entities: Optional[
             "context_used": [str(v) for k, v in resolved.items() if k not in current],
             "follow_up": follow_up,
             "continued_previous_topic": intent != ir["intent"],
+            "short_follow_up": carried,
         }
         return new_ir, memory_info
     except Exception as e:
@@ -157,6 +233,11 @@ def _remember_turn(session_id: Optional[str], language_result: dict, ir: dict,
                    response_result: dict) -> None:
     if not session_id or not response_result.get("success"):
         return
+    # 2026-10-29: admission guide — next step only if our question was really asked
+    guide = ir.get("guide") or {}
+    asked = guide.get("reply") or response_result.get("guide_appended")
+    admission_guide.remember(session_id, guide.get("next") if asked else None, guide.get("route"),
+                             guide.get("offer"), guide.get("done"))
     # Did we just ask "Which branch?" — then the next message is probably the answer.
     if (response_result.get("debug") or {}).get("path") == "ask_branch":
         _awaiting_branch[session_id] = (ir["intent"], time.time())
@@ -223,9 +304,11 @@ async def _respond(language_result: dict, understanding: dict, session_id: str,
     knowledge_result = understanding["knowledge"]
     timings.update(understanding["timings"])
 
-    engine5_input = intelligence_result
+    # input_type lets Engine 5 answer an unrecognised SPOKEN question with
+    # "Sorry, I couldn't catch that" instead of guessing (2026-10-28).
+    engine5_input = {**intelligence_result, "input_type": input_type}
     if reply_language in VALID_SPEECH_LANGUAGES:      # user chose the reply language
-        engine5_input = {**intelligence_result, "language": reply_language}
+        engine5_input["language"] = reply_language
 
     start = time.perf_counter()
     response_result = await generate_response(
@@ -283,8 +366,13 @@ async def _respond(language_result: dict, understanding: dict, session_id: str,
             "response_mode": intelligence_result["response_mode"],
             "needs_escalation": intelligence_result["needs_escalation"],
             "needs_memory": intelligence_result["needs_memory"],
+            "personal_case": bool(intelligence_result.get("personal_case")),   # 2026-10-30
         },
         "knowledge": _knowledge_summary(knowledge_result),
+        # 2026-10-15: "tell me everything" -> College-at-a-glance card data
+        "overview": knowledge_result.get("data") if knowledge_result.get("match_type") == "overview" else None,
+        # 2026-10-29: PDF buttons under the reply (bus routes, brochure)
+        "documents": response_result.get("documents") or [],
         "timings_ms": timings,
         "status": "complete" if response_result["success"] else "response_generation_failed",
         "debug": debug,
@@ -330,8 +418,25 @@ async def _voice_understanding(audio_bytes: bytes, filename: str, language: Opti
         raise PipelineError(500, f"Speech recognition failed: {e}")
     timings["stt"] = stt["stt_ms"]
     raw_text = stt["raw_text"].strip()
-    if not raw_text:
-        raise PipelineError(400, "I couldn't hear anything in that recording. Please try again.")
+    clarity = stt.get("clarity", "ok") if raw_text else "silent"
+    if clarity == "silent":
+        # 2026-10-28: nothing was said (or only Whisper's made-up "Thank you") —
+        # no thinking, no reply.
+        raise NoSpeechError()
+    if clarity == "unclear":
+        # Something was said but Whisper isn't sure of the words: don't guess,
+        # ask the user to repeat (fixed reply, see response_engine.UNCLEAR_MESSAGES).
+        language_result = await build_language_result(stt, no_correction(raw_text))
+        ir = _build_output(
+            query=raw_text, normalized_query=language_result["normalized_text"],
+            language=language_result["language"]["primary"], intent_id="fallback",
+            confidence=0.0, confidence_zone="out_of_scope", emotion="neutral", entities={},
+        )
+        ir["unclear_audio"] = True
+        understanding = {"intelligence": ir, "knowledge": {"found": False, "reason": "unclear_audio"},
+                         "memory": None, "timings": {}}
+        timings["understood_at"] = _ms(started)
+        return language_result, understanding, timings, {"unclear_audio": True}
 
     correction_task = asyncio.create_task(correct_transcript(raw_text, stt["speech_language"]))
 
@@ -443,6 +548,8 @@ async def voice_query(
             filename=audio.filename if audio else None,
             text=text, language=language, script=script, include_audio=include_audio,
         )
+    except NoSpeechError:
+        return {"status": "no_speech", "message": "No speech heard."}
     except PipelineError as e:
         return JSONResponse(status_code=e.status, content={"error": e.message})
 
@@ -460,6 +567,8 @@ async def text_query(
     try:
         return await answer(session_id=session_id or str(uuid.uuid4()), text=text,
                             script=script, include_audio=include_audio)
+    except NoSpeechError:
+        return {"status": "no_speech", "message": "No speech heard."}
     except PipelineError as e:
         return JSONResponse(status_code=e.status, content={"error": e.message})
 

@@ -103,7 +103,13 @@ _INDIC_LETTER = r"[\u0C80-\u0CFF\u0900-\u097F]"
 _ZERO_WIDTH = re.compile(r"[\u200b\u200c\u200d]")  # ZWSP/ZWNJ/ZWJ typed inside words
 
 
-def find_entity_word_boundary(text_lower: str, lookup_pairs: list) -> str | None:
+# 2026-10-30: these aliases are also everyday English words ("tell me the fee",
+# "will he be eligible") — they count only when written in CAPITALS (ME, BE).
+# "Tell me the fee" was read as a question about Mechanical Engineering.
+_UPPERCASE_ONLY_ALIASES = {"me", "be"}
+
+
+def find_entity_word_boundary(text_lower: str, lookup_pairs: list, original: str | None = None) -> str | None:
     """
     Matches an alias only as a whole word/phrase, using \\b boundaries.
     This is the fix for the earlier bug where "ce" matched inside
@@ -119,6 +125,10 @@ def find_entity_word_boundary(text_lower: str, lookup_pairs: list) -> str | None
     """
     text_lower = _ZERO_WIDTH.sub("", text_lower)
     for alias, canonical in lookup_pairs:
+        if alias in _UPPERCASE_ONLY_ALIASES:
+            if original is not None and re.search(r"\b" + re.escape(alias.upper()) + r"\b", original):
+                return canonical
+            continue
         if alias.isascii():
             pattern = r"\b" + re.escape(alias) + r"\b"
         else:
@@ -128,15 +138,46 @@ def find_entity_word_boundary(text_lower: str, lookup_pairs: list) -> str | None
     return None
 
 
+def find_all_branches(text_lower: str, original: str) -> list:
+    """Every branch named in the text, in the order said (longest name wins on overlaps)."""
+    text_lower = _ZERO_WIDTH.sub("", text_lower)
+    spans = []
+    for alias, canonical in ENTITY_LOOKUPS.get("branch", []):
+        if alias in _UPPERCASE_ONLY_ALIASES:
+            pattern, hay = r"\b" + re.escape(alias.upper()) + r"\b", original
+        elif alias.isascii():
+            pattern, hay = r"\b" + re.escape(alias) + r"\b", text_lower
+        else:
+            pattern, hay = r"(?<!" + _INDIC_LETTER + r")" + re.escape(_ZERO_WIDTH.sub("", alias)), text_lower
+        for m in re.finditer(pattern, hay):
+            spans.append((m.start(), m.end(), canonical))
+    spans.sort(key=lambda x: (x[0], -(x[1] - x[0])))
+    found, last_end = [], -1
+    for start, end, canonical in spans:
+        if start < last_end:
+            continue                                  # inside a longer name already taken
+        last_end = end
+        if canonical not in found:
+            found.append(canonical)
+    return found
+
+
 def extract_entities(text: str) -> dict:
     text_lower = text.lower()
     entities = {}
 
     for entity_type in EXTRACTABLE_ENTITY_TYPES:
         lookup_pairs = ENTITY_LOOKUPS.get(entity_type, [])
-        match = find_entity_word_boundary(text_lower, lookup_pairs)
+        match = find_entity_word_boundary(text_lower, lookup_pairs, text)
         if match:
             entities[entity_type] = match
+
+    # 2026-10-31: "cutoff for CSE and Mechanical" names TWO branches. Only one was
+    # kept, so the other was never looked up ("I don't have CSE information").
+    # All branches named are now kept in "branches" (the first one stays "branch").
+    named = find_all_branches(text_lower, text)
+    if len(named) >= 2:
+        entities["branches"] = named
 
     # Percentage — regex only, no alias table needed
     percent_match = re.search(r"\b(\d{1,3})\s*%|\b(\d{1,3})\s*(?:percent|percentage|marks)\b", text_lower)
@@ -248,11 +289,11 @@ INTENT_TOPIC_MAP = {
 # sending irrelevant extras causes false non-matches or, worse,
 # false matches against the wrong document.
 TOPIC_RELEVANT_ENTITIES = {
-    "process": [],
-    "documents": ["quota"],
+    "process": ["exam", "quota"],     # 2026-10-30: step-by-step process for that route
+    "documents": ["quota", "exam"],
     "deadline": ["exam"],
     "status": [],
-    "seats": ["branch"],
+    "seats": ["branch", "branches"],
 }
 
 
@@ -285,9 +326,257 @@ def determine_needs_memory(text: str, entities: dict, confidence_zone: str) -> b
     return False
 
 
+# ── "Tell me everything" detector (2026-10-15) ────────────────────────────
+# One question normally maps to ONE intent, so "fees, placements and hostel?"
+# used to answer only one topic. These rules catch requests for the whole
+# picture and send them to ask_college_overview (the College-at-a-glance card
+# + brochure). Rules run before the models, so they cost no time.
+OVERVIEW_INTENT = "ask_college_overview"
+
+_OVERVIEW_PHRASES = [
+    "brochure", "broucher", "brochur", "ब्रोशर", "ಬ್ರೋಷರ್", "ಬ್ರೋಚರ್",
+    "all details", "all the details", "all information", "all the information", "all info",
+    "complete details", "complete information", "complete info", "complete overview",
+    "full details", "full information", "full info", "full picture", "whole picture",
+    "everything about", "tell me everything", "everything i should know", "everything i need",
+    "sab kuch", "sabkuch", "saari details", "sari details", "saari jaankari", "poori jaankari",
+    "puri jaankari", "poori jankari", "puri jankari", "poora detail",
+    "सब कुछ", "सारी जानकारी", "पूरी जानकारी", "सारी डिटेल",
+    "ella maahiti", "ella mahiti", "ella details", "ella vivara", "poorti vivara", "sampoorna maahiti",
+    "ಎಲ್ಲಾ ಮಾಹಿತಿ", "ಎಲ್ಲ ಮಾಹಿತಿ", "ಸಂಪೂರ್ಣ ಮಾಹಿತಿ", "ಪೂರ್ತಿ ಮಾಹಿತಿ", "ಎಲ್ಲಾ ವಿವರ",
+]
+
+_OVERVIEW_TOPICS = {
+    "fees": ["fee", "fees", "kharcha", "shulka", "फीस", "शुल्क", "ಶುಲ್ಕ", "ಫೀಸ್"],
+    "cutoff": ["cutoff", "cut off", "cut-off", "closing rank", "कटऑफ", "ಕಟ್ಆಫ್"],
+    "placements": ["placement", "package", "recruiter", "companies", "प्लेसमेंट", "ಪ್ಲೇಸ್‌ಮೆಂಟ್", "ಪ್ಲೇಸ್ಮೆಂಟ್"],
+    "hostel": ["hostel", "हॉस्टल", "छात्रावास", "ಹಾಸ್ಟೆಲ್"],
+    "scholarship": ["scholarship", "छात्रवृत्ति", "स्कॉलरशिप", "ವಿದ್ಯಾರ್ಥಿವೇತನ", "ಸ್ಕಾಲರ್‌ಶಿಪ್", "ಸ್ಕಾಲರ್ಶಿಪ್"],
+    "transport": ["transport", "bus", "बस", "ಬಸ್"],
+    "internship": ["internship", "इंटर्नशिप", "ಇಂಟರ್ನ್‌ಶಿಪ್", "ಇಂಟರ್ನ್ಶಿಪ್"],
+    "courses": ["branches", "courses", "programmes", "programs", "seats", "कोर्स", "ಕೋರ್ಸ್"],
+    "faculty": ["faculty", "teachers", "hod", "principal", "ಅಧ್ಯಾಪಕ", "शिक्षक"],
+}
+
+
+def _has_word(text: str, word: str) -> bool:
+    if word.isascii():   # whole words only: "bus" must not match "business"
+        return re.search(rf"\b{re.escape(word)}", text) is not None
+    return word in text
+
+
+def _overview_topics(text: str) -> int:
+    return sum(1 for words in _OVERVIEW_TOPICS.values() if any(_has_word(text, w) for w in words))
+
+
+def is_overview_request(*texts: str) -> bool:
+    """True when the user wants everything at once (see the rules above)."""
+    for raw in texts:
+        if not raw:
+            continue
+        t = _ZERO_WIDTH.sub("", raw.lower())
+        topics = _overview_topics(t)
+        if topics >= 3:                      # "fees, placements and hostel?"
+            return True
+        if "brochure" in t or "ब्रोशर" in t or "ಬ್ರೋಷರ್" in t or "ಬ್ರೋಚರ್" in t:
+            return True
+        # "all details" about ONE topic ("full details of the hostel") stays with that topic
+        if topics != 1 and any(_has_word(t, p) for p in _OVERVIEW_PHRASES):
+            return True
+    return False
+
+
+# ── "Who is the principal?" rule (2026-10-28) ─────────────────────────────
+# No intent used to mention the principal, so the models guessed: sometimes
+# "about the college" (worked), sometimes "fallback" — and a fallback right
+# after a fees question was treated as a follow-up about fees, so the reply
+# said "I don't have that information". Questions naming a leader now go
+# straight to ask_leadership (answered from the faculty record).
+LEADERSHIP_INTENT = "ask_leadership"
+_LEADER_WORDS = [
+    "principal", "principle", "vice principal", "hod", "hods", "head of department",
+    "head of the department", "dean", "deans",
+    # 2026-10-29: management, trust and office heads too
+    "registrar", "chairman", "chairperson", "president", "vice president", "secretary", "treasurer",
+    "trustee", "trustees", "board of trustees", "governing council", "governing body", "director",
+    "founder", "founders", "controller of examination", "controller of examinations", "librarian",
+    "office superintendent", "management members", "trusti", "adhyaksha",
+    "अध्यक्ष", "ट्रस्टी", "संस्थापक", "निदेशक", "रजिस्ट्रार",
+    "ಅಧ್ಯಕ್ಷ", "ಟ್ರಸ್ಟಿ", "ಸಂಸ್ಥಾಪಕ", "ನಿರ್ದೇಶಕ", "ರಿಜಿಸ್ಟ್ರಾರ್",
+    "प्रिंसिपल", "प्राचार्य", "प्रधानाचार्य", "विभागाध्यक्ष", "डीन",
+    "ಪ್ರಾಂಶುಪಾಲ", "ಪ್ರಿನ್ಸಿಪಾಲ್", "ಪ್ರಿನ್ಸಿಪಲ್", "ವಿಭಾಗದ ಮುಖ್ಯಸ್ಥ", "ಡೀನ್", "ಎಚ್‌ಒಡಿ", "ಎಚ್ಒಡಿ",
+]
+# "Are HODs approachable?" is about faculty support, not who leads.
+_SUPPORT_WORDS = ["approach", "supportive", "support", "helpful", "friendly", "strict", "mentor"]
+
+
+def is_leadership_question(*texts: str) -> bool:
+    for raw in texts:
+        if not raw:
+            continue
+        t = _ZERO_WIDTH.sub("", raw.lower())
+        if any(_has_word(t, w) for w in _LEADER_WORDS) and not any(w in t for w in _SUPPORT_WORDS):
+            return True
+    return False
+
+
+# ── Faculty lists and named people (2026-10-29) ────────────────────────────
+# "Who are the faculty in AIML?" / "How many professors in ECE?" -> ask_faculty_list
+# (the faculty_members collection: every department's teachers from the website).
+# "Who is Dr. Vrinda Shetty?" -> ask_person (that person's roles, from the same data).
+FACULTY_LIST_INTENT = "ask_faculty_list"
+PERSON_INTENT = "ask_person"
+_FACULTY_WORDS = [
+    "faculty", "faculties", "professor", "professors", "teacher", "teachers", "teaching staff",
+    "lecturer", "lecturers", "staff members", "adhyapakaru", "upanyasakaru",
+    "शिक्षक", "प्रोफेसर", "अध्यापक", "ಅಧ್ಯಾಪಕ", "ಉಪನ್ಯಾಸಕ", "ಪ್ರೊಫೆಸರ್", "ಶಿಕ್ಷಕ",
+]
+_LIST_CUES = [
+    "list", "names", "name of", "who are", "how many", "number of", "all the", "details", "members",
+    "strength", "kaun kaun", "kitne", "yaaru yaaru", "eshtu", "yaaru", "ಯಾರು", "ಎಷ್ಟು", "कौन", "कितने",
+]
+_PERSON_CUES = [
+    "who is", "who's", "about", "tell me", "details", "profile", "sir", "madam", "mam", "ma'am",
+    "yaaru", "kaun", "contact", "department", "teach", "ಯಾರು", "ಬಗ್ಗೆ", "कौन", "बारे",
+]
+
+
+def is_faculty_list_question(*texts: str) -> bool:
+    for raw in texts:
+        if not raw:
+            continue
+        t = _ZERO_WIDTH.sub("", raw.lower())
+        if any(w in t for w in _SUPPORT_WORDS):
+            continue
+        if "who teaches" in t or "who all teach" in t:
+            return True
+        if any(_has_word(t, w) for w in _FACULTY_WORDS) and any(_has_word(t, c) for c in _LIST_CUES):
+            return True
+    return False
+
+
+async def find_named_people(text: str) -> list:
+    """People from the college data named in the question (never raises)."""
+    try:
+        from engines.knowledge_engine import find_people      # local import: no import cycle
+        people = await find_people(text)
+    except Exception as e:
+        print(f"⚠️  Name lookup skipped: {type(e).__name__}: {e}")
+        return []
+    if not people:
+        return []
+    if any(p["match"] == "full" for p in people):
+        return [p for p in people if p["match"] == "full"]
+    low = (text or "").lower()
+    if len(people) <= 3 and any(c in low for c in _PERSON_CUES):
+        return people
+    return []
+
+
+# ── Bus questions (2026-10-29) ────────────────────────────────────────────
+# "Which bus for Yelahanka?", "route 3 timing", "who drives route 5",
+# "is there pickup at Hebbal?" -> ask_transport_routes, answered from the exact
+# stops (knowledge_engine). A place name alone works too when it is a bus stop
+# ("Yelahanka?", "New Town" right after a Yelahanka answer).
+TRANSPORT_INTENT = "ask_transport_routes"
+_BUS_WORDS = [
+    "bus", "buses", "college bus", "bus route", "bus routes", "bus stop", "pick up", "pickup", "pick-up",
+    "boarding point", "transport", "transportation", "driver", "drivers", "bus fee", "bus fees",
+    "बस", "परिवहन", "ड्राइवर", "ಬಸ್", "ಸಾರಿಗೆ", "ಡ್ರೈವರ್", "ಚಾಲಕ",
+]
+_ROUTE_NUMBER = re.compile(r"\broute\s*(?:no\.?|number|num)?\s*\d{1,2}\b", re.I)
+_TRAVEL_CUES = ["reach", "come", "comes", "coming", "from", "pick", "drop", "near", "travel", "which one", "timing"]
+_NOT_A_PLACE_CUES = ["who is", "who's", "sir", "madam", "mam", "prof", "dr.", "dr ", "holiday", "jayanti", "festival"]
+
+
+def _has_whole_word(text: str, word: str) -> bool:
+    if word.isascii():   # "bus" matches "bus" / "buses" only, never "business"
+        return re.search(rf"(?<![a-z]){re.escape(word)}(?![a-z])", text) is not None
+    return word in text
+
+
+async def is_bus_question(text: str, query_for_matching: str) -> bool:
+    low = _ZERO_WIDTH.sub("", f"{text or ''} {query_for_matching or ''}".lower())
+    if any(_has_whole_word(low, w) for w in _BUS_WORDS) or _ROUTE_NUMBER.search(low):
+        return True
+    if any(c in low for c in _NOT_A_PLACE_CUES):
+        return False
+    words = len((query_for_matching or text or "").split())
+    if words > 5 and not any(_has_whole_word(low, c) for c in _TRAVEL_CUES):
+        return False
+    try:
+        from engines.knowledge_engine import find_bus_stops      # local import: no import cycle
+        return bool(await find_bus_stops(query_for_matching or text, strict=True))
+    except Exception as e:
+        print(f"⚠️  Bus stop check skipped: {type(e).__name__}: {e}")
+        return False
+
+
+# ── Documents from the college website (2026-10-30) ──────────────────────
+# "Show me the academic calendar", "exam timetable PDF", "syllabus" -> the PDF
+# button, from the saved copy of saividya.ac.in (engines/website_engine.py).
+DOCUMENTS_INTENT = "ask_documents_pdf"
+_DOC_WORDS = [
+    "pdf", "calendar", "calender", "calendar of events", "time table", "timetable", "syllabus", "scheme of study",
+    "circular", "circulars", "regulations", "admission policy", "refund policy", "anti ragging", "anti-ragging",
+    "mandatory disclosure", "nirf", "aicte", "approval letter", "newsletter", "exam fee structure", "grievance",
+    "branch brochure", "cse brochure", "ece brochure", "aiml brochure", "mechanical brochure", "data science brochure",
+    "ಕ್ಯಾಲೆಂಡರ್", "ಟೈಮ್ ಟೇಬಲ್", "ಸಿಲಬಸ್", "टाइम टेबल", "कैलेंडर", "सिलेबस",
+]
+
+
+def is_document_request(*texts: str) -> bool:
+    for raw in texts:
+        low = _ZERO_WIDTH.sub("", (raw or "").lower())
+        if any(_has_whole_word(low, w) for w in _DOC_WORDS):
+            return True
+    return False
+
+
+# ── Personal cases only the admission office can decide (2026-10-30) ──────
+# "Can my son get this quota?", "Will my daughter's fee be reduced?" — depends on
+# the student's own documents and is decided by the office after admission, so
+# IntelliVoice gives the general facts and refers them to the office (the reply
+# also shows the office's contact card).
+_SELF_WORDS = [
+    "my son", "my daughter", "my child", "my kid", "my ward", "my brother", "my sister", "my nephew", "my niece",
+    "for me", "can i get", "will i get", "am i eligible", "do i get", "for my", "nanna maga", "nanna magalu",
+    "nanna magu", "mera beta", "meri beti", "mere bete", "mere bachche", "mujhe", "nange", "nanage",
+    "ನನ್ನ ಮಗ", "ನನ್ನ ಮಗಳು", "ನನ್ನ ಮಗು", "ನನಗೆ", "मेरा बेटा", "मेरी बेटी", "मेरे बच्चे", "मुझे",
+]
+_DECIDE_WORDS = [
+    "eligible", "eligibility", "qualify", "concession", "discount", "reduce", "reduced", "reduction", "less fee",
+    "lesser fee", "waiver", "waive", "free seat", "quota", "guarantee", "confirm", "chance", "possible", "apply for",
+    "avail", "applicable", "applied", "applies", "sigutta", "sigutte", "siguthe", "milega", "milegi", "mil sakta", "mil sakti",
+    "ಸಿಗುತ್ತಾ", "ಸಿಗುತ್ತೆ", "ರಿಯಾಯಿತಿ", "मिलेगा", "मिलेगी", "छूट",
+]
+_RANK_NUMBER = re.compile(r"\b\d{3,6}\b")
+
+
+def is_personal_case(*texts: str) -> bool:
+    low = _ZERO_WIDTH.sub("", " ".join(t or "" for t in texts).lower())
+    if _RANK_NUMBER.search(low) and "rank" in low:
+        return False                                   # "my son's rank is 25000" -> the rank predictor answers
+    return any(_has_whole_word(low, w) for w in _SELF_WORDS) and any(_has_whole_word(low, w) for w in _DECIDE_WORDS)
+
+
 # ── Main intent classification — the locked Engine 2 contract ─────────────
 async def classify_intent(text: str, normalized_text: str = None, language: str = "en",
                           confirmed_intent: str = None) -> dict:
+    """Engine 2. 2026-10-30: also marks personal cases only the admission office can decide."""
+    result = await _classify_intent(text, normalized_text, language, confirmed_intent)
+    if is_personal_case(text, normalized_text or ""):
+        if result["intent"] in ("fallback", "greet"):
+            result = _build_output(
+                query=text, normalized_query=result.get("normalized_query", ""), language=language,
+                intent_id="ask_contact_admission_office", confidence=1.0, confidence_zone="confident",
+                emotion=result.get("emotion", "neutral"), entities=result.get("entities") or {})
+        result["personal_case"] = True
+    return result
+
+
+async def _classify_intent(text: str, normalized_text: str = None, language: str = "en",
+                           confirmed_intent: str = None) -> dict:
     """
     confirmed_intent (2026-10-09, speed): the voice route first classifies
     Whisper's raw text, then — if the transcript corrector changed a few
@@ -307,6 +596,57 @@ async def classify_intent(text: str, normalized_text: str = None, language: str 
             query=text, normalized_query=normalized_text or "", language=language,
             intent_id="fallback", confidence=0.0, confidence_zone="out_of_scope",
             emotion="neutral", entities={}
+        )
+
+    # 2026-10-15: "everything at once" requests -> College-at-a-glance overview
+    if is_overview_request(text, query_for_matching):
+        return _build_output(
+            query=text, normalized_query=query_for_matching, language=language,
+            intent_id=OVERVIEW_INTENT, confidence=1.0, confidence_zone="confident",
+            emotion=detect_emotion(text), entities={}
+        )
+
+    # 2026-10-28: "Who is the principal / HOD / dean?" -> ask_leadership
+    if is_leadership_question(text, query_for_matching):
+        return _build_output(
+            query=text, normalized_query=query_for_matching, language=language,
+            intent_id=LEADERSHIP_INTENT, confidence=1.0, confidence_zone="confident",
+            emotion=detect_emotion(text), entities=extract_entities(text)
+        )
+
+    # 2026-10-29: bus questions (before names: "Ramakrishna Ashrama" is a stop, not a person)
+    if await is_bus_question(text, query_for_matching):
+        return _build_output(
+            query=text, normalized_query=query_for_matching, language=language,
+            intent_id=TRANSPORT_INTENT, confidence=1.0, confidence_zone="confident",
+            emotion=detect_emotion(text), entities=extract_entities(text)
+        )
+
+    # 2026-10-30: a PDF from the college website ("academic calendar", "exam timetable")
+    if is_document_request(text, query_for_matching):
+        return _build_output(
+            query=text, normalized_query=query_for_matching, language=language,
+            intent_id=DOCUMENTS_INTENT, confidence=1.0, confidence_zone="confident",
+            emotion=detect_emotion(text), entities=extract_entities(text)
+        )
+
+    # 2026-10-29: a question naming someone from the college ("Who is Dr. Vrinda Shetty?")
+    people = await find_named_people(text)
+    if people:
+        result = _build_output(
+            query=text, normalized_query=query_for_matching, language=language,
+            intent_id=PERSON_INTENT, confidence=1.0, confidence_zone="confident",
+            emotion=detect_emotion(text), entities=extract_entities(text)
+        )
+        result["people"] = [p["name"] for p in people]
+        return result
+
+    # 2026-10-29: "Who are the faculty in CSE?" -> the department's teachers
+    if is_faculty_list_question(text, query_for_matching):
+        return _build_output(
+            query=text, normalized_query=query_for_matching, language=language,
+            intent_id=FACULTY_LIST_INTENT, confidence=1.0, confidence_zone="confident",
+            emotion=detect_emotion(text), entities=extract_entities(text)
         )
 
     # Sentence Transformers matching against all 45 intents' examples

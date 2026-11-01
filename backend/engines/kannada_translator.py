@@ -20,13 +20,13 @@ And SARVAM_API_KEY set in .env
 
 import os
 from dotenv import load_dotenv
-from sarvamai import SarvamAI
+from utils import sarvam_keys
 
 from engines.tts_engine import split_text
 
 load_dotenv()
 
-client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
+# 2026-11-01: several Sarvam keys — the next one is used when one runs out (utils/sarvam_keys.py)
 
 # "code-mixed" mode confirmed via testing to produce the best base
 # quality — the remaining English-ratio adjustment happens in the
@@ -43,6 +43,7 @@ def translate_to_kannada(text: str) -> str:
     Returns None on failure — caller must handle that explicitly.
     """
     try:
+        client = sarvam_keys.get_client()
         parts = []
         for chunk in split_text(text, MAX_CHARS_PER_REQUEST):
             response = client.text.translate(

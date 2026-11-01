@@ -26,7 +26,7 @@ from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 
 from dotenv import load_dotenv
-from sarvamai import SarvamAI
+from utils import sarvam_keys
 
 load_dotenv()
 
@@ -40,10 +40,12 @@ LANGUAGE_CODES = {
 
 # Voices chosen by the team (2026-10-06): Ritu for English,
 # Simran for Hindi, Roopa for Kannada. Change here to try others.
+# 2026-10-29 (San): Kannada now uses Simran too (Roopa's Kannada went up and
+# down); every Bulbul v3 voice speaks all three languages.
 SPEAKERS = {
     "en": "ritu",
     "hi": "simran",
-    "kn": "roopa",
+    "kn": "simran",
 }
 
 # Speaking speed per language. 1.0 is Sarvam's default (felt too slow
@@ -52,8 +54,37 @@ SPEAKERS = {
 PACE = {
     "en": 1.1,
     "hi": 1.1,
-    "kn": 1.1,      # 1.3 made Neha swallow syllables (e.g. ಆಗ್ತಿದ್ದೀರಿ)
+    "kn": 1.0,      # 2026-10-30 (San): Simran is already quick in Kannada, so normal speed (was 1.1 for Roopa; 1.3 made Neha swallow syllables)
 }
+
+# 2026-10-28: steadier voice. Bulbul v3's "temperature" (default 0.6) adds
+# random expressiveness to every request — each sentence came out with its own
+# pitch and speed, worst in Kannada. Lower = calmer, more consistent voice.
+TEMPERATURE = {
+    "en": 0.5,      # 2026-11-01 (San: "sounds very robotic"): 0.35 -> 0.5, a little more natural expression
+    "hi": 0.5,
+    "kn": 0.35,     # Kannada stays steadier (it went up and down at higher values)
+}
+# 2026-11-01: comforting voice. When the reply is reassuring (a worried / upset
+# parent), Eva speaks a little slower and warmer. Bulbul v3 has no emotion or
+# laugh setting — speed and expressiveness ("temperature") are what it offers.
+REASSURING_PACE = {
+    "en": 0.95,
+    "hi": 0.95,
+    "kn": 0.9,
+}
+REASSURING_TEMPERATURE = {
+    "en": 0.6,
+    "hi": 0.6,
+    "kn": 0.45,
+}
+
+# 2026-10-28: Kannada was cut into many small pieces (every sentence, and long
+# sentences at commas), each made separately, so the voice changed at every
+# join — even mid-sentence. Kannada is now sent in as few pieces as possible:
+# whole sentences packed up to MAX_CHARS_PER_REQUEST, never split at commas.
+# English/Hindi keep the faster sentence-by-sentence pieces.
+FEW_PIECES_LANGUAGES = {"kn"}
 
 # Abbreviations the voice model reads as a word instead of letters
 # (e.g. "SVIT" spoken as one word). Replaced ONLY in the text sent to
@@ -121,14 +152,9 @@ _ABBREVIATION_END = re.compile(r"(?:\b(?:rs|no|dr|mr|mrs|ms|st|vs|etc|approx|sl)
 _client = None
 
 
-def _get_client() -> SarvamAI:
-    global _client
-    if _client is None:
-        api_key = os.getenv("SARVAM_API_KEY")
-        if not api_key:
-            raise RuntimeError("SARVAM_API_KEY is not set in .env")
-        _client = SarvamAI(api_subscription_key=api_key)
-    return _client
+def _get_client():
+    """2026-11-01: several Sarvam keys — the next one is used when one runs out (utils/sarvam_keys.py)."""
+    return sarvam_keys.get_client()
 
 
 def split_text(text: str, max_chars: int) -> list:
@@ -402,11 +428,29 @@ def _trim_silence(frames: bytes, sample_width: int, channels: int, rate: int,
     return samples[start:end].tobytes()
 
 
+def _voiced_rms(frames: bytes) -> float:
+    """Loudness of the spoken part of a 16-bit clip (silence ignored)."""
+    samples = array.array("h", frames)
+    loud = [abs(x) for x in samples if abs(x) > SILENCE_THRESHOLD]
+    if not loud:
+        return 0.0
+    return (sum(x * x for x in loud[::4]) / len(loud[::4])) ** 0.5
+
+
+def _scale(frames: bytes, factor: float) -> bytes:
+    samples = array.array("h", frames)
+    for i, x in enumerate(samples):
+        samples[i] = max(-32768, min(32767, int(x * factor)))
+    return samples.tobytes()
+
+
 def _merge_wavs(wav_bytes_list: list) -> bytes:
     """
     Joins several WAV clips (same format) into one WAV file, trimming
     each clip's silent edges and inserting a short pause between them.
     The last clip's end is not trimmed, so nothing at the very end is lost.
+    2026-10-28: every clip is brought to the same loudness, so one sentence
+    is never suddenly louder or softer than the next.
     """
     output = io.BytesIO()
     with wave.open(io.BytesIO(wav_bytes_list[0]), "rb") as first:
@@ -414,12 +458,22 @@ def _merge_wavs(wav_bytes_list: list) -> bytes:
     sw, ch, rate = params.sampwidth, params.nchannels, params.framerate
     pause = b"\x00" * int(rate * PAUSE_BETWEEN_SECONDS) * sw * ch
 
+    clips = []
+    for clip in wav_bytes_list:
+        with wave.open(io.BytesIO(clip), "rb") as w:
+            clips.append(w.readframes(w.getnframes()))
+    if sw == 2 and len(clips) > 1:
+        levels = [_voiced_rms(f) for f in clips]
+        voiced = sorted(l for l in levels if l > 0)
+        if voiced:
+            target = voiced[len(voiced) // 2]          # the middle loudness
+            clips = [f if not l or abs(l - target) / target < 0.08
+                     else _scale(f, min(2.0, target / l)) for f, l in zip(clips, levels)]
+
     with wave.open(output, "wb") as out:
         out.setparams(params)
-        for i, clip in enumerate(wav_bytes_list):
-            with wave.open(io.BytesIO(clip), "rb") as w:
-                frames = w.readframes(w.getnframes())
-            is_last = i == len(wav_bytes_list) - 1
+        for i, frames in enumerate(clips):
+            is_last = i == len(clips) - 1
             out.writeframes(_trim_silence(frames, sw, ch, rate, trim_end=not is_last))
             if not is_last:
                 out.writeframes(pause)
@@ -435,13 +489,14 @@ _audio_cache = OrderedDict()
 _audio_cache_lock = threading.Lock()
 
 
-def _convert_chunk(text: str, language_code: str, speaker: str, pace: float) -> list:
-    key = (text, language_code, speaker, pace, TTS_MODEL)
+def _convert_chunk(text: str, language_code: str, speaker: str, pace: float,
+                   temperature: float | None = None) -> list:
+    key = (text, language_code, speaker, pace, temperature, TTS_MODEL)
     with _audio_cache_lock:
         if key in _audio_cache:
             _audio_cache.move_to_end(key)
             return list(_audio_cache[key])
-    clips = _convert_chunk_uncached(text, language_code, speaker, pace)
+    clips = _convert_chunk_uncached(text, language_code, speaker, pace, temperature)
     if clips:
         with _audio_cache_lock:
             _audio_cache[key] = list(clips)
@@ -450,30 +505,30 @@ def _convert_chunk(text: str, language_code: str, speaker: str, pace: float) -> 
     return clips
 
 
-def _convert_chunk_uncached(text: str, language_code: str, speaker: str, pace: float) -> list:
+def _convert_chunk_uncached(text: str, language_code: str, speaker: str, pace: float,
+                            temperature: float | None = None) -> list:
     client = _get_client()
-    try:
-        response = client.text_to_speech.convert(
-            text=text,
-            target_language_code=language_code,
-            model=TTS_MODEL,
-            speaker=speaker,
-            pace=pace,
-        )
-    except TypeError:
+    extra = {"temperature": temperature} if temperature is not None else {}
+    attempts = [
+        {"target_language_code": language_code, **extra},
         # Older sarvamai versions named this parameter language_code
         # (see the note in tests/test_sarvam_tts.py).
-        response = client.text_to_speech.convert(
-            text=text,
-            language_code=language_code,
-            model=TTS_MODEL,
-            speaker=speaker,
-            pace=pace,
-        )
-    return [base64.b64decode(a) for a in response.audios]
+        {"language_code": language_code, **extra},
+        {"language_code": language_code},          # a version without temperature
+    ]
+    last_error = None
+    for kwargs in attempts:
+        try:
+            response = client.text_to_speech.convert(
+                text=text, model=TTS_MODEL, speaker=speaker, pace=pace, **kwargs,
+            )
+            return [base64.b64decode(a) for a in response.audios]
+        except TypeError as e:
+            last_error = e
+    raise last_error
 
 
-def synthesize_speech(text: str, language: str) -> dict:
+def synthesize_speech(text: str, language: str, tone: str = "normal") -> dict:
     """
     Converts text to speech in the given language ("en", "hi", "kn").
 
@@ -491,19 +546,25 @@ def synthesize_speech(text: str, language: str) -> dict:
     language_code = LANGUAGE_CODES.get(language, "en-IN")
     speaker = SPEAKERS.get(language, SPEAKERS["en"])
     pace = PACE.get(language, PACE["en"])
+    temperature = TEMPERATURE.get(language)
+    if tone == "reassuring":            # 2026-11-01: slower, warmer voice for comforting replies
+        pace = REASSURING_PACE.get(language, pace)
+        temperature = REASSURING_TEMPERATURE.get(language, temperature)
 
     try:
         # Split into sentences first, then prepare each one for speaking
         # (numbers, abbreviations, final full stop) — the same way the
         # app's sentence-by-sentence requests to /voice/speak are prepared.
+        pieces = (split_text(text, MAX_CHARS_PER_REQUEST) if language in FEW_PIECES_LANGUAGES
+                  else speech_chunks(text))
         chunks = [
             ensure_final_punctuation(apply_spoken_forms(speak_numbers(c, language), language))
-            for c in speech_chunks(text)
+            for c in pieces
         ]
         # Convert sentence pieces in parallel; map() keeps them in order.
         with ThreadPoolExecutor(max_workers=MAX_PARALLEL_REQUESTS) as pool:
             results = list(pool.map(
-                lambda c: _convert_chunk(c, language_code, speaker, pace), chunks
+                lambda c: _convert_chunk(c, language_code, speaker, pace, temperature), chunks
             ))
         clips = [clip for result in results for clip in result]
         if not clips:

@@ -1,1 +1,5 @@
 ﻿.env
+*_backup_*
+backend/database/offline_copy/
+backend/routes/api_typed_textonly_2026-10-29.py
+frontend/public/vad/

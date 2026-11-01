@@ -1,4 +1,4 @@
-// Full-screen hands-free conversation view (2026-10-13).
+// Full-screen hands-free conversation view (2026-10-13; Eva layout 2026-11-01).
 // Glowing ribbon "orb" in the site's lavender / violet, drawn on a canvas over the
 // voice background image (public/assets/voice-bg.jpg). The orb emits a soft bloom:
 // it breathes when idle, follows your voice while listening, swirls while
@@ -6,6 +6,9 @@
 
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import { Icon } from "../../components/Icon";
+import type { QueryResponse } from "../../lib/types";
+import { EvaAvatar } from "../../components/EvaAvatar";
+import { LanguageMenu } from "../../components/SiteHeader";
 import type { ConversationPhase } from "./useVoiceConversation";
 
 interface Props {
@@ -14,19 +17,25 @@ interface Props {
   error: string | null;
   lastQuestion: string;
   lastReply: string;
+  /** 2026-10-31: the whole reply — its brochure / PDFs are shown right here */
+  lastResponse?: QueryResponse | null;
   startedAt: number | null;
   turns: number;
   languageSummary: string;
   onTap: () => void;
   onEnd: () => void;
+  /** 2026-11-01: pause / continue without leaving the voice chat */
+  onPause: () => void;
+  onResume: () => void;
 }
 
 const LABELS: Record<ConversationPhase, { title: string; hint: string }> = {
   off: { title: "", hint: "" },
   starting: { title: "Starting…", hint: "Allow the microphone if your browser asks." },
-  listening: { title: "Listening…", hint: "Speak in English, ಕನ್ನಡ or हिंदी. Pause when you're done." },
-  thinking: { title: "Thinking…", hint: "Finding the answer in the SVIT admissions database." },
-  speaking: { title: "Speaking…", hint: "Just start talking to interrupt — or tap the orb." },
+  listening: { title: "Eva is listening…", hint: "Speak in English, ಕನ್ನಡ or हिंदी. Pause when you're done." },
+  thinking: { title: "Eva is thinking…", hint: "Finding the answer in the SVIT admissions database." },
+  speaking: { title: "Eva is speaking…", hint: "Just start talking to interrupt — or tap the ring." },
+  paused: { title: "Paused", hint: "Eva is waiting. Tap ▶ (or the ring) to continue." },
   error: { title: "Something went wrong", hint: "" },
 };
 
@@ -141,8 +150,8 @@ function Orb({ phase, levelRef, onTap }: { phase: ConversationPhase; levelRef: M
     <button
       type="button"
       onClick={onTap}
-      aria-label={phase === "speaking" ? "Interrupt" : phase === "listening" ? "Send now" : "Voice orb"}
-      className="relative w-[min(92vw,54dvh,560px)] aspect-square rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+      aria-label={phase === "speaking" ? "Interrupt" : phase === "listening" ? "Send now" : phase === "paused" ? "Continue" : "Voice orb"}
+      className="relative w-[min(70vw,34dvh,420px)] lg:w-[min(30vw,52dvh,460px)] aspect-square flex-shrink-0 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
     >
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" aria-hidden="true" />
     </button>
@@ -162,7 +171,40 @@ function useClock(startedAt: number | null) {
   return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
 }
 
-export function VoiceConversation({ phase, levelRef, error, lastQuestion, lastReply, startedAt, turns, languageSummary, onTap, onEnd }: Props) {
+// 2026-10-31: "Tell me everything about the college" gave the brochure only in the
+// normal chat, so a new user had to leave the voice screen to see it. The brochure
+// and any PDF buttons now pop up here, under the reply.
+const PANEL = { background: "linear-gradient(160deg, rgba(34, 24, 52, 0.78), rgba(18, 14, 28, 0.86))", boxShadow: "0 18px 46px rgba(0,0,0,0.45)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" } as const;
+
+function ReplyExtras({ res }: { res: QueryResponse }) {
+  const docs = [...(res.documents ?? [])].filter((d) => d?.url);
+  if (res.overview) {
+    const url = res.overview.brochure_url || "/api/brochure";
+    if (!docs.some((d) => d.url === url)) docs.unshift({ title: "Download brochure (PDF)", url, download: true });
+  }
+  if (!docs.length) return null;
+  return (
+    <div className="mt-3 pt-3 border-t border-white/10">
+      <div className="flex flex-wrap gap-2">
+        {docs.map((d) => (
+          <a
+            key={d.url}
+            href={d.url}
+            {...(d.download ? { download: true } : { target: "_blank", rel: "noopener noreferrer" })}
+            className="h-10 pl-3.5 pr-4 rounded-full flex items-center gap-2 text-[14px] font-semibold transition-all hover:brightness-105 active:scale-[0.98]"
+            style={{ background: "#e8d3a3", color: "#2d1f45", boxShadow: "0 6px 18px rgba(232, 211, 163, 0.25)" }}
+          >
+            <Icon name={d.download ? "download" : "picture_as_pdf"} className="text-[19px]" />
+            {d.title || "Open PDF"}
+          </a>
+        ))}
+      </div>
+      <p className="mt-2 text-[12.5px] text-white/60 flex items-center gap-1.5"><Icon name="forum" className="text-[15px]" />Also saved in your chat</p>
+    </div>
+  );
+}
+
+export function VoiceConversation({ phase, levelRef, error, lastQuestion, lastReply, lastResponse, startedAt, turns, onTap, onEnd, onPause, onResume }: Props) {
   const clock = useClock(startedAt);
   const label = LABELS[phase];
 
@@ -176,7 +218,8 @@ export function VoiceConversation({ phase, levelRef, error, lastQuestion, lastRe
   if (phase === "off") return null;
 
   const caption = phase === "speaking" || (phase === "listening" && lastReply) ? lastReply : "";
-  const showQuestion = !!lastQuestion && (phase === "thinking" || phase === "speaking");
+  // 2026-11-01: before the first question Eva greets on screen
+  const greeting = turns === 0 && !lastQuestion && (phase === "listening" || phase === "starting");
 
   return (
     <div
@@ -201,16 +244,13 @@ export function VoiceConversation({ phase, levelRef, error, lastQuestion, lastRe
           className="iv-bg-shimmer absolute -inset-[10%]"
           style={{ background: "radial-gradient(40% 30% at 30% 40%, rgba(167, 139, 250, 0.16), transparent 70%), radial-gradient(35% 28% at 72% 58%, rgba(216, 180, 254, 0.12), transparent 70%)", animation: "iv-bg-shimmer 16s ease-in-out infinite alternate", willChange: "transform, opacity" }}
         />
-        <div className="absolute inset-0" style={{ background: "rgba(10, 10, 20, 0.18)" }} />
+        <div className="absolute inset-0" style={{ background: "rgba(10, 10, 20, 0.4)" }} />
       </div>
       {/* top bar */}
-      <div className="w-full max-w-3xl flex items-center justify-between px-6 pt-6">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 font-label-md text-label-md" style={{ textShadow: "rgba(0,0,0,0.7) 0 1px 3px" }}>
-          <span className="relative flex w-2.5 h-2.5">
-            <span className={`absolute inset-0 rounded-full bg-secondary ${phase === "listening" ? "animate-ping" : ""}`} />
-            <span className="relative w-2.5 h-2.5 rounded-full bg-secondary" />
-          </span>
-          IntelliVoice · Voice conversation
+      <div className="w-full max-w-[1500px] flex items-center justify-between px-4 sm:px-8 pt-6">
+        <div className="flex items-center gap-2.5 pl-1.5 pr-4 py-1.5 rounded-full border border-white/20 font-label-md text-label-md" style={{ background: "rgba(20, 14, 32, 0.55)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)", textShadow: "rgba(0,0,0,0.7) 0 1px 3px" }}>
+          <EvaAvatar size={30} />
+          <span><span className="font-semibold">Eva</span> <span className="text-white/75">· Voice conversation</span></span>
         </div>
         <div className="flex items-center gap-3">
           {turns > 0 && (
@@ -223,43 +263,73 @@ export function VoiceConversation({ phase, levelRef, error, lastQuestion, lastRe
         </div>
       </div>
 
-      {/* orb + captions */}
-      <div className="flex flex-col items-center gap-4 px-6 w-full max-w-3xl">
-        <Orb phase={phase} levelRef={levelRef} onTap={onTap} />
-        <div className="flex flex-col items-center gap-2 text-center min-h-[150px]" aria-live="polite" style={{ textShadow: "rgba(0,0,0,0.75) 0 1px 4px" }}>
-          <p className="font-headline-md text-headline-md font-bold">{error ? "Sorry…" : label.title}</p>
-          <p className="font-body-md text-body-md text-white/75">{error || label.hint}</p>
-          {showQuestion && (
-            <p className="mt-2 font-body-md text-body-md text-secondary max-w-xl line-clamp-2">“{lastQuestion}”</p>
+      {/* 2026-11-01: your question on the left, the ring in the centre, Eva's full reply on the right (stacked on phones) */}
+      <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-visible w-full max-w-[1500px] px-4 sm:px-8 py-2 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] content-start lg:content-center items-center gap-3 lg:gap-10">
+        <div className="order-2 lg:order-1 flex lg:justify-end min-w-0">
+          {lastQuestion && (phase === "thinking" || phase === "speaking" || (phase === "listening" && !!lastReply)) && (
+            <div className="w-full lg:max-w-[420px] lg:max-h-[58dvh] overflow-y-auto rounded-[18px] lg:rounded-[22px] px-4 py-2.5 lg:px-5 lg:py-4" style={{ ...PANEL, border: "1px solid rgba(255, 255, 255, 0.18)" }}>
+              <p className="text-[13px] font-semibold text-white/60 flex items-center gap-2">
+                <span className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)" }}><Icon name="person" className="text-[17px]" filled /></span>
+                You asked
+              </p>
+              <p className="mt-1 lg:mt-2 text-[15px] lg:text-[19px] leading-[1.5] text-white">“{lastQuestion}”</p>
+            </div>
           )}
-          {caption && (
-            <p className="mt-1 font-title-md text-title-md text-white/95 max-w-2xl line-clamp-3 leading-relaxed">{caption}</p>
+        </div>
+        <div className="order-1 lg:order-2 flex flex-col items-center gap-2">
+          <Orb phase={phase} levelRef={levelRef} onTap={onTap} />
+          <div className="flex flex-col items-center gap-1 text-center" aria-live="polite" style={{ textShadow: "rgba(0,0,0,0.75) 0 1px 4px" }}>
+            <p className="text-[22px] sm:text-[24px] font-semibold">{error ? "Sorry…" : label.title}</p>
+            <p className={`${error ? "" : "hidden sm:block "}text-[14px] text-white/70 max-w-[340px]`}>{error || label.hint}</p>
+          </div>
+        </div>
+        <div className="order-3 flex lg:justify-start min-w-0">
+          {(caption || phase === "thinking" || greeting) && (
+            <div className="w-full lg:max-w-[480px] lg:max-h-[58dvh] overflow-y-auto rounded-[22px] px-5 py-4" style={{ ...PANEL, border: "1px solid rgba(232, 211, 163, 0.4)" }} aria-live="polite">
+              <p className="text-[13px] font-semibold text-white/80 flex items-center gap-2">
+                <EvaAvatar size={30} className={phase === "speaking" ? "eva-speaking" : ""} />
+                Eva
+              </p>
+              {caption
+                ? <p className="mt-2 text-[16px] sm:text-[17px] leading-[1.55] text-white whitespace-pre-line break-words">{caption}</p>
+                : phase === "thinking"
+                  ? <p className="mt-2 text-[15px] text-white/70">Finding the answer…</p>
+                  : <p className="mt-2 text-[17px] leading-[1.55] text-white">Hello, I'm Eva. How can I help you?</p>}
+              {caption && lastResponse && <ReplyExtras res={lastResponse} />}
+            </div>
           )}
         </div>
       </div>
+      <style>{`
+        @keyframes eva-speaking { 0%, 100% { box-shadow: 0 0 0 0 rgba(232, 211, 163, 0.55); } 50% { box-shadow: 0 0 0 6px rgba(232, 211, 163, 0); } }
+        .eva-speaking { animation: eva-speaking 1.4s ease-out infinite; }
+        @media (prefers-reduced-motion: reduce) { .eva-speaking { animation: none; } }
+      `}</style>
 
-      {/* controls */}
-      <div className="w-full max-w-md flex items-center justify-between px-8 pb-10">
-        <span className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 border border-white/20" title={languageSummary} aria-label={languageSummary}>
-          <Icon name="translate" className="text-[22px]" />
-        </span>
+      {/* controls (2026-11-01): language · pause / continue · end voice chat */}
+      <div className="w-full max-w-lg flex items-center justify-between gap-3 px-6 pt-3 pb-8">
+        {/* 2026-11-01: a real language choice (applies from the next question) */}
+        <LanguageMenu round up className="block" />
         <button
           type="button"
-          onClick={onTap}
-          disabled={phase !== "speaking" && phase !== "listening"}
-          aria-label={phase === "speaking" ? "Interrupt and ask" : "Send what I said now"}
+          onClick={phase === "paused" ? onResume : onPause}
+          disabled={phase !== "paused" && phase !== "listening" && phase !== "speaking" && phase !== "thinking"}
+          aria-label={phase === "paused" ? "Continue the voice chat" : "Pause the voice chat"}
+          title={phase === "paused" ? "Continue" : "Pause"}
           className="w-[76px] h-[76px] rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95 disabled:opacity-60"
           style={{ background: "linear-gradient(135deg, rgb(109, 40, 217), rgb(79, 70, 229))", border: "2.5px solid rgba(255,255,255,0.6)", boxShadow: "rgba(124, 58, 237, 0.8) 0 0 40px, rgba(255,255,255,0.35) 0 0 14px" }}
         >
-          <Icon name={phase === "speaking" ? "stop" : phase === "thinking" ? "progress_activity" : "mic"} className={`text-[32px] ${phase === "thinking" ? "animate-spin" : ""}`} />
+          <Icon name={phase === "paused" ? "play_arrow" : "pause"} className="text-[36px]" filled />
         </button>
         <button
           type="button"
           onClick={onEnd}
-          aria-label="End conversation"
-          className="w-12 h-12 rounded-full flex items-center justify-center bg-red-500/25 border border-red-300/50 hover:bg-red-500/40 transition-colors"
+          aria-label="End voice chat"
+          className="h-12 pl-3.5 pr-4 rounded-full flex items-center gap-1.5 text-[14px] font-semibold bg-red-500/25 border border-red-300/50 hover:bg-red-500/40 transition-colors whitespace-nowrap"
         >
-          <Icon name="close" className="text-[24px]" />
+          <Icon name="call_end" className="text-[21px]" />
+          <span className="hidden sm:inline">End voice chat</span>
+          <span className="sm:hidden">End</span>
         </button>
       </div>
     </div>

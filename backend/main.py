@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -13,10 +14,22 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+async def _save_offline_copy():
+    """2026-10-28: keep database/offline_copy/ up to date (see knowledge_engine)."""
+    from engines.knowledge_engine import save_offline_copy
+    try:
+        counts = await save_offline_copy()
+        print(f"✅ Offline copy saved: {len(counts)} collections")
+    except Exception as e:
+        print(f"⚠️  Offline copy not refreshed ({type(e).__name__}) — the last saved copy is used if needed")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_to_mongo()
+    offline_task = asyncio.create_task(_save_offline_copy())   # in the background, never delays startup
     yield
+    offline_task.cancel()
     await close_mongo_connection()
 
 app = FastAPI(

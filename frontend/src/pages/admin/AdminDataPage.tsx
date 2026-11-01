@@ -3,11 +3,68 @@ import { Link } from "react-router-dom";
 import { Icon } from "../../components/Icon";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../lib/api";
-import { AdminConflictError, adminApi, formatDay, type Dataset, type UploadSummary } from "../../lib/adminApi";
+import { AdminConflictError, adminApi, formatDay, formatWhen, type Dataset, type UploadSummary, type WebsiteStatus } from "../../lib/adminApi";
 import { Button, Card, Loading, Notice, PageTitle, glassCard } from "./AdminUi";
 import { UploadPreview } from "./UploadPreview";
 
 type Msg = { kind: "ok" | "error" | "warn" | "info"; text: string; records?: string[] } | null;
+
+// 2026-10-30: "Fetch updated data from website" — copies saividya.ac.in (pages and
+// PDFs: calendar, timetables, circulars, brochures...) so IntelliVoice can answer
+// from it and show the PDFs. Answers never wait for the website itself.
+function WebsiteCard({ token }: { token: string | null }) {
+  const [info, setInfo] = useState<WebsiteStatus | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const timer = useRef<number | null>(null);
+
+  const load = useCallback(async () => {
+    if (!token) return;
+    try {
+      const s = await adminApi.websiteStatus(token);
+      setInfo(s);
+      setError(null);
+      if (s.status.running) timer.current = window.setTimeout(() => void load(), 3000);
+    } catch (err) { setError(err instanceof ApiError ? err.message : "Couldn't check the website status."); }
+  }, [token]);
+
+  useEffect(() => { void load(); return () => { if (timer.current) window.clearTimeout(timer.current); }; }, [load]);
+
+  const start = async () => {
+    if (!token) return;
+    setError(null);
+    try { await adminApi.websiteRefresh(token); void load(); }
+    catch (err) { setError(err instanceof ApiError ? err.message : "Couldn't start reading the website."); }
+  };
+
+  const running = !!info?.status.running;
+  const result = info?.status.summary ?? info?.last_fetch ?? null;
+  return (
+    <Card title="College website" icon="language" subtitle="Copy the latest pages and PDFs from saividya.ac.in, so IntelliVoice can answer from them and show the PDFs (calendar, timetables, circulars, brochures).">
+      {error && <Notice kind="error" onClose={() => setError(null)}>{error}</Notice>}
+      <div className="flex flex-wrap items-center gap-space-md">
+        <Button kind="primary" icon={running ? "progress_activity" : "sync"} busy={running} disabled={running || !token} onClick={() => void start()}>
+          {running ? `Reading the website… ${info?.status.pages_done ?? 0} pages` : "Fetch updated data from website"}
+        </Button>
+        {result && !result.error && (
+          <span className="font-body-sm text-body-sm text-white/75">
+            Last fetch {formatWhen(result.finished_at)}: {result.pages} pages, {result.pdfs} PDFs
+            {result.seconds !== undefined ? ` (${result.seconds}s)` : ""}
+          </span>
+        )}
+      </div>
+      {result?.error && !running && <Notice kind="error">The last fetch failed: {result.error}</Notice>}
+      {result && !result.error && !running && (
+        <ul className="flex flex-col gap-1 font-body-md text-body-md text-white/80">
+          <li className="flex gap-2"><Icon name="article" className="text-[18px] text-secondary" />Pages: {result.new_pages ?? 0} new, {result.changed_pages ?? 0} changed, {result.removed_pages ?? 0} removed</li>
+          <li className="flex gap-2"><Icon name="picture_as_pdf" className="text-[18px] text-secondary" />PDFs: {result.new_pdfs ?? 0} new, {result.removed_pdfs ?? 0} removed ({result.pdfs_for_parents ?? 0} for parents and students)</li>
+          {(result.new_pdf_titles ?? []).length > 0 && (
+            <li className="pl-6 text-white/65">New: {(result.new_pdf_titles ?? []).join(" · ")}</li>
+          )}
+        </ul>
+      )}
+    </Card>
+  );
+}
 
 export default function AdminDataPage() {
   const { token } = useAuth();
@@ -129,6 +186,8 @@ export default function AdminDataPage() {
           )}
         </Notice>
       )}
+
+      <WebsiteCard token={token} />
 
       {datasets === null && <Loading label="Loading data types…" />}
 

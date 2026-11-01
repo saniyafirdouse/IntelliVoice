@@ -11,6 +11,7 @@ const SECTIONS = [
   { to: "/admin/data", label: "Update Data", icon: "upload_file", hint: "Excel upload" },
   { to: "/admin/history", label: "Upload History", icon: "history", hint: "Undo changes" },
   { to: "/admin/unanswered", label: "Unanswered", icon: "help_center", hint: "Missing data" },
+  { to: "/admin/activity", label: "Activity Log", icon: "manage_history", hint: "Who did what" },
 ];
 
 /** Frame for every admin page: only admins get in; everyone else is sent to sign in. */
@@ -34,7 +35,7 @@ export default function AdminLayout() {
 
   return (
     <PageShell scope="pg-admin" variant="app" title="Admin Panel" className="bg-background font-body-md text-on-surface antialiased">
-      <div className="fixed inset-0 z-0 pointer-events-none bg-cover bg-center" style={{ backgroundImage: 'url("/assets/campus-sunset.jpg")' }} aria-hidden="true">
+      <div className="fixed inset-0 z-0 pointer-events-none bg-cover bg-center" style={{ backgroundImage: 'url("/assets/campus-lobby-hall.jpg")' }} aria-hidden="true">
         {/* same light veil as the Voice Chat page so the campus photo shows through the glass */}
         <div className="absolute inset-0 bg-black/15" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />

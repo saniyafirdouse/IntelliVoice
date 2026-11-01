@@ -27,7 +27,7 @@ import os
 import re
 
 from dotenv import load_dotenv
-from sarvamai import SarvamAI
+from utils import sarvam_keys
 
 from engines.tts_engine import split_text
 
@@ -90,14 +90,9 @@ MAX_CHARS_PER_REQUEST = 900
 _client = None
 
 
-def _get_client() -> SarvamAI:
-    global _client
-    if _client is None:
-        api_key = os.getenv("SARVAM_API_KEY")
-        if not api_key:
-            raise RuntimeError("SARVAM_API_KEY is not set in .env")
-        _client = SarvamAI(api_subscription_key=api_key)
-    return _client
+def _get_client():
+    """2026-11-01: several Sarvam keys — the next one is used when one runs out (utils/sarvam_keys.py)."""
+    return sarvam_keys.get_client()
 
 
 def romanize(text: str, language: str) -> str | None:
