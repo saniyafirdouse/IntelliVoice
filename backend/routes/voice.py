@@ -327,6 +327,12 @@ async def _respond(language_result: dict, understanding: dict, session_id: str,
         language=language_result["language"], intelligence_result=intelligence_result,
         knowledge_result=knowledge_result, input_type=input_type,
         response_time_ms=timings["total"],
+        # 2026-11-01: for the admin "System health" page
+        timings={**timings, **((response_result.get("debug") or {}).get("timings_ms") or {})},
+        reply={"ok": bool(response_result.get("success")),
+               "path": (response_result.get("debug") or {}).get("path"),
+               "tts_ok": bool(response_result.get("tts_success")) if include_audio else None,
+               "tts_error": (response_result.get("debug") or {}).get("tts_error") if include_audio else None},
     )
 
     debug = dict(response_result["debug"])

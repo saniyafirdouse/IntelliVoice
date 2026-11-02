@@ -1,5 +1,6 @@
-// Help & FAQ content. Answers are NOT stored here on purpose:
-// every question opens Voice Chat, so the answer comes from the SVIT admissions database.
+// Help & FAQ content. Admission answers are NOT stored here on purpose: when a question is
+// opened, the page asks Eva (text only, no voice) so the answer always comes from the SVIT
+// admissions database and is never out of date (2026-11-01; before, it only linked to the chat).
 
 export interface FaqCategory {
   id: string;
@@ -12,43 +13,84 @@ export interface FaqCategory {
 export const FAQ_CATEGORIES: FaqCategory[] = [
   {
     id: "admissions",
-    pill: "Admissions & Cutoffs",
+    pill: "Admissions",
     icon: "how_to_reg",
-    title: "Admissions & Cutoffs (KCET & COMEDK)",
+    title: "Admissions (KCET, COMEDK, management, DCET, PGCET)",
     questions: [
-      "How do I apply to SVIT? What are the official CET & COMEDK codes?",
-      "What are the expected eligibility cutoff ranks for CSE, ISE, and AI branches?",
+      "How do I get admission to SVIT?",
+      "What are the SVIT college codes for KCET, COMEDK and PGCET?",
+      "What documents are needed for admission?",
+      "Can diploma holders join SVIT through DCET?",
+      "How do I join the MBA program?",
     ],
   },
   {
-    id: "seat-matrix",
-    pill: "Branch & Seat Matrix",
+    id: "branches",
+    pill: "Branches, Seats & Cutoffs",
     icon: "account_tree",
-    title: "Branch & Seat Matrix",
-    questions: ["What is the sanctioned undergraduate intake and quota distribution per branch?"],
+    title: "Branches, Seats & Cutoffs",
+    questions: [
+      "Which engineering branches does SVIT offer?",
+      "How many seats does each branch have?",
+      "What was the KCET cutoff for CSE last year?",
+      "Is ISE still open for admission?",
+    ],
   },
   {
-    id: "hostels",
-    pill: "Hostels & Amenities",
+    id: "fees",
+    pill: "Fees & Scholarships",
+    icon: "payments",
+    title: "Fees & Scholarships",
+    questions: [
+      "What is the yearly fee for CSE through KCET?",
+      "What is the management quota fee for CSE?",
+      "What scholarships are available?",
+    ],
+  },
+  {
+    id: "campus",
+    pill: "Hostel & Transport",
     icon: "apartment",
-    title: "Hostels & Campus Amenities",
-    questions: ["What are the hostel accommodations, mess plans, and transport routes?"],
+    title: "Hostel, Transport & Campus",
+    questions: [
+      "Is there a hostel for girls and boys, and what is the fee?",
+      "Are there college buses, and what is the bus fee?",
+      "What facilities are there on campus?",
+    ],
   },
   {
     id: "placements",
-    pill: "Placements & Recruitment",
+    pill: "Placements",
     icon: "trending_up",
-    title: "Placements & Campus Recruitment",
-    questions: ["What is the highest package, average CTC, and list of recruiting companies?"],
+    title: "Placements & Recruiters",
+    questions: [
+      "What is the highest and average placement package?",
+      "Which companies recruit from SVIT?",
+    ],
   },
   {
-    id: "voice-pipeline",
-    pill: "6-Engine Voice Pipeline",
+    id: "eva",
+    pill: "About Eva",
     icon: "graphic_eq",
-    title: "Voice Engine FAQ (6-Engine Multilingual Architecture)",
-    questions: ["How is code-mixed Kannada, Hindi, and English auto-detected through the 6-engine pipeline?"],
+    title: "About Eva (IntelliVoice)",
+    questions: [
+      "Which languages can I speak to Eva in?",
+      "Are Eva's answers reliable?",
+      "Do I need to sign in to use Eva?",
+    ],
   },
 ];
+
+// 2026-11-01: questions about Eva herself are answered here (they are not admission data).
+// Every other question gets Eva's live answer from the SVIT admissions database when opened.
+export const STATIC_ANSWERS: Record<string, string> = {
+  "Which languages can I speak to Eva in?":
+    "English, Kannada and Hindi, including a natural mix like \"CSE fees eshtu?\" or \"hostel ki fees kitni hai?\". Eva replies in the same language, or in the one you choose from the language menu, also in English letters if you prefer.",
+  "Are Eva's answers reliable?":
+    "Eva answers only from the SVIT admissions database and the college website. The AI only puts those facts into words; it never invents fees, cutoffs or dates. If something isn't in the data, Eva says so and gives you the admission office contact.",
+  "Do I need to sign in to use Eva?":
+    "No. Anyone can use Voice Chat without an account. Signing in only adds a short history of your past questions, which you can delete at any time.",
+};
 
 export const HOW_IT_WORKS = [
   { n: "01", icon: "chat", title: "Open Voice Chat", body: "Go to the Voice Chat page. No sign-up needed." },

@@ -116,6 +116,18 @@ export interface WebsiteStatus {
   last_fetch: WebsiteFetchSummary | null;
 }
 
+/** 2026-11-01: the "System health" page */
+export interface HealthService { ok: boolean | null; detail: string; keys?: number; in_use?: number | null; resting?: number[]; last_ok?: string }
+export interface HealthStep { label: string; avg_ms: number | null; p90_ms: number | null; count: number }
+export interface SystemHealth {
+  checked_at: string;
+  services: { backend: HealthService; database: HealthService; sarvam: HealthService; groq: HealthService };
+  speed: { questions: number; avg_total_ms: number | null; p90_total_ms: number | null; steps: HealthStep[] };
+  last_hour: { questions: number; failed_replies: number; voice_failed: number; could_not_hear: number };
+  problems: { at: string; source: string; detail: string }[];
+  phones: { paused: boolean; questions_last_hour: number; hourly_cap: number };
+}
+
 // ── request helper ─────────────────────────────────────────────────────────
 type OnUnauthorized = () => void;
 let onUnauthorized: OnUnauthorized = () => {};
@@ -206,6 +218,11 @@ export const adminApi = {
   /** Starts reading saividya.ac.in again (runs in the background). */
   websiteRefresh: (token: string) => post<{ started: boolean; status: WebsiteStatus["status"] }>("/website/refresh", token),
   websiteStatus: (token: string) => json<WebsiteStatus>("/website/status", token),
+
+  /** 2026-11-01: is everything working right now? */
+  health: (token: string) => json<SystemHealth>("/health", token),
+  /** Pause / resume all visitor phones (the stall laptop keeps working). */
+  setPhoneAccess: (token: string, paused: boolean) => post<{ paused: boolean }>("/phone-access", token, { paused }),
 
   /** Who did what in the admin panel, newest first. */
   activity: (token: string, limit = 200) =>

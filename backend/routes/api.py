@@ -15,17 +15,19 @@ Added 2026-10-12 (integration).
 """
 
 import asyncio
+import time
 import json
 from typing import Optional
 
-from fastapi import APIRouter, File, Form, Header, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, Header, HTTPException, Request, UploadFile
 
 from engines.intelligence_engine import extract_entities
 from engines import user_history
 from engines.college_profile import CONTACT
-from engines.tts_engine import SPEAKERS
+from engines.tts_engine import SPEAKERS, synthesize_speech
 from routes.student import optional_user_email
 from routes.voice import NoSpeechError, PipelineError, answer
+from utils.system_health import count_phone_question, phone_cap_reached, phone_paused, record_problem
 
 router = APIRouter()
 
@@ -159,16 +161,64 @@ def _to_contract(result: dict) -> dict:
     }
 
 
+# ── Per-visitor limit (2026-11-01, for the expo) ──────────────────────────
+# A visitor on their own phone (through the Cloudflare tunnel) can ask at most
+# VISITOR_LIMIT spoken-reply questions per VISITOR_WINDOW_S, so one person (or a
+# prank) can't use up the Groq / Sarvam credits. Not limited:
+#   - the laptop itself (requests that did not come through the tunnel),
+#   - text-only answers (Help & FAQ), which use no Sarvam voice.
+# A visitor = the browser's own random id (X-Visitor-Id), else their internet address.
+VISITOR_LIMIT = 10
+VISITOR_WINDOW_S = 5 * 60
+_visitor_hits: dict = {}
+
+
+def _check_phone_access(request: Request) -> bool:
+    """True if this request came through the tunnel (a visitor's phone). Raises if phones are paused."""
+    if not request.headers.get("cf-connecting-ip"):
+        return False                        # the stall laptop: never paused or limited
+    if phone_paused():
+        raise HTTPException(503, detail="Phone access is paused right now. Please use the IntelliVoice laptop at the stall.")
+    return True
+
+
+def _check_visitor_limit(request: Request) -> None:
+    tunnel_ip = request.headers.get("cf-connecting-ip")
+    if not tunnel_ip:                       # not through the tunnel = the stall laptop: never limited
+        return
+    if phone_cap_reached():                 # 2026-11-01: all phones together, per hour
+        raise HTTPException(429, detail="Eva is very busy right now. Please try again in a few minutes, or use the IntelliVoice laptop at the stall.")
+    visitor = (request.headers.get("x-visitor-id") or "").strip()[:64] or tunnel_ip
+    now = time.time()
+    hits = [t for t in _visitor_hits.get(visitor, []) if now - t < VISITOR_WINDOW_S]
+    if len(hits) >= VISITOR_LIMIT:
+        wait_min = max(1, round((VISITOR_WINDOW_S - (now - hits[0])) / 60))
+        _visitor_hits[visitor] = hits
+        raise HTTPException(429, detail=(f"You've asked {VISITOR_LIMIT} questions in {VISITOR_WINDOW_S // 60} minutes. "
+                                         f"Please wait about {wait_min} minute{'s' if wait_min != 1 else ''} and ask again."))
+    hits.append(now)
+    _visitor_hits[visitor] = hits
+    count_phone_question()
+    if len(_visitor_hits) > 5000:           # keep memory small: forget visitors idle for a while
+        for key in [k for k, v in _visitor_hits.items() if not v or now - v[-1] > VISITOR_WINDOW_S]:
+            _visitor_hits.pop(key, None)
+
+
 @router.post("/query")
 async def api_query(
+    request: Request,
     session_id: str = Form(...),
     audio: Optional[UploadFile] = File(None),
     text: Optional[str] = Form(None),
     context: Optional[str] = Form(None),
     speech_language: str = Form("auto"),
     response_language: str = Form("same"),
+    include_audio: bool = Form(True),     # 2026-11-01: false = text only (Help & FAQ answers, no Sarvam voice)
     authorization: Optional[str] = Header(None),
 ):
+    _check_phone_access(request)               # 2026-11-01: admin can pause phone visitors
+    if include_audio:
+        _check_visitor_limit(request)          # 2026-11-01: expo per-visitor limit + hourly cap for all phones
     if not audio and not (text and text.strip()):
         raise HTTPException(422, detail="Please ask a question by voice or by typing.")
     if text and len(text) > MAX_TEXT_CHARS:
@@ -190,7 +240,7 @@ async def api_query(
             text=text,
             language=speech,
             script=script,
-            include_audio=True,
+            include_audio=include_audio,
             reply_language=reply_language,
             extra_entities=_context_entities(context),
         )
@@ -199,6 +249,7 @@ async def api_query(
         return {"status": "no_speech", "session_id": session_id,
                 "message": "I didn't hear anything. Tap the mic and try again."}
     except PipelineError as e:
+        record_problem("Pipeline", f"{e.status}: {e.message}")     # 2026-11-01: admin "System health"
         raise HTTPException(e.status, detail=e.message)
 
     # Memory across visits: remember this question for a logged-in student (background, never blocks).
@@ -217,9 +268,11 @@ async def api_query(
 # the same speech recognition + college-word fixes as a spoken question.
 @router.post("/transcribe")
 async def api_transcribe(
+    request: Request,
     audio: UploadFile = File(...),
     speech_language: str = Form("auto"),
 ):
+    _check_phone_access(request)               # 2026-11-01: paused phones can't use the mic either
     from engines.language_engine import correct_transcript, speech_to_text
     audio_bytes = await audio.read()
     if not audio_bytes:
@@ -240,3 +293,27 @@ async def api_transcribe(
         "language": stt.get("speech_language"),
         "unclear": stt.get("clarity") == "unclear",
     }
+
+
+# 2026-11-01: "Hey Eva" -> Eva says hello before listening. The spoken greeting is made
+# once per language and kept in memory, so it costs one Sarvam voice request per
+# language per backend start (not one per visitor).
+GREETINGS = {
+    "en": "Hello there, I'm listening. What would you like to know?",
+    "hi": "नमस्ते, मैं सुन रही हूँ। बताइए, आप क्या जानना चाहेंगे?",
+    "kn": "ನಮಸ್ಕಾರ, ನಾನು ಕೇಳ್ತಾ ಇದ್ದೀನಿ. ಏನು ತಿಳ್ಕೋಬೇಕು ಹೇಳಿ?",
+}
+_greeting_cache: dict = {}
+
+
+@router.get("/greeting")
+async def api_greeting(language: str = "en"):
+    lang = language if language in GREETINGS else "en"
+    if lang not in _greeting_cache:
+        tts = await asyncio.to_thread(synthesize_speech, GREETINGS[lang], lang)
+        audio = ({"format": tts.get("audio_format") or "wav", "base64": tts["audio_base64"],
+                  "voice": SPEAKERS.get(lang)} if tts.get("success") else None)
+        if audio is None:      # no voice now (e.g. no credits): show the text, try the voice again next time
+            return {"response": {"text": GREETINGS[lang], "language": lang}, "audio": None}
+        _greeting_cache[lang] = {"response": {"text": GREETINGS[lang], "language": lang}, "audio": audio}
+    return _greeting_cache[lang]

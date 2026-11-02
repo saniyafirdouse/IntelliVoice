@@ -9,6 +9,7 @@ const FaqPage = lazy(() => import("./pages/FaqPage"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const SignupPage = lazy(() => import("./pages/auth/SignupPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const ExpoPage = lazy(() => import("./pages/ExpoPage"));   // 2026-11-01: QR code for the expo stall
 // Admin panel (only admins can open these; others are sent to sign in)
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
@@ -16,6 +17,7 @@ const AdminDataPage = lazy(() => import("./pages/admin/AdminDataPage"));
 const AdminHistoryPage = lazy(() => import("./pages/admin/AdminHistoryPage"));
 const AdminUnansweredPage = lazy(() => import("./pages/admin/AdminUnansweredPage"));
 const AdminActivityPage = lazy(() => import("./pages/admin/AdminActivityPage"));
+const AdminHealthPage = lazy(() => import("./pages/admin/AdminHealthPage"));   // 2026-11-01
 
 /** Scroll to the top on page change (but keep #section links working). */
 function ScrollToTop() {
@@ -47,12 +49,14 @@ export default function App() {
           <Route path="/help" element={<FaqPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/expo" element={<ExpoPage />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboardPage />} />
             <Route path="data" element={<AdminDataPage />} />
             <Route path="history" element={<AdminHistoryPage />} />
             <Route path="unanswered" element={<AdminUnansweredPage />} />
             <Route path="activity" element={<AdminActivityPage />} />
+            <Route path="health" element={<AdminHealthPage />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

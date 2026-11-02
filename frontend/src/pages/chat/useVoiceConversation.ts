@@ -256,7 +256,8 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
   }, [finishTurn, startRecorder, stopRecorder]);
 
   // ---------- start / end ----------
-  const begin = useCallback(async () => {
+  /** greeting (2026-11-01): after "Hey Eva", Eva first says hello, then listens. */
+  const begin = useCallback(async (greeting?: Promise<QueryResponse | null>) => {
     if (phaseRef.current !== "off" && phaseRef.current !== "error") return;
     setError(null); setLastQuestion(""); setLastReply(""); setLastResponse(null); setTurns(0);
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
@@ -293,9 +294,16 @@ export function useVoiceConversation({ ask, onEnd }: Options) {
     const now = performance.now();
     Object.assign(vad.current, { noise: 0.02, calibrateUntil: now + CALIBRATE_MS, lastSpeechEver: now });
     setStartedAt(Date.now());
-    listen();
     rafRef.current = requestAnimationFrame(tick);
-  }, [listen, tick]);
+    const hello = greeting ? await greeting.catch(() => null) : null;
+    if (phaseRef.current === "off") return;
+    if (hello?.response?.text) {
+      setLastReply(hello.response.text);
+      speak(hello);                      // listens by itself when the hello ends (or right away with no voice)
+    } else {
+      listen();
+    }
+  }, [listen, speak, tick]);
 
   const cleanup = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);

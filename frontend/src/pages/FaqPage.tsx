@@ -1,10 +1,12 @@
-import { useMemo, useState, type CSSProperties } from "react";
-import { Link } from "react-router-dom";
-import { FloatingMicButton } from "../components/FloatingMicButton";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { Icon } from "../components/Icon";
 import { PageShell } from "../components/PageShell";
-import { FAQ_CATEGORIES, HOW_IT_WORKS, RELIABILITY } from "../data/faq";
-import { useOpenChat } from "../hooks/useOpenChat";
+import { EvaAvatar } from "../components/EvaAvatar";
+import { useLanguage } from "../context/LanguageContext";
+import { FAQ_CATEGORIES, HOW_IT_WORKS, RELIABILITY, STATIC_ANSWERS } from "../data/faq";
+import { askQuestion } from "../lib/api";
+import { ContactDialog } from "./chat/ContactDialog";
+import type { DocumentLink } from "../lib/types";
 
 const glassPanel: CSSProperties = {
   background: "rgba(14, 18, 30, 0.24)",
@@ -19,9 +21,12 @@ const primaryButton: CSSProperties = {
   boxShadow: "rgba(126, 130, 194, 0.55) 0px 0px 24px",
   color: "rgb(255, 255, 255)",
 };
-const filledIcon: CSSProperties = { fontVariationSettings: '"FILL" 1' };
 
-function FaqItem({ question, open, onToggle }: { question: string; open: boolean; onToggle: () => void }) {
+// 2026-11-01: an opened question shows Eva's real answer right here (text only — no voice,
+// so no Sarvam credits), from the same database as the chat. Before, it only linked to the chat.
+type Answer = { status: "loading" | "done" | "error"; text?: string; docs?: DocumentLink[] };
+
+function FaqItem({ question, open, onToggle, answer }: { question: string; open: boolean; onToggle: () => void; answer?: Answer }) {
   return (
     <div className="faq-card rounded-2xl bg-surface-container-lowest/55 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden transition-all">
       <button
@@ -35,15 +40,37 @@ function FaqItem({ question, open, onToggle }: { question: string; open: boolean
       </button>
       {open && (
         <div className="faq-content px-space-lg pb-space-lg pt-1">
-          <div className="p-space-md rounded-xl bg-surface-container-high/40 text-on-surface-variant font-body-md text-body-md flex flex-col sm:flex-row items-center justify-between gap-space-md">
-            <p className="text-on-surface font-medium">Get the verified answer from IntelliVoice</p>
-            <Link
-              to={`/chat?q=${encodeURIComponent(question)}`}
-              className="px-5 py-2.5 rounded-full bg-gradient-to-r from-secondary-container to-secondary text-white font-title-md text-title-md flex items-center gap-2 shadow-[0_0_16px_rgba(191,194,255,0.3)] hover:scale-105 active:scale-95 transition-all flex-shrink-0"
-            >
-              <Icon name="mic" className="text-[20px]" filled />
-              <span>Ask IntelliVoice</span>
-            </Link>
+          <div className="p-space-md rounded-xl bg-surface-container-high/40 flex gap-3" aria-live="polite">
+            <EvaAvatar size={36} />
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-semibold text-white/75">Eva</p>
+              {(!answer || answer.status === "loading") && (
+                <p className="mt-1 text-white/70 flex items-center gap-2">
+                  <Icon name="progress_activity" className="text-[18px] animate-spin" />
+                  Finding the answer in the SVIT admissions database…
+                </p>
+              )}
+              {answer?.status === "error" && (
+                <p className="mt-1 text-white/80">Sorry, I couldn't get the answer right now. Please ask me in Voice Chat.</p>
+              )}
+              {answer?.status === "done" && (
+                <>
+                  <p className="mt-1 text-[15.5px] leading-[1.55] text-white whitespace-pre-line break-words">{answer.text}</p>
+                  {!!answer.docs?.length && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {answer.docs.filter((d) => d?.url).map((d) => (
+                        <a key={d.url} href={d.url} {...(d.download ? { download: true } : { target: "_blank", rel: "noopener noreferrer" })}
+                          className="h-9 pl-3 pr-4 rounded-full flex items-center gap-1.5 text-[13.5px] font-semibold"
+                          style={{ background: "#e8d3a3", color: "#2d1f45" }}>
+                          <Icon name={d.download ? "download" : "picture_as_pdf"} className="text-[18px]" />
+                          {d.title || "Open PDF"}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -52,10 +79,35 @@ function FaqItem({ question, open, onToggle }: { question: string; open: boolean
 }
 
 export default function FaqPage() {
-  const openChat = useOpenChat();
   const [category, setCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
+  const [contactOpen, setContactOpen] = useState(false);
+  const { responseLanguage } = useLanguage();
+  const [answers, setAnswers] = useState<Record<string, Answer>>({});
+  const asked = useRef<Set<string>>(new Set());
+  const queue = useRef<Promise<void>>(Promise.resolve());   // one question at a time (free Groq limits)
+  const sessionId = useRef(`faq-${Math.random().toString(36).slice(2, 10)}`);
+  const counter = useRef(0);
+
+  const ensureAnswer = (q: string) => {
+    if (asked.current.has(q)) return;
+    asked.current.add(q);
+    if (STATIC_ANSWERS[q]) { setAnswers((a) => ({ ...a, [q]: { status: "done", text: STATIC_ANSWERS[q] } })); return; }
+    setAnswers((a) => ({ ...a, [q]: { status: "loading" } }));
+    counter.current += 1;
+    const sid = `${sessionId.current}-${counter.current}`;   // each question its own short session (no carry-over)
+    queue.current = queue.current.then(async () => {
+      try {
+        const res = await askQuestion({ sessionId: sid, text: q, responseLanguage, includeAudio: false });
+        const text = res.response?.text?.trim();
+        setAnswers((a) => ({ ...a, [q]: text ? { status: "done", text, docs: res.documents ?? [] } : { status: "error" } }));
+      } catch {
+        asked.current.delete(q);                      // closing and opening it tries again
+        setAnswers((a) => ({ ...a, [q]: { status: "error" } }));
+      }
+    });
+  };
 
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -71,11 +123,13 @@ export default function FaqPage() {
   const toggle = (q: string) =>
     setOpenItems((prev) => {
       const next = new Set(prev);
-      if (next.has(q)) next.delete(q); else next.add(q);
+      if (next.has(q)) next.delete(q); else { next.add(q); ensureAnswer(q); }
       return next;
     });
 
-  const askTyped = () => openChat(search.trim() || undefined);
+  // 2026-11-01: a typed question that isn't in the list is answered right here too (no jump to the chat)
+  const [custom, setCustom] = useState<string | null>(null);
+  const askTyped = () => { const q = search.trim(); if (q) { setCustom(q); ensureAnswer(q); } };
 
   return (
     <PageShell
@@ -83,12 +137,11 @@ export default function FaqPage() {
       variant="app"
       title="Help & FAQ"
       className="font-body-md text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container"
-      after={<FloatingMicButton variant="app" />}
     >
       <main className="w-full pt-20 min-h-screen relative">
         <div className="flex flex-col w-full relative">
           <div className="fixed inset-0 pointer-events-none z-0" aria-hidden="true">
-            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url("/assets/campus-night.jpg")' }} />
+            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url("/assets/campus-front.jpg")' }} />{/* 2026-11-01: same SVIT front entrance as the Home page (was the night photo) */}
             <div className="absolute inset-0 bg-black/45" />
           </div>
 
@@ -106,7 +159,7 @@ export default function FaqPage() {
                   How can we help you today?
                 </h1>
                 <p className="font-body-lg text-body-lg max-w-2xl leading-relaxed font-medium m-0" style={{ color: "#e2e8f0", textShadow: "0 1px 6px rgba(0, 0, 0, 0.8)" }}>
-                  Explore verified answers regarding CET/COMEDK admissions, scholarships, engineering curricula, campus hostels, and using our multilingual AI voice assistant.
+                  Open any question to see Eva’s answer from the SVIT admissions database: admissions, branches, fees, hostel, transport and placements.
                 </p>
               </div>
 
@@ -127,8 +180,8 @@ export default function FaqPage() {
                     className="w-full min-w-0 bg-transparent text-on-surface placeholder:text-on-surface-variant/60 font-body-md text-body-md focus:outline-none"
                   />
                   <button type="submit" className="flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-3 rounded-full shadow-lg hover:opacity-95 active:scale-95 transition-all" style={primaryButton}>
-                    <Icon name="mic" className="text-[20px]" filled />
-                    <span className="font-label-lg text-label-lg font-semibold tracking-wide hidden sm:inline">Ask with Voice</span>
+                    <Icon name="auto_awesome" className="text-[20px]" filled />
+                    <span className="font-label-lg text-label-lg font-semibold tracking-wide hidden sm:inline">Ask Eva</span>
                   </button>
                 </div>
               </form>
@@ -188,7 +241,7 @@ export default function FaqPage() {
                 <div className="hidden sm:flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setOpenItems(new Set(FAQ_CATEGORIES.flatMap((c) => c.questions)))}
+                    onClick={() => { const all = FAQ_CATEGORIES.flatMap((c) => c.questions); all.forEach(ensureAnswer); setOpenItems(new Set(all)); }}
                     className="px-3 py-1.5 rounded-full font-label-sm text-label-sm text-white transition-colors"
                     style={{ background: "rgba(126, 130, 194, 0.85)", boxShadow: "rgba(191, 194, 255, 0.6) 0px 0px 16px", border: "1px solid rgba(255, 255, 255, 0.6)" }}
                   >
@@ -205,13 +258,18 @@ export default function FaqPage() {
               </div>
 
               <div className="flex flex-col gap-space-lg">
-                {visible.length === 0 && (
-                  <div className="faq-card rounded-2xl p-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-md">
-                    <p className="text-on-surface font-medium">No listed question matches “{search}”. IntelliVoice can still answer it.</p>
-                    <button type="button" onClick={askTyped} className="px-5 py-2.5 rounded-full text-white font-title-md text-title-md flex items-center gap-2" style={primaryButton}>
-                      <Icon name="mic" className="text-[20px]" filled />
-                      Ask IntelliVoice
-                    </button>
+                {custom && (
+                  <div className="flex flex-col gap-space-sm">
+                    <div className="flex items-center gap-2.5 px-2">
+                      <Icon name="auto_awesome" className="text-secondary text-[20px]" />
+                      <h3 className="font-title-lg text-title-lg text-on-surface">Your question</h3>
+                    </div>
+                    <FaqItem question={custom} open onToggle={() => setCustom(null)} answer={answers[custom]} />
+                  </div>
+                )}
+                {visible.length === 0 && !custom && (
+                  <div className="faq-card rounded-2xl p-space-lg">
+                    <p className="text-on-surface font-medium">No listed question matches “{search}”. Press <strong>Ask Eva</strong> and she will answer it here.</p>
                   </div>
                 )}
                 {visible.map((c) => (
@@ -221,7 +279,7 @@ export default function FaqPage() {
                       <h3 className="font-title-lg text-title-lg text-on-surface">{c.title}</h3>
                     </div>
                     {c.questions.map((q) => (
-                      <FaqItem key={q} question={q} open={openItems.has(q)} onToggle={() => toggle(q)} />
+                      <FaqItem key={q} question={q} open={openItems.has(q)} onToggle={() => toggle(q)} answer={answers[q]} />
                     ))}
                   </div>
                 ))}
@@ -252,25 +310,22 @@ export default function FaqPage() {
               <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-secondary-container/30 blur-3xl pointer-events-none" />
               <div className="flex flex-col gap-space-xs text-center md:text-left z-10 max-w-xl">
                 <span className="font-label-sm text-label-sm uppercase text-secondary font-semibold tracking-wider">Unresolved Inquiry?</span>
-                <h2 className="font-headline-md text-headline-md text-on-surface">Speak directly to IntelliVoice or reach the SVIT Academic Desk</h2>
+                <h2 className="font-headline-md text-headline-md text-on-surface">Still have a question? Ask Eva above, or reach the SVIT admission office</h2>
                 <p className="font-body-md text-body-md text-on-surface-variant">
-                  Ask IntelliVoice about cutoffs, fees, branches and hostel facilities, or contact the SVIT admissions office directly.
+                  Type any question in the box at the top and Eva answers it on this page, or contact the admission office for personal cases.
                 </p>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-space-md z-10 flex-shrink-0">
-                <button type="button" onClick={() => openChat()} className="px-6 py-3.5 rounded-full font-title-md text-title-md flex items-center gap-2 hover:scale-105 active:scale-95 transition-all" style={primaryButton}>
-                  <Icon name="mic" className="text-[20px]" style={filledIcon} />
-                  <span>Ask IntelliVoice</span>
-                </button>
-                <button type="button" onClick={() => openChat("I want to talk to someone from the SVIT admissions office.")} className="px-6 py-3.5 rounded-full bg-surface-container-high/80 hover:bg-surface-container-high text-on-surface font-title-md text-title-md backdrop-blur-md flex items-center gap-2 transition-all">
+                <button type="button" onClick={() => setContactOpen(true)} className="px-6 py-3.5 rounded-full font-title-md text-title-md flex items-center gap-2 hover:scale-105 active:scale-95 transition-all" style={primaryButton}>
                   <Icon name="contact_support" className="text-[20px]" />
-                  <span>Contact Campus Desk</span>
+                  <span>Contact the admission office</span>
                 </button>
               </div>
             </section>
           </div>
         </div>
       </main>
+      <ContactDialog open={contactOpen} onClose={() => setContactOpen(false)} />
     </PageShell>
   );
 }

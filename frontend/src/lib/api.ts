@@ -1,4 +1,5 @@
 import type { AuthResponse, QueryContext, QueryResponse, Role, TranscribeResponse } from "./types";
+import { storage } from "./storage";
 
 // All calls go to the same origin (/api, /auth). The Express server
 // forwards them to the FastAPI backend, so the browser never needs CORS.
@@ -43,6 +44,16 @@ async function request<T>(url: string, init: RequestInit, timeoutMs = REQUEST_TI
   return data as T;
 }
 
+/** A random id for this browser, so the expo limit counts each visitor's phone separately (2026-11-01). */
+function visitorId(): string {
+  let id = storage.get("iv_visitor");
+  if (!id) {
+    id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    storage.set("iv_visitor", id);
+  }
+  return id;
+}
+
 export interface AskParams {
   sessionId: string;
   text?: string;
@@ -51,9 +62,11 @@ export interface AskParams {
   speechLanguage?: string;
   responseLanguage?: string;
   token?: string | null;
+  /** 2026-11-01: false = text-only reply (no voice, no Sarvam credits) — used by Help & FAQ */
+  includeAudio?: boolean;
 }
 
-export function askQuestion({ sessionId, text, audio, context, speechLanguage, responseLanguage, token }: AskParams) {
+export function askQuestion({ sessionId, text, audio, context, speechLanguage, responseLanguage, token, includeAudio }: AskParams) {
   const form = new FormData();
   form.append("session_id", sessionId);
   if (audio) {
@@ -65,10 +78,16 @@ export function askQuestion({ sessionId, text, audio, context, speechLanguage, r
   if (context) form.append("context", JSON.stringify(context));
   if (speechLanguage) form.append("speech_language", speechLanguage);
   if (responseLanguage) form.append("response_language", responseLanguage);
+  if (includeAudio === false) form.append("include_audio", "false");
 
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = { "X-Visitor-Id": visitorId() };   // 2026-11-01: expo per-visitor limit
   if (token) headers.Authorization = `Bearer ${token}`;
   return request<QueryResponse>("/api/query", { method: "POST", body: form, headers });
+}
+
+/** 2026-11-01: Eva's spoken hello after "Hey Eva" (en | hi | kn). */
+export function getGreeting(language: string) {
+  return request<QueryResponse>(`/api/greeting?language=${encodeURIComponent(language)}`, { method: "GET" });
 }
 
 /** 2026-10-31: speech to text only — the mic shows what it heard before sending. */

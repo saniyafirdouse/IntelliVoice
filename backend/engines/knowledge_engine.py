@@ -270,6 +270,19 @@ RANK_INTENTS = {"ask_rank_prediction", "ask_cutoff", "ask_seat_availability", "a
 # Questions about ISE that get the "merged into CSE" answer.
 ISE_MERGED_INTENTS = {"ask_fees_branch", "ask_cutoff", "ask_seat_availability"}
 
+# 2026-11-01: DCET (diploma holders, lateral entry to 2nd year B.E.) and PGCET (MBA).
+# Their fees, cutoffs and process are not stored per exam like KCET / COMEDK, so these
+# questions are answered from the lateral / PG admission record instead of the B.E.
+# figures (which would be wrong for them). Documents still use their own DCET / PGCET lists.
+LATERAL_PG_EXAMS = {"DCET", "PGCET"}
+LATERAL_PG_INTENTS = {"ask_fees_branch", "ask_cutoff", "ask_admission_process", "ask_seat_availability",
+                      "ask_admission_status", "ask_rank_prediction", "ask_application_deadline",
+                      "ask_branch_recommendation", "ask_lateral_pg_admission"}
+LATERAL_PG_GUIDE = (
+    "The person is asking about {exam} ({who}). Answer only from this record. If they asked for the {exam} "
+    "fee, cutoff, seats or a date and it is not in this record, say plainly that you don't have that "
+    "{exam} detail right now and suggest the SVIT admission office. Never use KCET / COMEDK figures for {exam}.")
+
 
 # ── People and faculty lists (2026-10-29) ─────────────────────────────────
 # Names come from the faculty_members collection (every department's teachers,
@@ -833,6 +846,16 @@ async def fetch_knowledge(intelligence_result: dict) -> dict:
             print(f"⚠️  Could not build the college overview: {e}")
             return {"found": False, "match_type": "none", "query_used": {}, "data": None}
 
+    # 2026-11-01: DCET / PGCET questions -> the lateral / PG admission record (see LATERAL_PG_INTENTS)
+    entities = intelligence_result.get("entities") or {}
+    exam = entities.get("exam")
+    if exam in LATERAL_PG_EXAMS and intelligence_result.get("intent") in LATERAL_PG_INTENTS:
+        lateral = await retrieve_knowledge("lateral_pg_admissions", {})
+        if lateral.get("found"):
+            who = "diploma holders joining 2nd year B.E. (lateral entry)" if exam == "DCET" else "MBA admission"
+            return await _finish(intelligence_result, _with_guide(
+                lateral, LATERAL_PG_GUIDE.format(exam=exam, who=who)))
+
     # 2026-10-13: a rank was given ("my KCET rank is 25000, which branch?")
     # -> compare it with the cutoffs in code (engines/rank_predictor.py).
     entities = intelligence_result.get("entities") or {}
@@ -895,4 +918,4 @@ async def fetch_knowledge(intelligence_result: dict) -> dict:
         profile = profile_knowledge(intelligence_result.get("intent"))
         if profile:
             return await _finish(intelligence_result, profile)
-    return await _finish(intelligence_result, result)
+    return await _finish(intelligence_result, result)

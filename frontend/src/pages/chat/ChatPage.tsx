@@ -5,7 +5,7 @@ import { PageShell } from "../../components/PageShell";
 import { useAuth } from "../../context/AuthContext";
 import { RESPONSE_SHORT, SPEECH_OPTIONS, useLanguage } from "../../context/LanguageContext";
 import { useRecorder, type RecorderError } from "../../hooks/useRecorder";
-import { ApiError, transcribeAudio } from "../../lib/api";
+import { ApiError, getGreeting, transcribeAudio } from "../../lib/api";
 import { storage } from "../../lib/storage";
 import { MessageList } from "./Messages";
 import { ActionCards, CHAT_HOME_CSS, ChatHeading, Composer, DecorLine, HandsFreeSide, HumanOfficerCard, TryAsking, type Draft } from "./ChatHome";
@@ -13,6 +13,7 @@ import { VoiceConversation } from "./VoiceConversation";
 import { useVoiceConversation } from "./useVoiceConversation";
 import { ContactDialog } from "./ContactDialog";
 import { useChat } from "./useChat";
+import { useWakeWord } from "../../hooks/useWakeWord";
 
 const MIC_ERRORS: Record<RecorderError, string> = {
   unsupported: "Voice recording isn't supported in this browser. Please use Chrome or Edge, or type your question.",
@@ -107,6 +108,29 @@ export default function ChatPage() {
     setConversationOn(true);
     void conversation.begin();
   };
+  // 2026-11-01: opened by "Hey Eva" -> Eva says "Hello there, I'm listening" first
+  const greetLanguage = (): string => {
+    const r = String(responseLanguage || "");
+    if (r.startsWith("kn")) return "kn";
+    if (r.startsWith("hi")) return "hi";
+    const sp = String(speechLanguage || "");
+    return sp === "kn" || sp === "hi" ? sp : "en";
+  };
+  const startConversationByName = () => {
+    current.current?.pause();
+    setConversationOn(true);
+    void conversation.begin(getGreeting(greetLanguage()).catch(() => null));
+  };
+
+  // 2026-11-01: "Hey Eva" — when switched on, saying her name opens the hands-free voice chat.
+  // Off by default (Edge/Chrome speech recognition sends audio online); paused while the mic is in use.
+  const [wakeOn, setWakeOn] = useState(() => storage.get("iv_wake") === "on");
+  const toggleWake = () => setWakeOn((on) => { storage.set("iv_wake", on ? "off" : "on"); return !on; });
+  const wake = useWakeWord({
+    enabled: wakeOn,
+    paused: conversationOn || recording || chat.busy || transcribing,
+    onWake: startConversationByName,
+  });
 
   useEffect(() => {
     if (recording) {
@@ -210,7 +234,26 @@ export default function ChatPage() {
           <div className={`relative z-10 w-full px-margin-mobile lg:px-margin pt-[18px] ${empty ? "pb-10" : "pb-0"} min-h-screen flex flex-col`}>
             {/* top row: chat tools (while chatting) + highlighted "Talk to a Human Officer" */}
             <div className="w-full flex flex-wrap items-start justify-between gap-3">
-              <div className="flex items-center gap-2 min-h-[44px]">
+              <div className="flex flex-wrap items-center gap-2 min-h-[44px]">
+                {wake.supported && (
+                  <button
+                    type="button"
+                    onClick={toggleWake}
+                    aria-pressed={wakeOn}
+                    title={wake.error ?? (wakeOn ? "Say \"Hey Eva\" to start the hands-free voice chat. Click to turn off." : "Turn on to start the voice chat by saying \"Hey Eva\" (Edge / Chrome, needs internet)")}
+                    className="h-10 pl-3 pr-2 rounded-full text-white text-[13.5px] font-medium flex items-center gap-2 transition-all hover:brightness-125"
+                    style={{ ...TOOL_STYLE, ...(wakeOn ? { border: "1px solid rgba(232, 211, 163, 0.7)", background: "rgba(62, 40, 92, 0.75)" } : {}) }}
+                  >
+                    <span className="relative flex w-2 h-2">
+                      {wakeOn && wake.listening && <span className="absolute inset-0 rounded-full animate-ping" style={{ background: "#e8d3a3" }} />}
+                      <span className="relative w-2 h-2 rounded-full" style={{ background: wake.error ? "#ff8a80" : wakeOn ? "#e8d3a3" : "rgba(255,255,255,0.35)" }} />
+                    </span>
+                    {wakeOn ? (wake.error ? "\"Hey Eva\" stopped" : wake.listening ? "Say \"Hey Eva\"" : "\"Hey Eva\" on") : "\"Hey Eva\""}
+                    <span className="w-8 h-[18px] rounded-full relative transition-colors" style={{ background: wakeOn ? "#7c5ba6" : "rgba(255,255,255,0.22)" }}>
+                      <span className="absolute top-[2px] w-[14px] h-[14px] rounded-full bg-white transition-all" style={{ left: wakeOn ? 16 : 2 }} />
+                    </span>
+                  </button>
+                )}
                 {!empty && (
                   <>
                     <button type="button" onClick={newChat} className={TOOL_BTN} style={TOOL_STYLE}>

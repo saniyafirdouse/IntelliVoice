@@ -12,6 +12,7 @@ const SECTIONS = [
   { to: "/admin/history", label: "Upload History", icon: "history", hint: "Undo changes" },
   { to: "/admin/unanswered", label: "Unanswered", icon: "help_center", hint: "Missing data" },
   { to: "/admin/activity", label: "Activity Log", icon: "manage_history", hint: "Who did what" },
+  { to: "/admin/health", label: "System Health", icon: "monitor_heart", hint: "Is everything working?" },   // 2026-11-01
 ];
 
 /** Frame for every admin page: only admins get in; everyone else is sent to sign in. */

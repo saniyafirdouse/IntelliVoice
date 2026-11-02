@@ -21,7 +21,9 @@
 
   "exam": {
     "KCET": ["kcet", "karnataka cet", "ಕೆಸಿಇಟಿ", "ಕೆ ಸಿ ಇ ಟಿ", "ಸಿಇಟಿ"],
-    "COMEDK": ["comedk", "ಕಾಮೆಡ್ಕೆ", "ಕಾಮೆಡ್ ಕೆ", "ಕೊಮೆಡ್ಕೆ"]
+    "COMEDK": ["comedk", "ಕಾಮೆಡ್ಕೆ", "ಕಾಮೆಡ್ ಕೆ", "ಕೊಮೆಡ್ಕೆ"],
+    "DCET": ["dcet", "diploma cet", "ಡಿಸಿಇಟಿ", "ಡಿ ಸಿ ಇ ಟಿ", "डीसीईटी", "डी सी ई टी"],
+    "PGCET": ["pgcet", "pg cet", "pg-cet", "ಪಿಜಿಸಿಇಟಿ", "ಪಿ ಜಿ ಸಿ ಇ ಟಿ", "पीजीसीईटी", "पी जी सी ई टी"]
   },
 
   "quota": {
@@ -96,4 +98,4 @@
   "KGIS": ["kgis"], "Arrow": ["arrow"], "HashedIn Deloitte": ["hashedin", "hashedin deloitte", "deloitte"],
   "Boeing": ["boeing"], "Bosch Rexroth": ["bosch rexroth"], "Salesforce": ["salesforce"]
 }
-}
+}

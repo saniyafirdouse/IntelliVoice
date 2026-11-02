@@ -515,6 +515,31 @@ async def is_bus_question(text: str, query_for_matching: str) -> bool:
 # ── Documents from the college website (2026-10-30) ──────────────────────
 # "Show me the academic calendar", "exam timetable PDF", "syllabus" -> the PDF
 # button, from the saved copy of saividya.ac.in (engines/website_engine.py).
+# 2026-11-02: "Cse fees" (very short) was sometimes given another topic by the Groq second
+# opinion (ST is unsure on two words), so the reply said "I don't have CSE fee information".
+# A short question about fees now always means the branch fee — unless it is clearly a
+# different fee (hostel, bus, exam, application, payment / instalments / refund).
+FEES_INTENT = "ask_fees_branch"
+FEES_MAX_WORDS = 8
+_FEE_WORDS = re.compile(r"\b(fee|fees|shulka|shulk|kharcha|kharch)\b|ಫೀಸ್|ಶುಲ್ಕ|फीस|शुल्क|ख़र्च|खर्च", re.IGNORECASE)
+_OTHER_FEE = re.compile(
+    r"\b(hostel|mess|bus|transport|transportation|exam|examination|application|admission\s+form|form|pay|paid|paying|"
+    r"payment|payments|instal+ments?|emi|refund|late|fine|due\s+date|last\s+date|scholarship|concession|waiver)\b"
+    r"|ಹಾಸ್ಟೆಲ್|ಬಸ್|हॉस्टल|बस",
+    re.IGNORECASE)
+
+
+def is_branch_fee_question(*texts: str) -> bool:
+    """'CSE fees', 'fees for ECE?', 'ಫೀಸ್ ಎಷ್ಟು', 'fees kitni hai' — but not hostel / bus / exam fees or paying."""
+    for t in texts:
+        t = (t or "").strip()
+        if not t or len(t.split()) > FEES_MAX_WORDS:
+            continue
+        if _FEE_WORDS.search(t) and not _OTHER_FEE.search(t):
+            return True
+    return False
+
+
 DOCUMENTS_INTENT = "ask_documents_pdf"
 _DOC_WORDS = [
     "pdf", "calendar", "calender", "calendar of events", "time table", "timetable", "syllabus", "scheme of study",
@@ -619,6 +644,14 @@ async def _classify_intent(text: str, normalized_text: str = None, language: str
         return _build_output(
             query=text, normalized_query=query_for_matching, language=language,
             intent_id=TRANSPORT_INTENT, confidence=1.0, confidence_zone="confident",
+            emotion=detect_emotion(text), entities=extract_entities(text)
+        )
+
+    # 2026-11-02: short fee questions -> branch fee (see is_branch_fee_question)
+    if is_branch_fee_question(text, query_for_matching):
+        return _build_output(
+            query=text, normalized_query=query_for_matching, language=language,
+            intent_id=FEES_INTENT, confidence=1.0, confidence_zone="confident",
             emotion=detect_emotion(text), entities=extract_entities(text)
         )
 
@@ -741,4 +774,4 @@ def _build_output(query, normalized_query, language, intent_id, confidence,
         "response_mode": response_mode,
         "needs_memory": needs_memory,
         "needs_escalation": needs_escalation
-    }
+    }

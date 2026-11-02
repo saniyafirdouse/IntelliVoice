@@ -328,6 +328,31 @@ _BRANCH_CHOICE = re.compile(
 )
 
 
+# 2026-11-01: "Are you listening?" / "Can you hear me?" was answered "Sorry, I couldn't catch that"
+# (no admission intent in it). Now Eva simply says she is listening. Fixed text, all three languages.
+# NOTE: Hindi/Kannada wording pending a native-speaker check by the team.
+PRESENCE_MESSAGES = {
+    ("en", "native"): "Yes, I'm listening! What would you like to know about SVIT admissions?",
+    ("en", "romanized"): "Yes, I'm listening! What would you like to know about SVIT admissions?",
+    ("hi", "native"): "हाँ, मैं सुन रही हूँ! SVIT admission के बारे में आप क्या जानना चाहेंगे?",
+    ("hi", "romanized"): "Haan, main sun rahi hoon! SVIT admission ke baare mein aap kya jaanna chahenge?",
+    ("kn", "native"): "ಹೌದು, ನಾನು ಕೇಳ್ತಾ ಇದ್ದೀನಿ! SVIT admission ಬಗ್ಗೆ ನಿಮಗೆ ಏನು ತಿಳ್ಕೋಬೇಕು?",
+    ("kn", "romanized"): "Houdu, naanu kelta iddeeni! SVIT admission bagge nimage enu tilkobeku?",
+}
+_PRESENCE = re.compile(
+    r"\b(are|r)\s+(you|u)\s+(listening|there|hearing\s+me|with\s+me|awake|on)\b|\b(can|could|do)\s+(you|u)\s+hear\s+me\b"
+    r"|\bis\s+(anyone|anybody|someone)\s+there\b|^\W*(hello|hey|hi)?\W*(eva|iva|ava)\W*(hello|hey|hi)?\W*$|^\W*hello\s*\?+\W*$"
+    r"|\bsun\s+(rahi|rahe|raha)\s+(ho|hain|hai)\b|\bsunai\s+de\s+raha\b|\b(kelstideya|kelistideya|keltideya|kelta\s+idiya|kelta\s+iddira)\b"
+    r"|सुन\s*(रही|रहे|रहा)\s*(हो|हैं|है)|सुनाई\s*दे|ಕೇಳಿಸ್ತಿದೆಯಾ|ಕೇಳಿಸುತ್ತಿದೆಯಾ|ಕೇಳ್ತಾ\s*ಇದ್ದೀರಾ|ಕೇಳ್ತಾ\s*ಇದ್ದೀಯಾ",
+    re.IGNORECASE,
+)
+
+
+def is_presence_check(*texts) -> bool:
+    """2026-11-01: 'Are you listening?' / 'Can you hear me?' / just 'Hello Eva' — in any of the three languages."""
+    return any(t and t.strip() and _PRESENCE.search(t.strip()) for t in texts)
+
+
 def is_branch_choice(*texts) -> bool:
     """2026-11-01: 'Which branch should my child choose?' — asked in any of the three languages."""
     return any(t and _BRANCH_CHOICE.search(t) for t in texts)
@@ -1026,6 +1051,11 @@ async def _make_reply_text(engine2_result, knowledge_result, language, script, q
             debug["path"] = "about_eva"
             timings["generate"] = _ms(started)
             return True, {**_fixed_reply(EVA_ABOUT_MESSAGES, language, script), "kannada_pipeline": None}
+        if is_presence_check(query):
+            # 2026-11-01: "Are you listening?" -> "Yes, I'm listening!" (was "Sorry, I couldn't catch that")
+            debug["path"] = "presence"
+            timings["generate"] = _ms(started)
+            return True, {**_fixed_reply(PRESENCE_MESSAGES, language, script), "kannada_pipeline": None}
         if is_branch_choice(query, engine2_result.get("normalized_query", "")):
             # 2026-11-01: never push one branch — the child's interest decides
             debug["path"] = "branch_choice"

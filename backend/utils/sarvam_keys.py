@@ -95,6 +95,11 @@ class _KeyPool:
         return ready + resting
 
     def _rest(self, index: int, seconds: float, reason: str) -> None:
+        try:                                   # 2026-11-01: shown on the admin "System health" page
+            from utils.system_health import record_problem
+            record_problem("Sarvam", f"key {index + 1} of {len(self._keys)}: {reason}")
+        except Exception:
+            pass
         with self._lock:
             self._resting_until[index] = time.time() + seconds
             if self._current == index and len(self._keys) > 1:

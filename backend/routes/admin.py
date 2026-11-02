@@ -190,6 +190,149 @@ async def resolve_unanswered(body: ResolveRequest, admin: dict = Depends(require
     return {"resolved": resolved}
 
 
+# ── System health (2026-11-01) ───────────────────────────────────────────
+# Is everything working right now? Service status, time per step over the last
+# questions, and recent problems. The page asks every 10 seconds; nothing here
+# calls Groq or Sarvam (that would cost credits) — it reads the question logs.
+HEALTH_STEPS = [            # (label, timing keys added together), in pipeline order
+    ("Speech to text", ["stt"]),
+    ("Language + correction", ["language_detect", "correction"]),
+    ("Understanding", ["intelligence"]),
+    ("Database lookup", ["knowledge"]),
+    ("Writing the answer", ["generate"]),
+    ("Kannada translate + polish", ["translate", "polish", "direct"]),
+    ("Voice", ["tts"]),
+]
+
+
+def _avg(values):
+    return round(sum(values) / len(values)) if values else None
+
+
+def _p90(values):
+    if not values:
+        return None
+    ordered = sorted(values)
+    return ordered[min(len(ordered) - 1, int(round(0.9 * (len(ordered) - 1))))]
+
+
+@router.get("/health")
+async def system_health():
+    import time as _time
+    from datetime import datetime, timedelta, timezone
+    from utils import sarvam_keys
+    from utils.system_health import (PHONE_HOURLY_CAP, phone_paused, phone_questions_last_hour,
+                                     recent_problems, uptime_seconds)
+
+    db = get_database()
+    services = {"backend": {"ok": True, "detail": f"running for {uptime_seconds() // 60} min"}}
+
+    # MongoDB
+    mongo_ms = None
+    try:
+        if db is None:
+            raise RuntimeError("not connected")
+        t0 = _time.perf_counter()
+        await db.command("ping")
+        mongo_ms = round((_time.perf_counter() - t0) * 1000)
+        services["database"] = {"ok": True, "detail": f"MongoDB reachable ({mongo_ms} ms)"}
+    except Exception as e:
+        services["database"] = {"ok": False, "detail": f"MongoDB not reachable: {type(e).__name__}"}
+
+    # Sarvam keys (numbers only, never the keys)
+    try:
+        st = sarvam_keys.status()
+        resting = st.get("resting") or []
+        ok = st["keys"] > 0 and len(resting) < st["keys"]
+        services["sarvam"] = {"ok": ok, "keys": st["keys"], "in_use": st.get("in_use"), "resting": resting,
+                              "detail": (f"key {st.get('in_use')} of {st['keys']} in use"
+                                         + (f"; out of credits / refused: key {', '.join(map(str, resting))}" if resting else ""))}
+    except Exception as e:
+        services["sarvam"] = {"ok": False, "keys": 0, "in_use": None, "resting": [], "detail": f"No Sarvam key loaded ({type(e).__name__})"}
+
+    # Recent questions (for Groq status, speed and errors)
+    logs = []
+    if db is not None:
+        try:
+            cursor = db[analytics_engine.LOGS].find(
+                {"timings_ms": {"$exists": True}},
+                {"timestamp": 1, "text": 1, "timings_ms": 1, "reply_ok": 1, "reply_path": 1, "tts_ok": 1,
+                 "tts_error": 1, "status": 1, "language": 1, "response_time_ms": 1},
+            ).sort("timestamp", -1).limit(100)
+            logs = await cursor.to_list(length=100)
+        except Exception as e:
+            print(f"⚠️ System health: could not read logs: {e}")
+
+    now = datetime.now(timezone.utc)
+    def _aware(t):
+        return t if t is None or t.tzinfo else t.replace(tzinfo=timezone.utc)
+    hour = [l for l in logs if _aware(l.get("timestamp")) and now - _aware(l["timestamp"]) <= timedelta(hours=1)]
+
+    replies = [l for l in logs if l.get("reply_ok") is not None]
+    last_three = replies[:3]
+    if not replies:
+        services["groq"] = {"ok": None, "detail": "No questions answered yet since logging started"}
+    elif last_three and all(l.get("reply_ok") is False for l in last_three):
+        services["groq"] = {"ok": False, "detail": "The last 3 replies failed — check the Groq key / internet"}
+    else:
+        last_ok = next((l for l in replies if l.get("reply_ok")), None)
+        when = _aware(last_ok["timestamp"]).isoformat() if last_ok else None
+        services["groq"] = {"ok": True, "detail": "Answers are being written normally", "last_ok": when}
+
+    # Time per step over the last 100 questions
+    steps = []
+    for label, keys in HEALTH_STEPS:
+        vals = []
+        for l in logs:
+            t = l.get("timings_ms") or {}
+            present = [t[k] for k in keys if isinstance(t.get(k), (int, float))]
+            if present:
+                vals.append(sum(present))
+        steps.append({"label": label, "avg_ms": _avg(vals), "p90_ms": _p90(vals), "count": len(vals)})
+    totals = [l["timings_ms"]["total"] for l in logs if isinstance((l.get("timings_ms") or {}).get("total"), (int, float))]
+
+    # Problems in the last hour + recent problem list
+    failed = [l for l in hour if l.get("reply_ok") is False]
+    voice_failed = [l for l in hour if l.get("tts_ok") is False]
+    unclear = [l for l in hour if l.get("reply_path") == "unclear"]
+    problems = recent_problems(10)
+    for l in logs:
+        if len(problems) >= 10:
+            break
+        if l.get("reply_ok") is False or l.get("tts_ok") is False:
+            problems.append({"at": _aware(l["timestamp"]).isoformat(timespec="seconds"),
+                             "source": "Voice" if l.get("reply_ok") is not False else "Reply",
+                             "detail": (l.get("tts_error") or "reply could not be generated") + f" — “{(l.get('text') or '')[:60]}”"})
+
+    return {
+        "checked_at": now.isoformat(timespec="seconds"),
+        "services": services,
+        "speed": {"questions": len(totals), "avg_total_ms": _avg(totals), "p90_total_ms": _p90(totals), "steps": steps},
+        "last_hour": {"questions": len(hour), "failed_replies": len(failed), "voice_failed": len(voice_failed),
+                      "could_not_hear": len(unclear)},
+        "problems": problems[:10],
+        # 2026-11-01: visitors on their own phones (through the Cloudflare tunnel)
+        "phones": {"paused": phone_paused(), "questions_last_hour": phone_questions_last_hour(),
+                   "hourly_cap": PHONE_HOURLY_CAP},
+    }
+
+
+class PhoneAccessRequest(BaseModel):
+    paused: bool
+
+
+@router.post("/phone-access")
+async def set_phone_access(body: PhoneAccessRequest, admin: dict = Depends(require_admin)):
+    """2026-11-01: one click pauses / resumes every visitor phone; the stall laptop keeps working."""
+    from utils.system_health import set_phone_paused
+    set_phone_paused(body.paused)
+    try:
+        await log_activity(_db(), admin["sub"], "phone_access", "paused" if body.paused else "resumed")
+    except Exception:
+        pass
+    return {"paused": body.paused}
+
+
 # ── Activity log ───────────────────────────────────────────────────────────
 @router.get("/activity")
 async def activity(limit: int = Query(100, ge=1, le=500), admin_email: str | None = None, action: str | None = None):

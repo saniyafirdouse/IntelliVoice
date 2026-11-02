@@ -47,7 +47,8 @@ def classify_status(intelligence_result: dict, knowledge_result: dict | None) ->
 
 async def log_query(db, *, session_id: str, text: str, language: dict | None,
                     intelligence_result: dict, knowledge_result: dict | None = None,
-                    input_type: str = "text", response_time_ms: int | None = None) -> None:
+                    input_type: str = "text", response_time_ms: int | None = None,
+                    timings: dict | None = None, reply: dict | None = None) -> None:
     """Save one question. Safe to call even if something is missing."""
     try:
         if db is None:
@@ -72,6 +73,12 @@ async def log_query(db, *, session_id: str, text: str, language: dict | None,
             "needs_escalation": bool(intelligence_result.get("needs_escalation")),
             "status": classify_status(intelligence_result, knowledge_result),
             "response_time_ms": response_time_ms,
+            # 2026-11-01: for the admin "System health" page — time per step (ms) and how the reply went
+            "timings_ms": {k: v for k, v in (timings or {}).items() if isinstance(v, (int, float))},
+            "reply_ok": (reply or {}).get("ok"),
+            "reply_path": (reply or {}).get("path"),
+            "tts_ok": (reply or {}).get("tts_ok"),
+            "tts_error": (reply or {}).get("tts_error"),
             "resolved": False,
         })
     except Exception as e:  # never let analytics break the voice pipeline

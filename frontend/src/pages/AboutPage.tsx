@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { CampusBackdrop, VantagePills } from "../components/CampusBackdrop";
+import { CampusBackdrop } from "../components/CampusBackdrop";
 import { FloatingMicButton } from "../components/FloatingMicButton";
 import { Icon } from "../components/Icon";
 import { PageShell } from "../components/PageShell";
@@ -33,12 +33,6 @@ const ENGINES = [
   { n: "06", icon: "bar_chart", title: "Analytics", body: "Logs queries and system performance to help the admissions team understand what students ask most and improve the assistant over time.", tag: "Query Insights" },
 ];
 
-const TEAM = [
-  { name: "Bhavana K C", role: "Frontend Developer", icons: ["terminal", "code"] },
-  { name: "Bhuvana J U", role: "Backend & AI Engineer", icons: ["database", "api"] },
-  { name: "M. Saniya Firdouse", role: "Core AI Lead", icons: ["psychology", "memory"] },
-  { name: "Pooja M", role: "Frontend Lead & UI/UX", icons: ["palette", "devices"] },
-];
 
 const RECOGNITION = [
   { icon: "verified", label: "University Affiliation", value: "Visvesvaraya Technological University (VTU)" },
@@ -56,6 +50,119 @@ function SectionIntro({ eyebrow, title, body }: { eyebrow: string; title: string
   );
 }
 
+// 2026-11-01: "About SVIT" — the college itself, from the college website and the admissions
+// database (verified facts in backend/engines/college_profile.py). Photos from public/assets.
+const SVIT_PHOTOS = [
+  { src: "/assets/campus-front.jpg", caption: "Main entrance" },
+  { src: "/assets/campus-lobby-hall.jpg", caption: "Lobby" },
+  { src: "/assets/campus-lawn.jpg", caption: "Campus lawn" },
+  { src: "/assets/campus-building.jpg", caption: "Academic block" },
+];
+const SVIT_STATS = [
+  { value: "2008", label: "Founded" },
+  { value: "1,686", label: "Students (2026)" },
+  { value: "402", label: "Placement offers (2026)" },
+  { value: "33 LPA", label: "Highest package" },
+  { value: "7.5 LPA", label: "Average package" },
+  { value: "200+", label: "Companies visited" },
+];
+const SVIT_PROGRAMMES = [
+  { name: "Computer Science & Engineering", note: "Intake 180" },
+  { name: "CSE (AI & Machine Learning)", note: "Intake 120" },
+  { name: "CSE (Data Science)", note: "Intake 120" },
+  { name: "Electronics & Communication", note: "Intake 120" },
+  { name: "CSE (Cyber Security)", note: "New from 2026-27" },
+  { name: "CS (Business Systems)", note: "New from 2026-27" },
+  { name: "Civil Engineering", note: "Intake 30" },
+  { name: "Mechanical Engineering", note: "Intake 30" },
+  { name: "MBA", note: "Through PGCET (code B269)" },
+];
+const SVIT_CAMPUS = [
+  { icon: "apartment", title: "Hostels", body: "Separate on-campus hostels for boys and girls, vegetarian food, solar hot water and purified drinking water on every floor." },
+  { icon: "directions_bus", title: "Transport", body: "8 college buses on routes across Bengaluru, with fixed morning pick-up times." },
+  { icon: "local_library", title: "Library", body: "20,057 volumes, IEEE Xplore, ScienceDirect and Springer e-resources, and a fully automated digital library." },
+  { icon: "sports_cricket", title: "Sports & clubs", body: "Cricket, basketball, volleyball, football, kabaddi, indoor games, a gym, NCC and NSS." },
+  { icon: "science", title: "Laboratories", body: "Department labs for every branch and a Makers Space lab for projects." },
+  { icon: "videocam", title: "Safe campus", body: "Green campus with CCTV in every classroom and strict hostel supervision." },
+];
+const SVIT_LEADERS = [
+  { name: "Dr. Manjunath T N", role: "Principal" },
+  { name: "Prof. M. R. Holla", role: "Mentor and guide" },
+  { name: "Dr. Lakshminarayanachari K", role: "Vice Principal" },
+  { name: "Dr. Vrinda Shetty", role: "Dean Academics" },
+  { name: "Prof. R C Shanmukhaswamy", role: "Dean Administration" },
+  { name: "Dr. T G Manjunatha", role: "Dean Student Affairs" },
+];
+
+function AboutSvit() {
+  return (
+    <section data-bg="bg-section-library" id="section-svit" className="flex flex-col gap-space-lg">
+      <SectionIntro
+        eyebrow="Our College"
+        title="Sai Vidya Institute of Technology"
+        body="Founded in 2008 by Sri Sai Vidya Vikas Shikshana Samithi with the motto “Learn to Lead”. Approved by AICTE, NAAC ‘A’ grade, affiliated to VTU, and autonomous for students joining from 2026."
+      />
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-space-md">
+        {SVIT_PHOTOS.map((p) => (
+          <figure key={p.src} className="relative rounded-lg overflow-hidden border border-white/30 shadow-2xl aspect-[4/3] m-0">
+            <img src={p.src} alt={`SVIT ${p.caption.toLowerCase()}`} className="w-full h-full object-cover" loading="lazy" />
+            <figcaption className="absolute left-0 right-0 bottom-0 px-3 py-2 text-white text-[13px] font-semibold" style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.75))" }}>{p.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-space-md">
+        {SVIT_STATS.map((s) => (
+          <div key={s.label} className="p-space-md rounded-lg border border-white/30 backdrop-blur-2xl text-center" style={card}>
+            <p className="text-white text-[26px] font-bold leading-tight glass-text-glow">{s.value}</p>
+            <p className="text-slate-200 text-[13px] font-medium mt-1">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-stretch">
+        <div className="lg:col-span-5 p-space-xl rounded-lg backdrop-blur-2xl shadow-2xl border border-white/30" style={cardLarge}>
+          <h3 className="text-white font-bold glass-text-glow flex items-center gap-2"><Icon name="school" className="text-mk-secondary" />Programmes 2026-27</h3>
+          <ul className="mt-space-md flex flex-col gap-2 list-none p-0 m-0">
+            {SVIT_PROGRAMMES.map((p) => (
+              <li key={p.name} className="flex items-center justify-between gap-3 px-3 py-2 rounded-DEFAULT border border-white/15" style={softFill}>
+                <span className="text-white font-medium">{p.name}</span>
+                <span className="text-mk-secondary text-[13px] font-semibold whitespace-nowrap">{p.note}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-space-md text-slate-200 text-[13px]">ISE has been merged into CSE for new admissions. Diploma holders can join the 2nd year of B.E. through DCET.</p>
+        </div>
+        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+          {SVIT_CAMPUS.map((c) => (
+            <div key={c.title} className="p-space-lg rounded-lg border border-white/30 backdrop-blur-2xl shadow-2xl" style={card}>
+              <div className="flex items-center gap-2.5">
+                <span className="w-10 h-10 rounded-full flex items-center justify-center border border-white/30" style={lavenderFill}><Icon name={c.icon} className="text-white text-[22px]" /></span>
+                <h3 className="text-white font-bold glass-text-glow">{c.title}</h3>
+              </div>
+              <p className="mt-2 text-slate-100 font-medium leading-relaxed">{c.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="p-space-xl rounded-lg backdrop-blur-2xl shadow-2xl border border-white/30" style={cardLarge}>
+        <h3 className="text-white font-bold glass-text-glow flex items-center gap-2"><Icon name="groups" className="text-mk-secondary" />Leadership</h3>
+        <div className="mt-space-md grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-md">
+          {SVIT_LEADERS.map((l) => (
+            <div key={l.name} className="px-4 py-3 rounded-DEFAULT border border-white/15" style={softFill}>
+              <p className="text-white font-bold">{l.name}</p>
+              <p className="text-mk-secondary text-[13px] font-semibold">{l.role}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-space-md text-slate-300 text-[12.5px]">Source: saividya.ac.in and the SVIT admissions data, 2026. Ask Eva for the latest fees, cutoffs and seats.</p>
+      </div>
+    </section>
+  );
+}
+
 export default function AboutPage() {
   const { ref, active } = useSectionBackground<HTMLElement>("bg-section-courtyard");
 
@@ -70,6 +177,7 @@ export default function AboutPage() {
         <>
           <CampusBackdrop
             active={active}
+            images={{ "bg-section-quad": "/assets/campus-lobby-hall.jpg" }}   // 2026-11-01: lobby photo behind the team and college card
             overlay={
               <>
                 <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-[#7E82C2]/20 via-[#EBE7F5]/10 to-[#bfc2ff]/20 backdrop-blur-[2px]" />
@@ -77,7 +185,7 @@ export default function AboutPage() {
               </>
             }
           />
-          <VantagePills active={active} />
+          {/* 2026-11-01: the moving dots on the right (VantagePills) removed — they jumped around while scrolling */}
         </>
       }
       after={<FloatingMicButton variant="marketing" />}
@@ -143,7 +251,8 @@ export default function AboutPage() {
                   ))}
                 </div>
               </div>
-              <div className="lg:col-span-5 relative rounded-lg overflow-hidden backdrop-blur-xl shadow-2xl flex flex-col justify-end min-h-[360px] border border-white/90" style={{ boxShadow: "rgba(18, 20, 20, 0.1) 0px 20px 50px" }}>
+              {/* 2026-11-01: opens SVIT on Google Maps */}
+              <a href="https://www.google.com/maps/search/?api=1&query=Sai+Vidya+Institute+of+Technology+Rajanukunte+Bengaluru" target="_blank" rel="noopener noreferrer" title="Open SVIT on Google Maps" className="group lg:col-span-5 relative rounded-lg overflow-hidden backdrop-blur-xl shadow-2xl flex flex-col justify-end min-h-[360px] border border-white/90" style={{ boxShadow: "rgba(18, 20, 20, 0.1) 0px 20px 50px" }}>
                 <img alt="SVIT campus building" className="absolute inset-0 w-full h-full object-cover transition-all duration-700 opacity-95 scale-105 hover:scale-100" src="/assets/campus-building.jpg" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="relative z-10 p-space-lg m-4 rounded-DEFAULT backdrop-blur-md border border-white/30 shadow-xl" style={{ background: "rgba(20, 16, 28, 0.6)", backdropFilter: "blur(16px)" }}>
@@ -152,9 +261,13 @@ export default function AboutPage() {
                     SVIT CAMPUS
                   </span>
                   <p className="text-white font-bold glass-text-glow">Rajanukunte, Bengaluru</p>
+                  <p className="mt-1 text-[13px] text-slate-200 flex items-center gap-1 group-hover:text-white"><Icon name="map" className="text-[16px]" />Open in Google Maps</p>
                 </div>
-              </div>
+              </a>
             </section>
+
+            {/* ---------- About SVIT (2026-11-01): right after the campus card ---------- */}
+            <AboutSvit />
 
             {/* ---------- The problem ---------- */}
             <section data-bg="bg-section-library" id="section-features" className="flex flex-col gap-space-lg">
@@ -218,26 +331,7 @@ export default function AboutPage() {
               </div>
             </section>
 
-            {/* ---------- Team ---------- */}
-            <section data-bg="bg-section-quad" id="section-cta" className="flex flex-col gap-space-lg">
-              <SectionIntro
-                eyebrow="Student Innovation"
-                title="Architects & Engineering Team"
-                body="Built as an ISE Final Year Major Project (2026-27) to solve a real admission challenge using applied AI."
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter py-space-md">
-                {TEAM.map((m) => (
-                  <div key={m.name} className="p-space-lg rounded-DEFAULT backdrop-blur-2xl border border-white/30 shadow-xl flex flex-col items-center text-center group hover:scale-[1.02] transition-all duration-300" style={card}>
-                    <h4 className="font-title-lg text-white font-bold mb-2 glass-text-glow tracking-wide">{m.name}</h4>
-                    <span className="px-3.5 py-1 rounded-full text-white font-bold mb-2 shadow-sm border border-white/30 tracking-wide" style={lavenderFill}>{m.role}</span>
-                    <span className="text-slate-100 font-medium glass-text-glow">Dept of ISE, SVIT Bengaluru</span>
-                    <div className="mt-space-md pt-space-sm border-t border-white/20 w-full flex justify-center gap-3 text-mk-secondary">
-                      {m.icons.map((i) => <Icon key={i} name={i} className="text-[20px]" />)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
+            {/* 2026-11-01: team member cards removed (San) */}
 
             {/* ---------- Institution ---------- */}
             <section data-bg="bg-section-quad" className="p-space-xl rounded-lg backdrop-blur-2xl shadow-2xl relative overflow-hidden border border-white/30" style={cardLarge}>
@@ -253,12 +347,12 @@ export default function AboutPage() {
                     </div>
                     <p className="font-mk-body-md text-slate-100 flex items-center gap-1.5 mt-0.5 font-medium glass-text-glow">
                       <Icon name="pin_drop" className="text-[16px] text-mk-secondary" />
-                      Rajanukunte, Doddaballapur Main Road, Bengaluru, Karnataka 560064
+                      Rajanukunte, via Yelahanka, Bengaluru, Karnataka 560119
                     </p>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
-                  {[["CET Code", "E168"], ["COMEDK Code", "E094"]].map(([k, v]) => (
+                  {[["KCET Code", "E173"], ["COMEDK Code", "E113"], ["PGCET (MBA)", "B269"]].map(([k, v]) => (
                     <div key={k} className="px-4 py-2 rounded-DEFAULT text-white border border-white/30 font-bold shadow-md backdrop-blur-md" style={chipFill}>
                       {k}: <strong className="text-mk-secondary font-bold ml-1 glass-text-glow">{v}</strong>
                     </div>
