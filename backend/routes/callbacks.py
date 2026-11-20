@@ -7,7 +7,8 @@ in MongoDB (collection "callback_requests") with the question and the last
 few chat turns, so the office knows what it is about. Staff see the list in
 the admin panel and mark each one as called / resolved.
 
-Public (no login — it is the parent asking):
+Public (no login needed — it is the parent asking; 2026-11-20: if a student is signed in,
+their email is saved too, so they can follow the request under "My callback requests"):
   POST  /api/callback                      {name, phone, question?, language?, preferred_time?, session_id?}
 
 Admin (admin login token, like routes/admin.py):
@@ -20,7 +21,7 @@ from datetime import datetime, timedelta, timezone
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from database.connection import get_database
@@ -85,11 +86,14 @@ def _public_view(doc: dict) -> dict:
         "created_at": doc.get("created_at").isoformat() if doc.get("created_at") else None,
         "updated_at": doc.get("updated_at").isoformat() if doc.get("updated_at") else None,
         "handled_by": doc.get("handled_by"),
+        "email": doc.get("email"),
     }
 
 
 @public_router.post("/callback")
-async def create_callback(body: CallbackRequest):
+async def create_callback(body: CallbackRequest, authorization: str | None = Header(None)):
+    from routes.student import optional_user_email      # 2026-11-20 (imported here: no import loop)
+    email = optional_user_email(authorization)
     phone = clean_phone(body.phone)
     if not phone:
         raise HTTPException(422, detail="Please enter a valid 10-digit phone number.")
@@ -117,6 +121,7 @@ async def create_callback(body: CallbackRequest):
         "preferred_time": (body.preferred_time or "").strip() or None,
         "session_id": body.session_id,
         "recent_conversation": turns,
+        "email": email,
         "updated_at": _now(),
     }
     if recent:

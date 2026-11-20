@@ -18,6 +18,7 @@ const AdminHistoryPage = lazy(() => import("./pages/admin/AdminHistoryPage"));
 const AdminUnansweredPage = lazy(() => import("./pages/admin/AdminUnansweredPage"));
 const AdminActivityPage = lazy(() => import("./pages/admin/AdminActivityPage"));
 const AdminHealthPage = lazy(() => import("./pages/admin/AdminHealthPage"));   // 2026-11-01
+const AdminCallbacksPage = lazy(() => import("./pages/admin/AdminCallbacksPage"));   // 2026-11-20
 
 /** Scroll to the top on page change (but keep #section links working). */
 function ScrollToTop() {
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="data" element={<AdminDataPage />} />
             <Route path="history" element={<AdminHistoryPage />} />
             <Route path="unanswered" element={<AdminUnansweredPage />} />
+            <Route path="callbacks" element={<AdminCallbacksPage />} />
             <Route path="activity" element={<AdminActivityPage />} />
             <Route path="health" element={<AdminHealthPage />} />
           </Route>

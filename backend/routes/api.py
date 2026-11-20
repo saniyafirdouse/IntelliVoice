@@ -15,6 +15,7 @@ Added 2026-10-12 (integration).
 """
 
 import asyncio
+import os
 import time
 import json
 from typing import Optional
@@ -173,9 +174,23 @@ VISITOR_WINDOW_S = 5 * 60
 _visitor_hits: dict = {}
 
 
+# 2026-11-20: on the public website (Hugging Face) there is no stall laptop: every request is a
+# visitor and gets the limits. PUBLIC_SITE=true is set in the Dockerfile; the laptop doesn't have it.
+PUBLIC_SITE = os.getenv("PUBLIC_SITE", "").strip().lower() in ("1", "true", "yes")
+
+
+def _visitor_ip(request: Request) -> str:
+    """The visitor's address: the tunnel header, else (public site) the first X-Forwarded-For address."""
+    ip = request.headers.get("cf-connecting-ip")
+    if ip or not PUBLIC_SITE:
+        return ip or ""
+    forwarded = (request.headers.get("x-forwarded-for") or "").split(",")[0].strip()
+    return forwarded or (request.client.host if request.client else "") or "unknown"
+
+
 def _check_phone_access(request: Request) -> bool:
     """True if this request came through the tunnel (a visitor's phone). Raises if phones are paused."""
-    if not request.headers.get("cf-connecting-ip"):
+    if not _visitor_ip(request):
         return False                        # the stall laptop: never paused or limited
     if phone_paused():
         raise HTTPException(503, detail="Phone access is paused right now. Please use the IntelliVoice laptop at the stall.")
@@ -183,7 +198,7 @@ def _check_phone_access(request: Request) -> bool:
 
 
 def _check_visitor_limit(request: Request) -> None:
-    tunnel_ip = request.headers.get("cf-connecting-ip")
+    tunnel_ip = _visitor_ip(request)
     if not tunnel_ip:                       # not through the tunnel = the stall laptop: never limited
         return
     if phone_cap_reached():                 # 2026-11-01: all phones together, per hour
@@ -228,6 +243,19 @@ async def api_query(
     speech = speech if speech in SPEECH_LANGUAGES else None          # "auto" -> detect
     reply_language, script = RESPONSE_LANGUAGES.get((response_language or "same").strip(), (None, None))
 
+    # 2026-11-20: a signed-in student's profile (exam, rank, category) is used like the old
+    # "Your Query Context" box; what the question itself says always comes first.
+    email = optional_user_email(authorization)
+    extra = _context_entities(context)
+    if email and not context:
+        try:
+            profile = await user_history.profile_context(email)
+            extra = _context_entities(json.dumps(profile)) if profile else {}
+            if profile.get("exam"):
+                extra["exam"] = profile["exam"]
+        except Exception as e:                   # the profile is a bonus: never block the answer
+            print(f"⚠️  Profile not used: {e}")
+
     audio_bytes = await audio.read() if audio else None
     if audio is not None and not audio_bytes and not (text and text.strip()):
         raise HTTPException(400, detail="I couldn't hear anything in that recording. Please try again.")
@@ -242,7 +270,7 @@ async def api_query(
             script=script,
             include_audio=include_audio,
             reply_language=reply_language,
-            extra_entities=_context_entities(context),
+            extra_entities=extra,
         )
     except NoSpeechError:
         # 2026-10-28: silence / noise only — the app shows a small hint, no reply
@@ -252,14 +280,25 @@ async def api_query(
         record_problem("Pipeline", f"{e.status}: {e.message}")     # 2026-11-01: admin "System health"
         raise HTTPException(e.status, detail=e.message)
 
+    out = _to_contract(result)
     # Memory across visits: remember this question for a logged-in student (background, never blocks).
-    email = optional_user_email(authorization)
     if email:
         analysis = result.get("analysis") or {}
+        question = result.get("transcribed_text") or text or ""
         asyncio.create_task(user_history.record_turn(
-            email, result.get("transcribed_text") or text or "", analysis.get("intent"),
+            email, question, analysis.get("intent"),
             analysis.get("entities"), (result.get("language") or {}).get("primary")))
-    return _to_contract(result)
+        # 2026-11-20: the whole chat ("Your chats"): question + Eva's reply (no audio)
+        reply = {
+            "text": (out.get("response") or {}).get("text"),
+            "language": (out.get("response") or {}).get("language"),
+            "extra": {k: out.get(k) for k in ("escalation", "source", "checklist_available", "overview", "documents")
+                      if out.get(k)},
+        }
+        asyncio.create_task(user_history.record_message(
+            email, session_id, question, reply, mode="voice" if audio else "text",
+            language=(result.get("language") or {}).get("primary"), intent=analysis.get("intent")))
+    return out
 
 
 # ── Speech to text only (2026-10-31) ─────────────────────────────────────

@@ -1,0 +1,15 @@
+# keep secrets, big local folders and backups out of the Hugging Face image (2026-11-20)
+**/.env
+.git
+**/venv
+**/node_modules
+**/__pycache__
+**/*_backup_*
+frontend/dist
+frontend/public/vad
+backend/database/offline_copy
+**/*.wav
+**/*.mp4
+**/*.pt
+admin-panel
+docs

@@ -40,7 +40,8 @@ const HIGHLIGHTS = [
 // opens the tunnel address, so the code always matches the current tunnel (it changes each start).
 function PhoneQrCard() {
   const { hostname, origin } = window.location;
-  if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(hostname)) return null;
+  // 2026-11-20: only at the expo (the Cloudflare tunnel address), not on the hosted website
+  if (!hostname.endsWith(".trycloudflare.com")) return null;
   const url = `${origin}/chat`;
   const qr = `https://api.qrserver.com/v1/create-qr-code/?size=640x640&margin=12&data=${encodeURIComponent(url)}`;
   // 2026-11-02: same look as the /expo page (big QR code, steps, Eva)

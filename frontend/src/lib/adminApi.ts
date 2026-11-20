@@ -171,6 +171,24 @@ const post = <T>(path: string, token: string, body?: unknown) =>
     body: body === undefined ? undefined : JSON.stringify(body),
   });
 
+// 2026-11-20: callback requests ("Please call me back") — backend routes/callbacks.py
+export type CallbackStatus = "new" | "called" | "resolved";
+export interface CallbackItem {
+  id: string;
+  name: string | null;
+  phone: string | null;
+  question: string | null;
+  language: string | null;
+  preferred_time: string | null;
+  recent_conversation: { question: string; answer: string }[];
+  status: CallbackStatus;
+  note: string;
+  created_at: string | null;
+  updated_at: string | null;
+  handled_by: string | null;
+  email?: string | null;
+}
+
 // ── endpoints ──────────────────────────────────────────────────────────────
 export const adminApi = {
   datasets: (token: string) => json<{ datasets: Dataset[] }>("/datasets", token).then((r) => r.datasets),
@@ -223,6 +241,16 @@ export const adminApi = {
   health: (token: string) => json<SystemHealth>("/health", token),
   /** Pause / resume all visitor phones (the stall laptop keeps working). */
   setPhoneAccess: (token: string, paused: boolean) => post<{ paused: boolean }>("/phone-access", token, { paused }),
+
+  /** 2026-11-20: callback requests, newest first. status: new | called | resolved | all */
+  callbacks: (token: string, status: CallbackStatus | "all" = "new") =>
+    json<{ items: CallbackItem[]; counts: Record<CallbackStatus, number> }>(`/callbacks?status=${status}`, token),
+  updateCallback: (token: string, id: string, change: { status?: CallbackStatus; note?: string }) =>
+    json<CallbackItem>(`/callbacks/${encodeURIComponent(id)}`, token, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(change),
+    }),
 
   /** Who did what in the admin panel, newest first. */
   activity: (token: string, limit = 200) =>

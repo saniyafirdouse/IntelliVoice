@@ -50,7 +50,7 @@ export function SiteFooter({ variant }: { variant: HeaderVariant }) {
             <span className={look.badge.className} style={look.badge.style}>Autonomous</span>
           </div>
           <p className={look.line1}>NAAC &apos;A&apos; Grade Accredited | Approved by AICTE, Affiliated to VTU Belagavi</p>
-          <p className={look.line2}>Rajanukunte, Doddaballapur Road, Bengaluru, Karnataka 560064</p>
+          <p className={look.line2}>Rajanukunte, Doddaballapur Road, Bengaluru, Karnataka 560119</p>
         </div>
         <div className={`flex flex-col items-center md:items-end text-center md:text-right ${look.gap}`}>
           <span className={look.project}>ISE Final Year Major Project 2026-27</span>

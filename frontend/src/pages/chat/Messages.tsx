@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "../../components/Icon";
 import { audioSource } from "../../lib/audio";
-import { ApiError, downloadChecklist } from "../../lib/api";
+import { ApiError, deleteSaved, downloadChecklist, saveAnswer } from "../../lib/api";
+import { useAuth } from "../../context/AuthContext";
+import { CallbackForm } from "./CallbackForm";
+import { EmailMeButton } from "./EmailMeButton";
 import type { CollegeOverview, DocumentLink, OverviewSection, QueryResponse, TableData } from "../../lib/types";
 import type { ChatMessage } from "./useChat";
 import { EvaAvatar } from "../../components/EvaAvatar";
@@ -385,6 +388,30 @@ function CopyButton({ text }: { text: string }) {
 }
 
 /** 👍 / 👎 — shows the choice (saved on this screen only for now). */
+/** 2026-11-20: ☆ star this answer (signed-in students; listed under "Your chats" -> Starred) */
+function SaveAnswerButton({ question, answer, language }: { question: string; answer: string; language?: string }) {
+  const { token } = useAuth();
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+  if (!token || !answer.trim()) return null;
+  const toggle = async () => {
+    setBusy(true);
+    setFailed(false);
+    try {
+      if (savedId) { await deleteSaved(token, savedId); setSavedId(null); }
+      else setSavedId((await saveAnswer(token, question, answer, language)).id);
+    } catch { setFailed(true); } finally { setBusy(false); }
+  };
+  return (
+    <button type="button" onClick={() => void toggle()} disabled={busy} className={ACTION_BTN} aria-pressed={!!savedId}
+      title={failed ? "Couldn't star it. Try again." : savedId ? "Starred: see “Your chats” → Starred. Click to unstar." : "Star this answer to find it later"}>
+      <Icon name="star" className="text-[19px]" filled={!!savedId} style={savedId ? { color: "#e8d3a3" } : undefined} />
+      <span>{failed ? "Retry" : savedId ? "Starred" : "Star"}</span>
+    </button>
+  );
+}
+
 function Feedback() {
   const [vote, setVote] = useState<"up" | "down" | null>(null);
   return (
@@ -451,7 +478,7 @@ function FollowUps({ res, onAsk, disabled }: { res: QueryResponse; onAsk: (q: st
   );
 }
 
-function BotBubble({ m, control, isLatest, onAsk, busy }: { m: Extract<ChatMessage, { kind: "bot" }>; control: AudioControl; isLatest: boolean; onAsk: (q: string) => void; busy: boolean }) {
+function BotBubble({ m, control, isLatest, onAsk, busy, question = "" }: { m: Extract<ChatMessage, { kind: "bot" }>; control: AudioControl; isLatest: boolean; onAsk: (q: string) => void; busy: boolean; question?: string }) {
   const { res } = m;
   const r = res.response ?? {};
   // the reply's own language/script if the backend says so, else the detected question language
@@ -498,6 +525,8 @@ function BotBubble({ m, control, isLatest, onAsk, busy }: { m: Extract<ChatMessa
                 <ReplyAudio res={res} control={control} isLatest={isLatest} />
               </span>
               <CopyButton text={shown} />
+              <SaveAnswerButton question={question} answer={r.text ?? ""} language={lang || undefined} />
+              {r.text && <EmailMeButton kind="answer" question={question} answer={r.text} className={ACTION_BTN} />}
               {canRomanize && (
                 <button type="button" onClick={() => setRoman((x) => !x)} className={ACTION_BTN}>
                   <Icon name="translate" className="text-[20px]" />
@@ -518,6 +547,8 @@ function BotBubble({ m, control, isLatest, onAsk, busy }: { m: Extract<ChatMessa
             <span className="text-[14.5px] text-white/85">{res.escalation?.message || "The SVIT admissions team can help with this question."}</span>
             {contact?.phone && <a className="text-[14.5px] underline underline-offset-2" style={{ color: "#f6f0bd" }} href={`tel:${contact.phone}`}>{contact.phone}</a>}
             {contact?.email && <a className="text-[14.5px] underline underline-offset-2" style={{ color: "#f6f0bd" }} href={`mailto:${contact.email}`}>{contact.email}</a>}
+            {/* 2026-11-20: the office calls back (saved for Admin -> Callbacks) */}
+            <CallbackForm question={res.transcript || undefined} language={(res.language?.primary as string) || undefined} />
           </div>
         </div>
       )}
@@ -552,10 +583,14 @@ export function MessageList({ messages, busy, control, onRetry, onAsk }: {
   const lastId = messages[messages.length - 1]?.id;
   return (
     <>
-      {messages.map((m) =>
-        m.kind === "user" ? <UserBubble key={m.id} m={m} />
-          : m.kind === "bot" ? <BotBubble key={m.id} m={m} control={control} isLatest={m.id === lastBotId && m.id === lastId && !busy} onAsk={onAsk} busy={busy} />
-            : <ErrorBubble key={m.id} m={m} onRetry={onRetry} />)}
+      {messages.map((m, i) => {
+        if (m.kind === "user") return <UserBubble key={m.id} m={m} />;
+        if (m.kind === "bot") {
+          const prev = messages[i - 1];      // the question this reply answers (for ⭐ Save)
+          return <BotBubble key={m.id} m={m} control={control} isLatest={m.id === lastBotId && m.id === lastId && !busy} onAsk={onAsk} busy={busy} question={prev?.kind === "user" ? prev.text : ""} />;
+        }
+        return <ErrorBubble key={m.id} m={m} onRetry={onRetry} />;
+      })}
       {busy && (
         <div className="self-start flex items-center gap-3 pl-2 pr-5 py-2 rounded-full text-white/85 text-[15px]" style={{ background: "rgba(20, 19, 16, 0.6)", border: "1px solid rgba(167, 134, 95, 0.4)", ...GLASS }}>
           <EvaAvatar size={32} />

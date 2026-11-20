@@ -1,9 +1,11 @@
 // "Talk to a Human Officer" pop-up (2026-10-14, v3: frosted glass in the site's warm/sage theme).
 // Real SVIT contact details from backend/engines/college_profile.py.
-// Call Now -> phone dialer, Send Email -> email app, View on Map -> Google Maps (SVIT pin).
+// Call Now -> phone dialer, View on Map -> Google Maps (SVIT pin), Save contact -> "Add to contacts".
+// 2026-11-20 (San): "Send email" button removed (the email address stays, with Copy).
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "../../components/Icon";
+import { CallbackForm, saveSvitContact } from "./CallbackForm";
 
 // ---- verified contact details (same as the backend's college_profile.py) ----
 export const SVIT_CONTACT = {
@@ -63,11 +65,27 @@ function Row({ icon, label, children, action }: { icon: string; label: string; c
 
 const BTN = "h-11 px-4 rounded-xl flex items-center justify-center gap-2 text-[14.5px] font-semibold transition-colors";
 
+/** 2026-11-20: phones (touch screens) can call and add contacts; laptops can't. */
+function isPhone() {
+  try {
+    return window.matchMedia("(pointer: coarse)").matches || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+  } catch {
+    return false;
+  }
+}
+
 export function ContactDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  // 2026-11-20 (San): on a laptop "Call now" / "Save contact" can't work, so explain instead
+  const [phoneOnly, setPhoneOnly] = useState(false);
+  const phoneAction = (e: { preventDefault: () => void }, action?: () => void) => {
+    if (isPhone()) { action?.(); return; }
+    e.preventDefault();
+    setPhoneOnly(true);
+  };
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) { setPhoneOnly(false); return; }
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
@@ -160,18 +178,35 @@ export function ContactDialog({ open, onClose }: { open: boolean; onClose: () =>
 
         {/* actions */}
         <div className="relative px-6 pt-5 pb-6 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <a href={`tel:${c.phoneTel}`} className={`${BTN} hover:brightness-105`} style={{ background: C.callFill, color: C.callText, boxShadow: "0 8px 22px rgba(194, 204, 153, 0.3)" }}>
+          <a href={`tel:${c.phoneTel}`} onClick={(e) => phoneAction(e)} className={`${BTN} hover:brightness-105`} style={{ background: C.callFill, color: C.callText, boxShadow: "0 8px 22px rgba(194, 204, 153, 0.3)" }}>
             <Icon name="call" className="text-[18px]" />
             Call now
-          </a>
-          <a href={`mailto:${c.email}?subject=${encodeURIComponent("Admission enquiry")}`} className={`${BTN} hover:bg-white/15`} style={{ color: C.ink, border: "1px solid rgba(255, 245, 225, 0.3)", background: "rgba(255, 250, 240, 0.08)" }}>
-            <Icon name="mail" className="text-[18px]" />
-            Send email
           </a>
           <a href={c.mapUrl} target="_blank" rel="noopener noreferrer" className={`${BTN} hover:bg-white/15`} style={{ color: C.ink, border: "1px solid rgba(255, 245, 225, 0.3)", background: "rgba(255, 250, 240, 0.08)" }}>
             <Icon name="map" className="text-[18px]" />
             View on map
           </a>
+          {/* 2026-11-20: on a phone this opens "Add to contacts" with the office's numbers and email */}
+          <button type="button" onClick={(e) => phoneAction(e, saveSvitContact)} className={`${BTN} hover:bg-white/15`} style={{ color: C.ink, border: "1px solid rgba(255, 245, 225, 0.3)", background: "rgba(255, 250, 240, 0.08)" }}>
+            <Icon name="person_add" className="text-[18px]" />
+            Save contact
+          </button>
+        </div>
+
+        {phoneOnly && (
+          <div className="relative mx-6 -mt-2 mb-5 px-4 py-3 rounded-xl flex items-start gap-2.5 text-[14px] leading-snug" role="status"
+            style={{ background: "rgba(20, 18, 14, 0.35)", border: `1px solid ${C.line}`, color: C.body }}>
+            <Icon name="smartphone" className="text-[20px] mt-px" style={{ color: C.sage }} />
+            <span>
+              Calling and saving the contact work on mobile phones, not on a laptop or desktop. Sorry for the inconvenience.
+              You can copy the number above, or <strong style={{ color: C.ink }}>open IntelliVoice on your phone</strong> for the best experience.
+            </span>
+          </div>
+        )}
+
+        {/* 2026-11-20: when the office is closed, let it call you back (hidden during office hours) */}
+        <div className="relative px-6 pb-6 -mt-2">
+          <CallbackForm />
         </div>
       </div>
     </div>

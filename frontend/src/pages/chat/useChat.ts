@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import { askQuestion, ApiError } from "../../lib/api";
+import { askQuestion, ApiError, type SavedChat } from "../../lib/api";
 import { newSessionId, storage } from "../../lib/storage";
 import type { MemoryInfo, QueryContext, QueryResponse, Understanding } from "../../lib/types";
 
@@ -38,7 +38,8 @@ type Action =
   | { type: "status"; text: string; icon: string }
   | { type: "drop"; ids: string[] }
   | { type: "nospeech"; userId: string; message?: string }
-  | { type: "reset"; sessionId: string };
+  | { type: "reset"; sessionId: string }
+  | { type: "restore"; sessionId: string; messages: ChatMessage[] };
 
 const LANG_NAMES: Record<string, string> = { en: "English", hi: "Hindi", kn: "Kannada" };
 let counter = 0;
@@ -126,7 +127,41 @@ function reducer(state: State, action: Action): State {
       return { ...state, messages: state.messages.filter((m) => !action.ids.includes(m.id)) };
     case "reset":
       return { ...initialState(), sessionId: action.sessionId };
+    case "restore":
+      // 2026-11-20: an earlier chat from "Your chats", opened again (same session: new questions are added to it)
+      return {
+        ...initialState(),
+        sessionId: action.sessionId,
+        messages: action.messages,
+        status: { text: "Your earlier chat is open. Ask a follow-up to continue it.", icon: "history" },
+      };
   }
+}
+
+/** 2026-11-20: a saved chat (from the backend) -> chat bubbles. Old replies have text, PDFs and help cards, but no voice. */
+function savedToMessages(chat: SavedChat): ChatMessage[] {
+  const out: ChatMessage[] = [];
+  for (const m of chat.messages) {
+    const at = m.at ? new Date(m.at) : new Date();
+    if (m.role === "user") {
+      out.push({
+        id: uid(), kind: "user", voice: m.mode === "voice", pending: false, at,
+        text: m.text || (m.mode === "voice" ? "(voice message)" : ""),
+        langLabel: m.language && LANG_NAMES[m.language] ? LANG_NAMES[m.language] : undefined,
+      });
+    } else {
+      out.push({
+        id: uid(), kind: "bot", at,
+        res: {
+          ...(m.extra ?? {}),
+          response: { text: m.text, language: m.language ?? undefined },
+          understanding: m.intent ? { intent: m.intent } : undefined,
+          audio: null,
+        },
+      });
+    }
+  }
+  return out;
 }
 
 function initialState(): State {
@@ -207,6 +242,10 @@ export function useChat({ getContext, token, speechLanguage, responseLanguage }:
 
   const setStatus = useCallback((text: string, icon = "info") => dispatch({ type: "status", text, icon }), []);
   const reset = useCallback(() => dispatch({ type: "reset", sessionId: newSessionId() }), []);
+  // 2026-11-20: open an earlier chat from "Your chats"
+  const open = useCallback((chat: SavedChat) => {
+    dispatch({ type: "restore", sessionId: chat.session_id || newSessionId(), messages: savedToMessages(chat) });
+  }, []);
 
-  return { ...state, ask, retry, setStatus, reset };
+  return { ...state, ask, retry, setStatus, reset, open };
 }

@@ -11,6 +11,7 @@ const SECTIONS = [
   { to: "/admin/data", label: "Update Data", icon: "upload_file", hint: "Excel upload" },
   { to: "/admin/history", label: "Upload History", icon: "history", hint: "Undo changes" },
   { to: "/admin/unanswered", label: "Unanswered", icon: "help_center", hint: "Missing data" },
+  { to: "/admin/callbacks", label: "Callbacks", icon: "phone_callback", hint: "Please call me back" },   // 2026-11-20
   { to: "/admin/activity", label: "Activity Log", icon: "manage_history", hint: "Who did what" },
   { to: "/admin/health", label: "System Health", icon: "monitor_heart", hint: "Is everything working?" },   // 2026-11-01
 ];

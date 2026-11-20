@@ -5,7 +5,7 @@ import { PageShell } from "../../components/PageShell";
 import { useAuth } from "../../context/AuthContext";
 import { RESPONSE_SHORT, SPEECH_OPTIONS, useLanguage } from "../../context/LanguageContext";
 import { useRecorder, type RecorderError } from "../../hooks/useRecorder";
-import { ApiError, getGreeting, transcribeAudio } from "../../lib/api";
+import { ApiError, getChat, getGreeting, transcribeAudio } from "../../lib/api";
 import { storage } from "../../lib/storage";
 import { MessageList } from "./Messages";
 import { ActionCards, CHAT_HOME_CSS, ChatHeading, Composer, DecorLine, HandsFreeSide, HumanOfficerCard, TryAsking, type Draft } from "./ChatHome";
@@ -14,6 +14,8 @@ import { useVoiceConversation } from "./useVoiceConversation";
 import { ContactDialog } from "./ContactDialog";
 import { useChat } from "./useChat";
 import { useWakeWord } from "../../hooks/useWakeWord";
+import { WelcomeBack } from "./WelcomeBack";
+import { ChatSidebar } from "./ChatSidebar";
 
 const MIC_ERRORS: Record<RecorderError, string> = {
   unsupported: "Voice recording isn't supported in this browser. Please use Chrome or Edge, or type your question.",
@@ -32,7 +34,7 @@ function scrollToNewest() {
 }
 
 export default function ChatPage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const { speechLanguage, responseLanguage } = useLanguage();
   const [params, setParams] = useSearchParams();
 
@@ -183,29 +185,30 @@ export default function ChatPage() {
   const askText = (q: string) => void ask({ text: q });
   const languageSummary = `Speaking: ${SPEECH_OPTIONS.find((o) => o.value === speechLanguage)?.label.replace(/ \(.*\)$/, "") ?? "Auto-detect"} · Reply: ${RESPONSE_SHORT[responseLanguage]}`;
 
-  const saveChat = () => {
-    const lines = ["IntelliVoice — SVIT Admission Assistant", `Saved ${new Date().toLocaleString()}`, ""];
-    for (const m of chat.messages) {
-      if (m.kind === "user" && !m.pending) lines.push(`[${m.at.toLocaleTimeString()}] You: ${m.text}`, "");
-      if (m.kind === "bot") lines.push(`[${m.at.toLocaleTimeString()}] IntelliVoice: ${m.res.response?.text ?? ""}`, "");
-    }
-    if (lines.length === 3) {
-      setStatus("Nothing to save yet. Ask a question first.", "info");
-      return;
-    }
-    const url = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" }));
-    const a = Object.assign(document.createElement("a"), { href: url, download: "intellivoice-chat.txt" });
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  };
+  // 2026-11-20 (San): the "Save chat" (.txt download) button was removed; use ☆ Star under a reply instead
 
   const newChat = () => {
     if (recording) stop();
     current.current?.pause();
     chat.reset();
   };
+
+  // 2026-11-20: "Your chats" for signed-in students: open an earlier chat and continue it
+  const [chatsOpen, setChatsOpen] = useState(false);
+  const [chatsVersion, setChatsVersion] = useState(0);
+  useEffect(() => {
+    if (token && !chat.busy && chat.messages.length > 0) setChatsVersion((v) => v + 1);
+  }, [token, chat.busy, chat.messages.length]);
+  const openChat = useCallback(async (id: string) => {
+    if (!token) return;
+    const saved = await getChat(token, id);
+    if (recording) stop();
+    current.current?.pause();
+    chat.open(saved);
+    setChatsOpen(false);
+    window.setTimeout(scrollToNewest, 80);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, recording, chat.open]);
 
   const topic = chat.memory?.topic;
   const contextUsed = chat.memory?.context_used?.filter(Boolean) ?? [];
@@ -233,8 +236,18 @@ export default function ChatPage() {
           {/* ---------- Voice Chat (2026-10-14 redesign, reference: "Hello! How can I help you today?") ---------- */}
           <div className={`relative z-10 w-full px-margin-mobile lg:px-margin pt-[18px] ${empty ? "pb-10" : "pb-0"} min-h-screen flex flex-col`}>
             {/* top row: chat tools (while chatting) + highlighted "Talk to a Human Officer" */}
-            <div className="w-full flex flex-wrap items-start justify-between gap-3">
+            {/* 2026-11-20 (San): while chatting, the whole row stays pinned under the header when scrolling */}
+            <div
+              className={`w-full flex flex-wrap items-start justify-between gap-3 ${empty ? "" : "sticky top-20 z-30 -mx-margin-mobile lg:-mx-margin px-margin-mobile lg:px-margin pt-3 pb-5 -mt-3"}`}
+              style={empty ? undefined : { width: "auto", background: "linear-gradient(180deg, rgba(14, 11, 9, 0.9) 0%, rgba(14, 11, 9, 0.78) 75%, rgba(14, 11, 9, 0.35) 100%)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+            >
               <div className="flex flex-wrap items-center gap-2 min-h-[44px]">
+                {token && user && (
+                  <button type="button" onClick={() => setChatsOpen(true)} className={TOOL_BTN} style={{ ...TOOL_STYLE, border: "1px solid rgba(232, 211, 163, 0.55)" }} title="Your saved chats: open an earlier chat, rename, search or delete">
+                    <Icon name="forum" className="text-[18px]" />
+                    <span>Your chats</span>
+                  </button>
+                )}
                 {wake.supported && (
                   <button
                     type="button"
@@ -260,10 +273,6 @@ export default function ChatPage() {
                       <Icon name="add_comment" className="text-[18px]" />
                       <span className="hidden sm:inline">New chat</span>
                     </button>
-                    <button type="button" onClick={saveChat} className={TOOL_BTN} style={TOOL_STYLE}>
-                      <Icon name="download" className="text-[18px]" />
-                      <span className="hidden sm:inline">Save chat</span>
-                    </button>
                     <button type="button" onClick={toggleAutoplay} aria-pressed={autoplay} title={`Auto-play voice replies: ${autoplay ? "on" : "off"}`} className={TOOL_ICON} style={TOOL_STYLE}>
                       <Icon name={autoplay ? "volume_up" : "volume_off"} className="text-[19px]" />
                     </button>
@@ -276,12 +285,26 @@ export default function ChatPage() {
                   </>
                 )}
               </div>
-              <HumanOfficerCard onClick={() => setContactOpen(true)} disabled={false} />
+              {empty ? (
+                <HumanOfficerCard onClick={() => setContactOpen(true)} disabled={false} />
+              ) : (
+                // 2026-11-20: pinned with the row; a small version on phones so it takes less room
+                <>
+                  <div className="hidden md:block"><HumanOfficerCard onClick={() => setContactOpen(true)} disabled={false} /></div>
+                  <div className="md:hidden"><HumanOfficerCard compact onClick={() => setContactOpen(true)} disabled={false} /></div>
+                </>
+              )}
             </div>
 
             {empty ? (
               <>
                 <div className="mt-6 md:mt-[10px]"><ChatHeading /></div>
+                {/* 2026-11-19: signed-in students: "Welcome back" + recent questions + Forget my history */}
+                {token && user && (
+                  <div className="mt-6 md:mt-8">
+                    <WelcomeBack token={token} name={user.name} onAsk={askText} disabled={chat.busy} onOpenChat={openChat} />
+                  </div>
+                )}
                 <div className="mt-12 md:mt-[66px]">
                   <ActionCards
                     busy={chat.busy}
@@ -352,6 +375,18 @@ export default function ChatPage() {
         </div>
       </main>
       <ContactDialog open={contactOpen} onClose={() => setContactOpen(false)} />
+      {token && user && (
+        <ChatSidebar
+          open={chatsOpen}
+          onClose={() => setChatsOpen(false)}
+          token={token}
+          activeSessionId={chat.sessionId}
+          refreshKey={chatsVersion}
+          onOpenChat={openChat}
+          onNewChat={newChat}
+          onHistoryCleared={newChat}
+        />
+      )}
       <VoiceConversation
         phase={conversation.phase}
         levelRef={conversation.levelRef}

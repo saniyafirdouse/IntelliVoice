@@ -85,6 +85,188 @@ export function askQuestion({ sessionId, text, audio, context, speechLanguage, r
   return request<QueryResponse>("/api/query", { method: "POST", body: form, headers });
 }
 
+/** 2026-11-19: memory across visits for signed-in users (backend: GET / DELETE /api/me/history). */
+export interface MyHistory {
+  has_history: boolean;
+  welcome_message: string | null;
+  last_topic: string | null;
+  last_question?: string;
+  last_asked_at?: string | null;
+  recent_topics: string[];
+}
+
+export function getMyHistory(token: string) {
+  return request<MyHistory>("/api/me/history", { method: "GET", headers: { Authorization: `Bearer ${token}` } }, 15_000);
+}
+
+export function forgetMyHistory(token: string) {
+  return request<{ ok: boolean; removed: number; message: string }>(
+    "/api/me/history", { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }, 15_000);
+}
+
+// ── "Your chats" for signed-in students (2026-11-20; backend: /api/me/conversations) ──
+export interface SavedChatSummary {
+  id: string;
+  session_id: string;
+  title: string;
+  questions: number;
+  preview: string;
+  created_at: string | null;
+  updated_at: string | null;
+}
+export interface SavedMessage {
+  role: "user" | "eva";
+  text: string;
+  mode?: "voice" | "text";
+  language?: string | null;
+  intent?: string | null;
+  at: string | null;
+  /** Eva's extras, so an old reply looks the same: PDF buttons, help card, overview… */
+  extra?: Partial<QueryResponse>;
+}
+export interface SavedChat {
+  id: string;
+  session_id: string;
+  title: string;
+  created_at: string | null;
+  updated_at: string | null;
+  messages: SavedMessage[];
+}
+
+const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
+
+export function listChats(token: string, search?: string) {
+  const q = search?.trim() ? `?q=${encodeURIComponent(search.trim())}` : "";
+  return request<{ items: SavedChatSummary[] }>(`/api/me/conversations${q}`, { method: "GET", headers: auth(token) }, 15_000)
+    .then((r) => r.items);
+}
+
+export function getChat(token: string, id: string) {
+  return request<SavedChat>(`/api/me/conversations/${encodeURIComponent(id)}`, { method: "GET", headers: auth(token) }, 15_000);
+}
+
+export function renameChat(token: string, id: string, title: string) {
+  return request<{ ok: boolean }>(`/api/me/conversations/${encodeURIComponent(id)}`, {
+    method: "PATCH", headers: { ...auth(token), "Content-Type": "application/json" }, body: JSON.stringify({ title }),
+  }, 15_000);
+}
+
+export function deleteChat(token: string, id: string) {
+  return request<{ ok: boolean }>(`/api/me/conversations/${encodeURIComponent(id)}`, { method: "DELETE", headers: auth(token) }, 15_000);
+}
+
+// ── callback requests (2026-11-20; backend: POST /api/callback, GET /api/me/callbacks) ──
+export interface CallbackInput {
+  name: string;
+  phone: string;
+  question?: string;
+  language?: string;
+  preferred_time?: string;
+  session_id?: string;
+}
+export interface MyCallback {
+  id: string;
+  reference: string;
+  question: string | null;
+  phone: string | null;
+  preferred_time: string | null;
+  status: "new" | "called" | "resolved" | string;
+  status_text: string;
+  created_at: string | null;
+}
+
+export function requestCallback(body: CallbackInput, token?: string | null) {
+  return request<{ ok: boolean; reference: string; message: string }>("/api/callback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(token ? auth(token) : {}) },
+    body: JSON.stringify(body),
+  }, 20_000);
+}
+
+export function myCallbacks(token: string) {
+  return request<{ items: MyCallback[] }>("/api/me/callbacks", { method: "GET", headers: auth(token) }, 15_000).then((r) => r.items);
+}
+
+// ── ⭐ saved answers + my checklist (2026-11-20; backend: /api/me/saved, /api/me/checklist) ──
+export interface SavedAnswer { id: string; question: string; answer: string; language: string | null; saved_at: string | null }
+export interface MyChecklist {
+  admission_type: string;
+  category: string;
+  admission_types: Record<string, string>;
+  categories: string[];
+  documents: string[];
+  steps: string[];
+  done: string[];
+  note: string;
+}
+
+export function listSaved(token: string) {
+  return request<{ items: SavedAnswer[] }>("/api/me/saved", { method: "GET", headers: auth(token) }, 15_000).then((r) => r.items);
+}
+
+export function saveAnswer(token: string, question: string, answer: string, language?: string) {
+  return request<SavedAnswer>("/api/me/saved", {
+    method: "POST", headers: { ...auth(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ question: question.slice(0, 500), answer, language }),
+  }, 15_000);
+}
+
+export function deleteSaved(token: string, id: string) {
+  return request<{ ok: boolean }>(`/api/me/saved/${encodeURIComponent(id)}`, { method: "DELETE", headers: auth(token) }, 15_000);
+}
+
+export function getMyChecklist(token: string, admissionType?: string, category?: string) {
+  const q = new URLSearchParams();
+  if (admissionType) q.set("admission_type", admissionType);
+  if (category) q.set("category", category);
+  const qs = q.toString();
+  return request<MyChecklist>(`/api/me/checklist${qs ? `?${qs}` : ""}`, { method: "GET", headers: auth(token) }, 15_000);
+}
+
+export function saveMyChecklist(token: string, admissionType: string, category: string, done: string[]) {
+  return request<{ ok: boolean }>("/api/me/checklist", {
+    method: "PUT", headers: { ...auth(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ admission_type: admissionType, category, done }),
+  }, 15_000);
+}
+
+// ── my profile (2026-11-20; backend: /api/me/profile) ──
+export interface MyProfile {
+  exam: string | null;
+  rank: number | null;
+  category: string | null;
+  branches: string[];
+  updated_at: string | null;
+  options?: { exams: Record<string, string>; categories: string[]; branches: string[] };
+}
+
+export function getMyProfile(token: string) {
+  return request<MyProfile>("/api/me/profile", { method: "GET", headers: auth(token) }, 15_000);
+}
+
+export function saveMyProfile(token: string, p: { exam: string | null; rank: number | null; category: string | null; branches: string[] }) {
+  return request<MyProfile>("/api/me/profile", {
+    method: "PUT", headers: { ...auth(token), "Content-Type": "application/json" }, body: JSON.stringify(p),
+  }, 15_000);
+}
+
+// ── "Email me" (2026-11-20; backend: /api/me/email; hidden until the backend has an email account) ──
+let emailStatusCache: { token: string; promise: Promise<boolean> } | null = null;
+export function emailEnabled(token: string): Promise<boolean> {
+  if (!emailStatusCache || emailStatusCache.token !== token) {
+    const promise = request<{ enabled: boolean }>("/api/me/email", { method: "GET", headers: auth(token) }, 10_000)
+      .then((r) => !!r.enabled).catch(() => false);
+    emailStatusCache = { token, promise };
+  }
+  return emailStatusCache.promise;
+}
+
+export function emailMe(token: string, body: { kind: "answer" | "starred" | "checklist"; question?: string; answer?: string }) {
+  return request<{ ok: boolean; message: string }>("/api/me/email", {
+    method: "POST", headers: { ...auth(token), "Content-Type": "application/json" }, body: JSON.stringify(body),
+  }, 30_000);
+}
+
 /** 2026-11-01: Eva's spoken hello after "Hey Eva" (en | hi | kn). */
 export function getGreeting(language: string) {
   return request<QueryResponse>(`/api/greeting?language=${encodeURIComponent(language)}`, { method: "GET" });

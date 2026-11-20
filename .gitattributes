@@ -1,0 +1,3 @@
+# 2026-11-20: Linux scripts must keep LF line endings (a CRLF start.sh fails on Hugging Face)
+*.sh text eol=lf
+Dockerfile text eol=lf

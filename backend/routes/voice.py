@@ -33,7 +33,7 @@ from fastapi.responses import JSONResponse
 from database.connection import get_database
 from engines.analytics_engine import log_query
 from engines.intelligence_engine import REFERENTIAL_MARKERS, _build_output, classify_intent
-from engines.knowledge_engine import fetch_knowledge
+from engines.knowledge_engine import RANK_INTENTS, fetch_knowledge
 from engines.language_engine import (
     build_language_result,
     correct_transcript,
@@ -146,7 +146,11 @@ def _apply_memory(session_id: Optional[str], ir: dict, extra_entities: Optional[
     try:
         original = {k: v for k, v in (ir.get("entities") or {}).items() if k != "topic"}
         current = dict(original)
-        for key, value in (extra_entities or {}).items():   # "Your Query Context" box
+        for key, value in (extra_entities or {}).items():   # "Your Query Context" box / profile
+            # 2026-11-20: rank and exam (from the student's profile) only for rank / cutoff questions,
+            # so e.g. "What is the fee?" still asks "Which branch?" instead of jumping to the predictor.
+            if key in ("rank", "exam") and ir.get("intent") not in RANK_INTENTS:
+                continue
             current.setdefault(key, value)
 
         context = memory_engine.get_context(session_id)

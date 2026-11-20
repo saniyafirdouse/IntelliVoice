@@ -50,7 +50,25 @@ export function ChatHeading() {
 }
 
 // ---------------------------------------------------------------- human officer card
-export function HumanOfficerCard({ onClick, disabled }: { onClick: () => void; disabled: boolean }) {
+export function HumanOfficerCard({ onClick, disabled, compact = false }: { onClick: () => void; disabled: boolean; compact?: boolean }) {
+  if (compact) {
+    // 2026-11-20: small version that stays at the top right while chatting on a phone
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        aria-label="Talk to a Human Officer"
+        className="h-11 pl-1.5 pr-3.5 rounded-full flex items-center gap-2 text-[13.5px] font-semibold text-white transition-all hover:brightness-110 disabled:opacity-60"
+        style={{ background: "linear-gradient(135deg, rgba(65, 42, 26, 0.9), rgba(36, 26, 22, 0.88))", border: "1.5px solid rgba(246, 240, 189, 0.85)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", boxShadow: "0 0 18px rgba(246, 240, 189, 0.25), 0 8px 22px rgba(0,0,0,0.35)" }}
+      >
+        <span className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#202023" }}>
+          <Icon name="headset_mic" className="text-[18px] text-white" />
+        </span>
+        Human officer
+      </button>
+    );
+  }
   return (
     <button
       type="button"
@@ -146,7 +164,12 @@ function TypeCard({ onSend, busy, draft }: { onSend: (q: string) => void; busy: 
 
   return (
     <div
-      className={`${CARD_BASE} min-h-[150px] p-5 flex flex-col justify-between hover:brightness-110`}
+      // 2026-11-20: click anywhere on the card to type (not only on the small text)
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest("button, input, a")) return;
+        if (!open) setOpen(true); else inputRef.current?.focus();
+      }}
+      className={`${CARD_BASE} min-h-[150px] p-5 flex flex-col justify-between hover:brightness-110 cursor-text`}
       style={{ background: "linear-gradient(180deg, rgba(62, 56, 54, 0.62), rgba(40, 38, 42, 0.66))", border: "1px solid rgba(255, 255, 255, 0.16)", boxShadow: "0 14px 36px rgba(0,0,0,0.35)", ...glassBlur }}
     >
       <span className="w-[52px] h-[52px] rounded-full flex items-center justify-center" style={{ background: "rgba(255, 255, 255, 0.1)", border: "1px solid rgba(255, 255, 255, 0.28)" }}>
@@ -438,7 +461,13 @@ export function Composer({ busy, recording, onSend, onStartRecording, onStopReco
   return (
     <form
       onSubmit={submit}
-      className="w-full flex items-center gap-2 sm:gap-3 h-[76px] md:h-[88px] pl-3 md:pl-4 pr-3 rounded-[30px]"
+      // 2026-11-20: click anywhere on the bar (not only on the text line) to start typing
+      onMouseDown={(e) => {
+        if ((e.target as HTMLElement).closest("button, input, a, select, [role=menu]")) return;
+        e.preventDefault();
+        inputRef.current?.focus();
+      }}
+      className="w-full flex items-center gap-2 sm:gap-3 h-[76px] md:h-[88px] pl-3 md:pl-4 pr-3 rounded-[30px] cursor-text"
       style={{ background: "linear-gradient(180deg, rgba(44, 42, 37, 0.82), rgba(30, 29, 26, 0.86))", border: `1.5px solid rgba(191, 152, 111, ${recording ? 0.95 : 0.7})`, boxShadow: recording ? "0 0 28px rgba(220, 170, 147, 0.35), 0 16px 40px rgba(0,0,0,0.4)" : "0 16px 40px rgba(0,0,0,0.4)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}
     >
       <button
@@ -465,7 +494,7 @@ export function Composer({ busy, recording, onSend, onStartRecording, onStopReco
         disabled={busy || transcribing}
         aria-label="Type your question"
         placeholder={recording ? "Listening… release (or tap the mic) when you're done" : transcribing ? "Writing down what you said…" : "Ask a follow-up question..."}
-        className="flex-1 min-w-0 bg-transparent border-none outline-none text-[16px] md:text-[18px] text-white placeholder:text-white/55"
+        className="flex-1 min-w-0 self-stretch bg-transparent border-none outline-none text-[16px] md:text-[18px] text-white placeholder:text-white/55"
       />
       <LanguageMenu up className="hidden sm:block flex-shrink-0" />
       <button
